@@ -14,8 +14,9 @@ const userOtpSchema = mongoose.Schema({
     type: Date,
   },
 });
-const UserOtpVerification = mongoose.model(
-  "UserOtpVerification",
-  userOtpSchema
-);
-module.exports = UserOtpVerification;
+if (mongoose.models.userOtpVerification) {
+  userOtpVerification = mongoose.model("userOtpVerification");
+} else {
+  userOtpVerification = mongoose.model("userOtpVerification", userOtpSchema);
+}
+module.exports = userOtpVerification;
