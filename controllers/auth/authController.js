@@ -7,6 +7,7 @@ const Candidate = require("../../models/users/candidateModel");
 const QuizMaster = require("../../models/users/quizMasterModel");
 const UserOtpVerification = require("../../models/users/userOtpVerification");
 const bcrypt = require("bcryptjs");
+const myEnum = require("./enumUser");
 
 const registerAdmin = asyncHandler(async (req, res) => {
   try {
@@ -241,10 +242,79 @@ const resendverification = asyncHandler(async (req, res) => {
   }
 });
 
+//login user
+
+const loginUser = asyncHandler(async (req, res) => {
+  const { email, password } = req.body;
+  switch (req.params.typeUser) {
+    case myEnum.ADMIN.value:
+      user = await Admin.findOne({
+        email,
+      });
+      // console.log(user);
+      if (!user) {
+        res.json({
+          message: "user doesn't exist",
+        });
+      }
+      // console.log(user);
+      else if (user) {
+        if (await user.matchPassword(req.body.password)) {
+          res.json({
+            email,
+            password,
+          });
+        } else {
+          res.json({
+            message: "Invalid email or password",
+          });
+        }
+      }
+      break;
+    case myEnum.CANDIDATE.value:
+      user = await Candidate.findOne({
+        email,
+      });
+      break;
+    case myEnum.QUIZMASTER.value:
+      user = await QuizMaster.findOne({
+        email: req.body.email,
+      });
+      // console.log(user);
+      break;
+    default:
+      throw console.error("user doesn't exist");
+  }
+  if (!user) {
+    res.json({
+      message: "user doesn't exist",
+    });
+  }
+
+  // console.log(user);
+  else if (user) {
+    if (!user.verified) {
+      res.json({
+        message: "Please verify your account",
+      });
+    } else if (await user.matchPassword(req.body.password)) {
+      res.json({
+        email,
+        password,
+      });
+    } else {
+      res.json({
+        message: "Invalid email or password",
+      });
+    }
+  }
+});
+
 module.exports = {
   registerAdmin,
   registerQuizMaster,
   registerCandidate,
   verifyOTP,
   resendverification,
+  loginUser,
 };
