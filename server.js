@@ -4,6 +4,7 @@ const connectDB = require("./data/db");
 const app = express();
 const authRoute = require("./routes/authRoute");
 app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 dotenv.config();
 connectDB();
 
