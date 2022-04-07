@@ -38,7 +38,9 @@ const sendPasswordLink = async (req, res) => {
                 newtoken=await new Token (
                   {
                     userId:user._id,
-                    token :crypto.randomBytes(32).toString("hex")
+                    token :crypto.randomBytes(32).toString("hex"),
+                    expiresAt: Date.now()+3600000
+
                   }
                 ).save();
                 

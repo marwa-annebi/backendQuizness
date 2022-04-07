@@ -8,7 +8,8 @@ const QuizMaster = require("../../models/users/quizMasterModel");
 const UserOtpVerification = require("../../models/users/userOtpVerification");
 const bcrypt = require("bcryptjs");
 const myEnum = require("./enumUser");
-
+const tokenModel = require("../../models/users/tokenModel");
+const crypto =require ("crypto");
 const registerAdmin = asyncHandler(async (req, res) => {
   try {
     let { firstName, lastName, email, password } = req.body;
@@ -298,9 +299,19 @@ const loginUser = asyncHandler(async (req, res) => {
         message: "Please verify your account",
       });
     } else if (await user.matchPassword(req.body.password)) {
+     const newtoken=await new tokenModel (
+        {
+          userId:user._id,
+          token :crypto.randomBytes(32).toString("hex"),
+          expiresAt: Date.now()+3600000
+        }
+        
+      )
+      newtoken.save()
       res.json({
         email,
         password,
+        newtoken
       });
     } else {
       res.json({
@@ -310,6 +321,14 @@ const loginUser = asyncHandler(async (req, res) => {
   }
 });
 
+//logout 
+
+const logout = asyncHandler(async (req, res) => {
+  req.logout()
+  req.session.destroy()
+
+})
+
 module.exports = {
   registerAdmin,
   registerQuizMaster,
@@ -317,4 +336,5 @@ module.exports = {
   verifyOTP,
   resendverification,
   loginUser,
+  logout
 };

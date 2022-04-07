@@ -5,10 +5,14 @@ const tokenSchema = new Schema({
 	userId: {
 		type: String,
 		required: true,
-		unique: true,
+		//unique: true,
 	},
 	token: { type: String, required: true },
-	createdAt: { type: Date, default: Date.now, expires: Date.now()+36000000 },
+	createdAt: { type: Date, default: Date.now},
+    expiresAt :{type:Date}
 });
 
+
+
+		
 module.exports = Token = mongoose.model("Token", tokenSchema);
