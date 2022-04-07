@@ -303,7 +303,7 @@ const loginUser = asyncHandler(async (req, res) => {
         {
           userId:user._id,
           token :crypto.randomBytes(32).toString("hex"),
-          expires: Date.now()+3600000
+          expiresAt: Date.now()+3600000
         }
         
       )

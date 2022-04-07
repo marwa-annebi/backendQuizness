@@ -9,7 +9,7 @@ const Token=require ("../models/users/tokenModel");
    console.log(token);
      if(!token) return res.status(401).send("access denied");
      if (token){
- const expiredToken=token.expires;
+ const expiredToken=token.expiresAt;
   console.log(expiredToken);
 
         // const verified=jwt.verify(token,process.env.TOKEN_SECRET);
