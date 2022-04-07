@@ -6,8 +6,8 @@ const {
   verifyOTP,
   resendverification,
   loginUser,
-} = require("../controllers/auth/authController");
-const  {sendPasswordLink,setNewPassword} = require("../controllers/auth/resetPassword");
+} = require("../../controllers/auth/authController");
+const  {sendPasswordLink,setNewPassword} = require("../../controllers/auth/resetPassword");
 const router = express.Router();
 
 router.route("/registerAdmin").post(registerAdmin);
