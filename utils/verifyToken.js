@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+
 const Token=require ("../models/users/tokenModel");
  async function verifyToken(req,res,next){
     try{
@@ -30,4 +31,6 @@ const Token=require ("../models/users/tokenModel");
           });
     }
 };
-module.exports=verifyToken
+module.exports=verifyToken;
+
+
