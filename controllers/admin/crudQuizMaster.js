@@ -1,3 +1,4 @@
+const express = require("express");
 const QuizMaster = require("./../../models/Users/quizMasterModel");
 
 const createUser = async (req, res) => {
@@ -10,7 +11,7 @@ const createUser = async (req, res) => {
     password,
   });
   try {
-    newUser.save().then(() => {
+    newUser.save().then((result) => {
       newUser._id;
     });
   } catch (error) {
@@ -32,9 +33,11 @@ const getAllUsers = async (req, res) => {
 //delete
 
 const deleteUser = async (req, res) => {
+
   const user = await QuizMaster.findById(req.params.id);
 
   if (user) {
+      
     await user.remove();
     res.json({ message: "user Removed" });
   } else {
