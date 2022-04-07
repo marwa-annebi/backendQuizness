@@ -1,5 +1,5 @@
 const express = require("express");
-const QuizMaster = require("./../../models/Users/quizMasterModel");
+const QuizMaster = require("../../models/users/quizMasterModel");
 
 const createUser = async (req, res) => {
   let { firstName, lastName, email, password } = req.body;
