@@ -1,4 +1,5 @@
 const express = require("express");
+const { sendPasswordLink, setNewPassword } = require("../../controllers/auth/resetPassword");
 const {
   registerAdmin,
   registerCandidate,
@@ -8,9 +9,8 @@ const {
   loginUser,
   logout,
 } = require("../controllers/auth/authController");
-const  {sendPasswordLink,setNewPassword} = require("../controllers/auth/resetPassword");
-const router = express.Router();
 const verifyToken = require("../utils/verifyToken")
+const router =express.Router()
 router.route("/registerAdmin").post(registerAdmin);
 router.route("/registerCandidate").post(registerCandidate);
 router.route("/registerQuizMaster").post(registerQuizMaster);
