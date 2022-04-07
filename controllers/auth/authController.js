@@ -246,13 +246,14 @@ const resendverification = asyncHandler(async (req, res) => {
 //login user
 
 const loginUser = asyncHandler(async (req, res) => {
+  try{
   const { email, password } = req.body;
   switch (req.params.typeUser) {
     case myEnum.ADMIN.value:
       user = await Admin.findOne({
         email,
       });
-      // console.log(user);
+       console.log(user);
       if (!user) {
         res.json({
           message: "user doesn't exist",
@@ -279,9 +280,9 @@ const loginUser = asyncHandler(async (req, res) => {
       break;
     case myEnum.QUIZMASTER.value:
       user = await QuizMaster.findOne({
-        email: req.body.email,
+       email,
       });
-      // console.log(user);
+       console.log(user);
       break;
     default:
       throw console.error("user doesn't exist");
@@ -318,6 +319,11 @@ const loginUser = asyncHandler(async (req, res) => {
         message: "Invalid email or password",
       });
     }
+  }}catch(error){
+    res.json({
+      status: "FAILED",
+      message: error.message,
+    });
   }
 });
 
