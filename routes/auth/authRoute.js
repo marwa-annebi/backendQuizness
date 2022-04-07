@@ -8,8 +8,8 @@ const {
   resendverification,
   loginUser,
   logout,
-} = require("../controllers/auth/authController");
-const verifyToken = require("../utils/verifyToken")
+} = require("../../controllers/auth/authController");
+const verifyToken = require("../../utils/verifyToken")
 const router =express.Router()
 router.route("/registerAdmin").post(registerAdmin);
 router.route("/registerCandidate").post(registerCandidate);
