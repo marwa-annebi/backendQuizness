@@ -1,11 +1,11 @@
 const mongoose = require("mongoose");
 const answerCandidatSchema = mongoose.Schema({
-  voucherID: {
+  voucher: {
     type: mongoose.Types.ObjectId,
     ref: "Voucher",
     required: true,
   },
-  propositionID: {
+  proposition: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
     ref: "Proposition",
