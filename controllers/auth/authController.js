@@ -7,9 +7,15 @@ const Candidate = require("../../models/users/candidateModel");
 const QuizMaster = require("../../models/users/quizMasterModel");
 const UserOtpVerification = require("../../models/users/userOtpVerification");
 const bcrypt = require("bcryptjs");
+var jwt = require('jsonwebtoken');
 const myEnum = require("./enumUser");
+
+const  generateToken = require("../../utils/generateToken");
+const crypto =require ("crypto");
+
 const tokenModel = require("../../models/users/tokenModel");
 const crypto = require("crypto");
+
 const registerAdmin = asyncHandler(async (req, res) => {
   try {
     let { firstName, lastName, email, password } = req.body;
@@ -244,6 +250,7 @@ const resendverification = asyncHandler(async (req, res) => {
 });
 
 //login user
+
 const loginUser = asyncHandler(async (req, res) => {
   try {
    
@@ -325,7 +332,9 @@ const loginUser = asyncHandler(async (req, res) => {
 //logout 
 
 const logout = asyncHandler(async (req, res) => {
-  res.status(200).send({ auth: false, token: null });
+
+  res.status(200).send({ auth: false,token:null });
+
 
 })
 
@@ -335,8 +344,6 @@ module.exports = {
   registerCandidate,
   verifyOTP,
   resendverification,
-
-
   loginUser,
   logout,
 
