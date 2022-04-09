@@ -23,4 +23,7 @@ router.route("/verifyToken/:id").post(verifyToken)
 router.route('/logout').get(logout)
 router.route('/loginUser').post(loginUser)
 
+
 module.exports = router;
+
+

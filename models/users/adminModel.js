@@ -12,9 +12,6 @@ const adminSchema = mongoose.Schema(
     microsoftId: {
       type: String,
     },
-    unitNo: {
-      type: Number,
-    },
     firstName: {
       type: String,
       required: true,
