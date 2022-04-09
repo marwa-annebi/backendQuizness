@@ -246,8 +246,8 @@ const resendverification = asyncHandler(async (req, res) => {
 //login user
 const loginUser = asyncHandler(async (req, res) => {
   try {
-    // console.log("dfghj");
-    const { email, password,type } = req.body;
+   
+    const {email,password,type} = req.body;
     switch (type) {
       case myEnum.ADMIN.value:
         user = await Admin.findOne({
@@ -262,12 +262,12 @@ const loginUser = asyncHandler(async (req, res) => {
         // console.log(user);
         else if (user) {
           if (await user.matchPassword(req.body.password)) {
-            res.json({
+            return  res.json({
               email,
               password,
             });
           } else {
-            res.json({
+           return   res.json({
               message: "Invalid email or password",
             });
           }
@@ -286,52 +286,48 @@ const loginUser = asyncHandler(async (req, res) => {
         break;
       default:
         throw console.error("user doesn't exist");
+       
     }
-    if (!user) {
-      res.json({
+     if (!user) {
+     return   res.status(404).json({
         message: "user doesn't exist",
       });
+      
     }
 
-    // console.log(user);
-    else if (user) {
+    //console.log(user);
+     else if (user) {
+     console.log(user);
       if (!user.verified) {
-        res.json({
+        return  res.status(400).json({
           message: "Please verify your account",
         });
       } else if (await user.matchPassword(req.body.password)) {
-        const newtoken = await new tokenModel({
-          userId: user._id,
-          token: crypto.randomBytes(32).toString("hex"),
-          expiresAt: Date.now() + 3600000,
-        });
-        newtoken.save();
-        res.json({
-          email,
-          password,
-          newtoken,
-        });
+        console.log(req.body.type);
+       var token=generateToken(user._id,req.body.type,user.email);
+       console.log(token);
+      res.status(200).send({ auth: true, token: token });
       } else {
-        res.json({
+        return  res.status(400).json({
           message: "Invalid email or password",
         });
       }
     }
   } catch (error) {
     console.log(error);
-    res.json({
+     return res.status(400).json({
       status: "FAILED",
       message: error.message,
     });
   }
 });
 
-//logout
+//logout 
 
 const logout = asyncHandler(async (req, res) => {
-  req.logout();
-  req.session.destroy();
-});
+  res.status(200).send({ auth: false, token: null });
+
+})
 
 module.exports = {
   registerAdmin,
