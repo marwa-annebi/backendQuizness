@@ -245,9 +245,10 @@ const resendverification = asyncHandler(async (req, res) => {
 
 //login user
 
-const loginUser = asyncHandler(async (req, res) => {
+const login = asyncHandler(async (req, res) => {
+  
   try{
-  const { email, password } = req.body;
+  const {email,password } = req.body;
   switch (req.params.typeUser) {
     case myEnum.ADMIN.value:
       user = await Admin.findOne({
@@ -341,6 +342,6 @@ module.exports = {
   registerCandidate,
   verifyOTP,
   resendverification,
-  loginUser,
+  login,
   logout
 };

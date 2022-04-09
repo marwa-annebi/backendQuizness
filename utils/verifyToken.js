@@ -9,19 +9,10 @@ const Token=require ("../models/users/tokenModel");
    console.log(token);
      if(!token) return res.status(401).send("access denied");
      if (token){
- const expiredToken=token.expires;
+ const expiredToken=token.expiresAt;
   console.log(expiredToken);
 
-        const verified=jwt.verify(token,process.env.JWT_SECRET);
-        console.log(verified);
-        // if(verified){
-        //     res.status(200).send("token verified");
-        //     next();
-        // } else 
-        // {
-        //     res.status(400).send("token not verified");
-            
-        // }
+        // const verified=jwt.verify(token,process.env.TOKEN_SECRET);
         // req.user=verified;
         if (Date.now() > expiredToken)
         {
@@ -29,10 +20,10 @@ const Token=require ("../models/users/tokenModel");
             res.status(400).send("token expired");
         }
         else {
-            res.status(200).send({token});
+            res.status(400).send({token});
 
         }
-    }
+        next();}
     } catch (error){
         res.json({
             status: "FAILED",
@@ -41,5 +32,4 @@ const Token=require ("../models/users/tokenModel");
     }
 };
 module.exports=verifyToken;
-
 
