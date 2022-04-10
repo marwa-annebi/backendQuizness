@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const { findById } = require("../models/users/adminModel");
 
 function verifyToken(req, res, next) {
     var token = req.body.token || req.query.token || req.headers["x-access-token"];
@@ -7,6 +8,10 @@ function verifyToken(req, res, next) {
       return res.status(403).send({ auth: false, message: 'No token provided.' });
       try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const user = await findById(decoded.id)
+        if (user){
+          return res.status(404).send({ auth: false, message: 'user not exist' })
+        }
         req.user = decoded;
         res.status(200).send(decoded);
         // User.findById(decoded.id, function (err, user) {
