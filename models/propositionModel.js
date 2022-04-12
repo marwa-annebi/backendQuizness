@@ -1,14 +1,14 @@
 const mongoose = require("mongoose");
+
 const propositionSchema = mongoose.Schema({
   _id_proposition: {
     type: Number,
   },
-  questionID: {
+  question: {
     type: mongoose.Schema.Types.ObjectId,
-    required: true,
+   // required: true,
     ref: "Question",
   },
-
   content: {
     type: String,
     required: true,
@@ -18,5 +18,4 @@ const propositionSchema = mongoose.Schema({
     required: true,
   },
 });
-
 module.exports = Proposition = mongoose.model("Proposition", propositionSchema);

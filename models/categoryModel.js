@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const categorySchema = mongoose.Schema({
-  quizMasterID: {
+  quizmaster: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
     ref: "QuizMaster",

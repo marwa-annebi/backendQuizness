@@ -1,12 +1,16 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const connectDB = require("./data/db");
+var bodyParser = require('body-parser')
 const app = express();
 const authRoute = require("./routes/auth/authRoute");
 const adminRoute = require("./routes/admin/adminRoute");
 const quizMasterRoute=require("./routes/quizMaster/quizMasterRoute")
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: false }))
+
+// parse application/json
+app.use(bodyParser.json())
 dotenv.config();
 connectDB();
 

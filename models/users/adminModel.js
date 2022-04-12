@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
-const AutoIncrement = require("mongoose-sequence")(mongoose);
 const adminSchema = mongoose.Schema(
   {
     linkedinId: {
@@ -41,7 +40,6 @@ const adminSchema = mongoose.Schema(
     timestamps: true,
   }
 );
-adminSchema.plugin(AutoIncrement, { id: "order_seq", inc_field: "unitNo" });
 adminSchema.pre("save", async function (next) {
   if (!this.isModified("password")) {
     next();
