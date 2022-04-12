@@ -16,6 +16,7 @@ const { findById } = require("../../models/users/tokenModel");
 const sendPasswordLink = async (req, res, next) => {
   const { email, type } = req.body;
 
+
   //     const { error } = emailSchema.validate(req.body.email);
   //      if (error)
   //    return res.status(400).send({ message: error.details[0].message });

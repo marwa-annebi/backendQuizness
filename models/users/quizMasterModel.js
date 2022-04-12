@@ -12,9 +12,7 @@ const quizMasterSchema = mongoose.Schema(
     microsoftId: {
       type: String,
     },
-    unitNo: {
-      type: Number,
-    },
+
     firstName: {
       type: String,
       required: true,
@@ -59,6 +57,7 @@ quizMasterSchema.methods.matchPassword = async function (enteredPass) {
 };
 quizMasterSchema.methods.getResetPasswordToken = function () {
   const resetToken = crypto.randomBytes(20).toString("hex");
+
   // Hash token (private key) and save to database
   this.resetPasswordToken = crypto
     .createHash("sha256")

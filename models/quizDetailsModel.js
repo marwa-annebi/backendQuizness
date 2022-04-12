@@ -1,10 +1,10 @@
 const mongoose = require("mongoose");
 const quizDetailsSchema = mongoose.Schema({
-  quiz_id: {
+  quiz: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Quiz",
   },
-  question_id: {
+  question: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Question",
   },

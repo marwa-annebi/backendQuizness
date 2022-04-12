@@ -12,9 +12,6 @@ const candidateSchema = mongoose.Schema(
     microsoftId: {
       type: String,
     },
-    unitNo: {
-      type: Number,
-    },
     firstName: {
       type: String,
       required: true,
@@ -60,6 +57,10 @@ candidateSchema.methods.matchPassword = async function (enteredPass) {
 candidateSchema.methods.getResetPasswordToken = function () {
   const resetToken = crypto.randomBytes(20).toString("hex");
 
+
+
+
+
   // Hash token (private key) and save to database
   this.resetPasswordToken = crypto
     .createHash("sha256")
@@ -71,7 +72,6 @@ candidateSchema.methods.getResetPasswordToken = function () {
 
   return resetToken;
 };
-
 // Compile model from schema
 const Candidate = mongoose.model("Candidate", candidateSchema);
 module.exports = Candidate;

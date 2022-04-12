@@ -3,7 +3,7 @@ const questionSchema = mongoose.Schema({
   _id_question: {
     type: Number,
   },
-  quizMasterID: {
+  quizmaster: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
     ref: "QuizMaster",
@@ -33,6 +33,7 @@ const questionSchema = mongoose.Schema({
     type: Date,
   },
 });
+questionSchema.plugin(AutoIncrement, { id: "order_seq", inc_field: "_id_question" });
 
 const Question = mongoose.model("Question", questionSchema);
 module.exports = Question;
