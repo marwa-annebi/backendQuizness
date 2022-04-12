@@ -2,7 +2,7 @@ const expressAsyncHandler = require("express-async-handler");
 const Category = require("./../../models/categoryModel");
 const createCategory = expressAsyncHandler(async (req, res) => {
   try {
-    let { quizMasterID, category_name, questions } = req.body;
+    let { quizmaster, category_name } = req.body;
     const categoryExists = await Category.findOne({ category_name });
     console.log(categoryExists);
     if (categoryExists) {
@@ -12,10 +12,10 @@ const createCategory = expressAsyncHandler(async (req, res) => {
       });
     } else {
       const newCategory = new Category({
-        // quizMasterID: req.quizMasterID._id,
-        quizMasterID,
+        // quizmaster: req.quizmaster._id,
+        quizmaster,
         category_name,
-        questions,
+        
       });
       newCategory.save().then(() => {
         res.json({
@@ -68,16 +68,16 @@ const deleteCategory = expressAsyncHandler(async (req, res) => {
 //read all by id quizmaster
 
 const getCategories = expressAsyncHandler(async (req, res) => {
-  let { quizMasterID } = req.body;
+  let { quizmaster } = req.body;
   const categories = await Category.find({
     // quizmaster: req.quizmaster._id
-    quizMasterID,
+    quizmaster,
   });
   res.json(categories);
 });
 
-const getCategoryById = expressAsyncHandler(async (req, res) => {
-  const category = await Category.findById(req.params.id);
+const getCategoryById = expressAsyncHandler(async (id) => {
+  const category = await Category.findById(id);
 
   if (category) {
     res.json(category);
