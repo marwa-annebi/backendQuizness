@@ -43,6 +43,7 @@ const questionSchema = mongoose.Schema({
     type: Date,
   },
 });
+
 questionSchema.plugin(AutoIncrement, {
   id: "order_seq",
   inc_field: "_id_question",
@@ -59,6 +60,8 @@ questionSchema.pre('deleteOne', function (next) {
     }
   });
 });
+
+questionSchema.plugin(AutoIncrement, { id: "order_seq", inc_field: "_id_question" });
 const Question = mongoose.model("Question", questionSchema);
 module.exports = Question;
 // questionSchema.plugin(autoIncrement.plugin,{model : "Question", field: '_id_question' ,startAt: 001,

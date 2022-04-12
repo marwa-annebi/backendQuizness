@@ -5,8 +5,10 @@ const propositionSchema = mongoose.Schema({
     type: Number,
   },
   question: {
+
     type: mongoose.Schema.Types.ObjectId,
    // required: true,
+
     ref: "Question",
   },
   content: {
@@ -18,4 +20,7 @@ const propositionSchema = mongoose.Schema({
     required: true,
   },
 });
+
+adminSchema.plugin(AutoIncrement, { id: "order_seq", inc_field: "_id_proposition" });
+
 module.exports = Proposition = mongoose.model("Proposition", propositionSchema);

@@ -3,12 +3,12 @@ const voucherSchema = mongoose.Schema({
   _id_voucher: {
     type: Number,
   },
-  candidatID: {
+  candidat: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
     ref: "Candidat",
   },
-  quizID: {
+  quiz: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
     ref: "Quiz",

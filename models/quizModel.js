@@ -1,7 +1,9 @@
 const mongoose = require("mongoose");
 const quizSchema = mongoose.Schema({
-  quiz_id: {
-    type: Number,
+
+  quiz_id : {
+    type:Number,    
+
   },
   quizmaster: {
     type: mongoose.Schema.Types.ObjectId,
@@ -16,6 +18,9 @@ const quizSchema = mongoose.Schema({
   },
   questions: [{ type: mongoose.Schema.Types.ObjectId, ref: "Question" }],
 });
+
+adminSchema.plugin(AutoIncrement, { id: "order_seq",inc_field: "quiz_id" });
+
 
 const Quiz = mongoose.model("Quiz", quizSchema);
 module.exports = Quiz;
