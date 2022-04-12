@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
+const crypto =require ("crypto");
 const candidateSchema = mongoose.Schema(
   {
     linkedinId: {
@@ -36,6 +37,8 @@ const candidateSchema = mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    resetPasswordToken: {type:String},
+    resetPasswordExpire: {type:Date},
   },
   {
     timestamps: true,
@@ -53,6 +56,10 @@ candidateSchema.methods.matchPassword = async function (enteredPass) {
 };
 candidateSchema.methods.getResetPasswordToken = function () {
   const resetToken = crypto.randomBytes(20).toString("hex");
+
+
+
+
 
   // Hash token (private key) and save to database
   this.resetPasswordToken = crypto

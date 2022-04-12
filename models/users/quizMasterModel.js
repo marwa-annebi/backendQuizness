@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
+const crypto =require ("crypto");
 const quizMasterSchema = mongoose.Schema(
   {
     linkedinId: {
@@ -37,6 +38,8 @@ const quizMasterSchema = mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    resetPasswordToken: {type:String},
+    resetPasswordExpire: {type:Date},
   },
   {
     timestamps: true,
