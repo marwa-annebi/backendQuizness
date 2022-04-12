@@ -5,9 +5,10 @@ const {
   registerQuizMaster,
   verifyOTP,
   resendverification,
+ 
   loginUser,
 } = require("../controllers/auth/authController");
-const  {sendPasswordLink,setNewPassword} = require("../controllers/auth/resetPassword");
+const  {sendPasswordLink,setNewPassword,confirmResetPassword} = require("../controllers/auth/resetPassword");
 const router = express.Router();
 
 router.route("/registerAdmin").post(registerAdmin);
@@ -16,10 +17,9 @@ router.route("/registerQuizMaster").post(registerQuizMaster);
 router.route("/verifyOTP").post(verifyOTP);
 router.route("/resendOtpVerificarion").post(resendverification);
 
-router.route("/sendpasswordlink/:typeUser").post(sendPasswordLink);
-router.route("/:id/:token").post(setNewPassword);
-
-router.route("/login/:typeUser").post(loginUser);
+router.route("/sendpasswordlink").post(sendPasswordLink);
+router.route("/setNewPassword/:id/:resetToken/:type").post(setNewPassword)
+router.route("/loginUser").post(loginUser)
 
 
 module.exports = router;

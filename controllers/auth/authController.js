@@ -7,7 +7,14 @@ const Candidate = require("../../models/users/candidateModel");
 const QuizMaster = require("../../models/users/quizMasterModel");
 const UserOtpVerification = require("../../models/users/userOtpVerification");
 const bcrypt = require("bcryptjs");
+var jwt = require('jsonwebtoken');
 const myEnum = require("./enumUser");
+
+const  generateToken = require("../../utils/generateToken");
+const crypto =require ("crypto");
+
+const tokenModel = require("../../models/users/tokenModel");
+
 
 const registerAdmin = asyncHandler(async (req, res) => {
   try {
@@ -245,70 +252,91 @@ const resendverification = asyncHandler(async (req, res) => {
 //login user
 
 const loginUser = asyncHandler(async (req, res) => {
-  const { email, password } = req.body;
-  switch (req.params.typeUser) {
-    case myEnum.ADMIN.value:
-      user = await Admin.findOne({
-        email,
-      });
-      // console.log(user);
-      if (!user) {
-        res.json({
-          message: "user doesn't exist",
+  try {
+   
+    const {email,password,type} = req.body;
+    switch (type) {
+      case myEnum.ADMIN.value:
+        user = await Admin.findOne({
+          email,
         });
-      }
-      // console.log(user);
-      else if (user) {
-        if (await user.matchPassword(req.body.password)) {
+        // console.log(user);
+        if (!user) {
           res.json({
-            email,
-            password,
-          });
-        } else {
-          res.json({
-            message: "Invalid email or password",
+            message: "user doesn't exist",
           });
         }
+        // console.log(user);
+        else if (user) {
+          if (await user.matchPassword(req.body.password)) {
+            return  res.json({
+              email,
+              password,
+            });
+          } else {
+           return   res.json({
+              message: "Invalid email or password",
+            });
+          }
+        }
+        break;
+      case myEnum.CANDIDATE.value:
+        user = await Candidate.findOne({
+          email,
+        });
+        break;
+      case myEnum.QUIZMASTER.value:
+        user = await QuizMaster.findOne({
+          email: req.body.email,
+        });
+        // console.log(user);
+        break;
+      default:
+        throw console.error("user doesn't exist");
+       
+    }
+     if (!user) {
+     return   res.status(404).json({
+        message: "user doesn't exist",
+      });
+      
+    }
+
+    //console.log(user);
+     else if (user) {
+     console.log(user);
+      if (!user.verified) {
+        return  res.status(400).json({
+          message: "Please verify your account",
+        });
+      } else if (await user.matchPassword(req.body.password)) {
+        console.log(req.body.type);
+       var token=generateToken(user._id,req.body.type,user.email);
+       console.log(token);
+      res.status(200).send({ auth: true, token: token });
+      } else {
+        return  res.status(400).json({
+          message: "Invalid email or password",
+        });
       }
-      break;
-    case myEnum.CANDIDATE.value:
-      user = await Candidate.findOne({
-        email,
-      });
-      break;
-    case myEnum.QUIZMASTER.value:
-      user = await QuizMaster.findOne({
-        email: req.body.email,
-      });
-      // console.log(user);
-      break;
-    default:
-      throw console.error("user doesn't exist");
-  }
-  if (!user) {
-    res.json({
-      message: "user doesn't exist",
+    }
+  } catch (error) {
+    console.log(error);
+     return res.status(400).json({
+      status: "FAILED",
+      message: error.message,
     });
   }
-
-  // console.log(user);
-  else if (user) {
-    if (!user.verified) {
-      res.json({
-        message: "Please verify your account",
-      });
-    } else if (await user.matchPassword(req.body.password)) {
-      res.json({
-        email,
-        password,
-      });
-    } else {
-      res.json({
-        message: "Invalid email or password",
-      });
-    }
-  }
 });
+
+//logout 
+
+const logout = asyncHandler(async (req, res) => {
+
+  res.status(200).send({ auth: false,token:null });
+
+
+})
 
 module.exports = {
   registerAdmin,
@@ -317,4 +345,6 @@ module.exports = {
   verifyOTP,
   resendverification,
   loginUser,
+  logout,
+
 };
