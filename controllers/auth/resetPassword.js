@@ -103,7 +103,7 @@ const setNewPassword = async (req, res, next) => {
 
     if (user) {
       const hashedPassword = await bcrypt.hash(password, 10);
-     // user.password = hashedPassword;
+     //user.password = hashedPassword;
       // user.resetPasswordToken = undefined;
       // user.resetPasswordExpire = undefined;
      // console.log(hashedPassword);
