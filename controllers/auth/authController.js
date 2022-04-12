@@ -14,11 +14,9 @@ const  generateToken = require("../../utils/generateToken");
 const crypto =require ("crypto");
 
 const tokenModel = require("../../models/users/tokenModel");
-<<<<<<< HEAD
 
-=======
 const crypto = require("crypto");
->>>>>>> main
+
 
 const registerAdmin = asyncHandler(async (req, res) => {
   try {
