@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const AutoIncrement = require("mongoose-sequence")(mongoose);
+// const AutoIncrement = require("mongoose-sequence")(mongoose);
 
 const questionSchema = mongoose.Schema({
   _id_question: {
@@ -44,10 +44,10 @@ const questionSchema = mongoose.Schema({
   },
 });
 
-questionSchema.plugin(AutoIncrement, {
-  id: "order_seq",
-  inc_field: "_id_question",
-});
+// questionSchema.plugin(AutoIncrement, {
+//   id: "order_seq",
+//   inc_field: "_id_question",
+// });
 questionSchema.pre('deleteOne', function (next) {
   const questionId = this.getQuery()["_id"];
   mongoose.model("Proposition").deleteMany({'question': questionId}, function (err, result) {
@@ -61,7 +61,7 @@ questionSchema.pre('deleteOne', function (next) {
   });
 });
 
-questionSchema.plugin(AutoIncrement, { id: "order_seq", inc_field: "_id_question" });
+// questionSchema.plugin(AutoIncrement, { id: "order_seq", inc_field: "_id_question" });
 const Question = mongoose.model("Question", questionSchema);
 module.exports = Question;
 // questionSchema.plugin(autoIncrement.plugin,{model : "Question", field: '_id_question' ,startAt: 001,

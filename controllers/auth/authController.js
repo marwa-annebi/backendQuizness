@@ -11,9 +11,9 @@ var jwt = require('jsonwebtoken');
 const myEnum = require("./enumUser");
 
 const  generateToken = require("../../utils/generateToken");
-const crypto =require ("crypto");
 
-const tokenModel = require("../../models/users/tokenModel");
+
+
 
 const crypto = require("crypto");
 

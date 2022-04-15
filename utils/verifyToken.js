@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 const { findById } = require("../models/users/adminModel");
 
-function verifyToken(req, res, next) {
+async function  verifyToken  (req, res, next) {
     var token = req.body.token || req.query.token || req.headers["x-access-token"];
     console.log(token);
     if (!token)

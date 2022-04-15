@@ -13,6 +13,7 @@ const {
    createQuestion, deleteQuestion, findAll,
 } = require("../../controllers/quizMaster/questionController");
 const { finishQuestion } = require("../../controllers/quizMaster/questionMakerController");
+const { createQuiz } = require("../../controllers/quizMaster/quizController");
 const router = express.Router();
 
 //category
@@ -36,7 +37,8 @@ router.route("/createProposition").post(createProposition);
 
 router.route("/finishQuestion").post(finishQuestion);
 
+// quiz 
 
-
+router.route('/createQuiz').post(createQuiz)
 
 module.exports = router;
