@@ -21,6 +21,6 @@ const propositionSchema = mongoose.Schema({
   },
 });
 
-adminSchema.plugin(AutoIncrement, { id: "order_seq", inc_field: "_id_proposition" });
+// propositionSchema.plugin(AutoIncrement, { id: "order_seq", inc_field: "_id_proposition" });
 
 module.exports = Proposition = mongoose.model("Proposition", propositionSchema);

@@ -19,7 +19,7 @@ const quizSchema = mongoose.Schema({
   questions: [{ type: mongoose.Schema.Types.ObjectId, ref: "Question" }],
 });
 
-adminSchema.plugin(AutoIncrement, { id: "order_seq",inc_field: "quiz_id" });
+// adminSchema.plugin(AutoIncrement, { id: "order_seq",inc_field: "quiz_id" });
 
 
 const Quiz = mongoose.model("Quiz", quizSchema);
