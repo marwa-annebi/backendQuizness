@@ -7,36 +7,61 @@ const {
   getCategoryById,
 } = require("../../controllers/quizMaster/categoryController");
 const {
-   createProposition,
+  createProposition,
+  deleteProposition,
+  updateProposition,
+  getPropositionById,
+  findAllProposition,
 } = require("../../controllers/quizMaster/propositionController");
 const {
-   createQuestion, deleteQuestion, findAll,
+  createQuestion,
+  deleteQuestion,
+  findAll,
 } = require("../../controllers/quizMaster/questionController");
-const { finishQuestion } = require("../../controllers/quizMaster/questionMakerController");
+const {
+  finishQuestion,
+} = require("../../controllers/quizMaster/questionMakerController");
+const {
+  createQuiz,
+  findAllQuiz,
+  deleteQuiz,
+} = require("../../controllers/quizMaster/quizController");
 const router = express.Router();
 
 //category
 
 router.route("/createCategory").post(createCategory);
 router.route("/getAll").get(getCategories);
-router.route("/updateCategory/:id").put(updateCategory);
-router.route("/deleteCategory/:id").delete(deleteCategory);
-router.route("/getCategoryById").get(getCategoryById);
+router
+  .route("/category/:id")
+  .put(updateCategory)
+  .delete(deleteCategory)
+  .get(getCategoryById);
 
 //question
 
 router.route("/createQuestion").post(createQuestion);
-router.route("/deleteQuestion/:id").delete(deleteQuestion)
-router.route("/getAll").get(findAll)
+router.route("/getAllQuestions").get(findAll);
+router.route("/deleteQuestion/:id").delete(deleteQuestion);
+
 //proposition
 
 router.route("/createProposition").post(createProposition);
+router.route("/getAllProposition").get(findAllProposition);
+router
+  .route("/proposition/:id")
+  .delete(deleteProposition)
+  .put(updateProposition)
+  .get(getPropositionById);
 
 // question maker
 
 router.route("/finishQuestion").post(finishQuestion);
 
+// quiz
 
-
+router.route("/createQuiz").post(createQuiz);
+router.route("/findAllQuiz").get(findAllQuiz);
+router.route("/quiz/:id").delete(deleteQuiz);
 
 module.exports = router;
