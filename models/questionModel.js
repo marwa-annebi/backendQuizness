@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
-// const AutoIncrement = require("mongoose-sequence")(mongoose);
+
+var autoIncrement = require("mongoose-auto-increment-prefix");
+
 
 const questionSchema = mongoose.Schema({
   _id_question: {
@@ -43,26 +45,41 @@ const questionSchema = mongoose.Schema({
     type: Date,
   },
 });
-
-// questionSchema.plugin(AutoIncrement, {
-//   id: "order_seq",
-//   inc_field: "_id_question",
-// });
-questionSchema.pre('deleteOne', function (next) {
+autoIncrement.initialize(mongoose.connection);
+questionSchema.plugin(autoIncrement.plugin, {
+  model: "Question",
+  field: "_id_question",
+  startAt: 1,
+  incrementBy: 1,
+  prefix: "Q",
+});
+questionSchema.pre("deleteOne", function (next) {
   const questionId = this.getQuery()["_id"];
-  mongoose.model("Proposition").deleteMany({'question': questionId}, function (err, result) {
-    if (err) {
-      console.log(`[error] ${err}`);
-      next(err);
-    } else {
-      console.log('success');
-      next();
-    }
-  });
+  mongoose
+    .model("Proposition")
+    .deleteMany({ question: questionId }, function (err, result) {
+      if (err) {
+        console.log(`[error] ${err}`);
+        next(err);
+      } else {
+        console.log("success");
+        next();
+      }
+    });
+  mongoose
+    .model("Quiz")
+    .update({}, { $pull: { questions: questionId } }, function (err, result) {
+      if (err) {
+        console.log(`[error] ${err}`);
+        next(err);
+      } else {
+        console.log("success");
+        next();
+      }
+    });
 });
 
-// questionSchema.plugin(AutoIncrement, { id: "order_seq", inc_field: "_id_question" });
+
+
 const Question = mongoose.model("Question", questionSchema);
 module.exports = Question;
-// questionSchema.plugin(autoIncrement.plugin,{model : "Question", field: '_id_question' ,startAt: 001,
-// incrementBy: 001});

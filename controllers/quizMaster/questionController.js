@@ -12,24 +12,33 @@ const createQuestion = function (question) {
 };
 
 const deleteQuestion = expressAsyncHandler(async (req, res) => {
-  try {
-    const deleted = await Question.deleteOne({ _id: req.params.id });
-  } catch (e) {
-    console.error(`[error] ${e}`);
-    throw Error("Error occurred while deleting Question");
-  }
+  // const id = req.params.id;
+  await Question.deleteOne({ _id: req.params.id })
+    .then(res.send({ message: "Question was deleted successfully!" }))
+    .catch((err) => {
+      res.status(500).send({
+        message: "Could not delete Question ",
+      });
+    });
 });
 
 const findAll = expressAsyncHandler(async (req, res) => {
-  const questions = await Question.findAll({
-    include: ["propositions"],
-  }).then(() => {
-    return questions;
-  });
+  // Question.find({ quizmaster: req.quizmaster._id })
+  Question.find({ quizmaster: req.body.quizmaster })
+    .populate("propositions")
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving questions.",
+      });
+    });
 });
 
 module.exports = {
   createQuestion,
   deleteQuestion,
-  findAll
+  findAll,
 };
