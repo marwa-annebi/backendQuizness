@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
+const crypto =require ("crypto");
 const quizMasterSchema = mongoose.Schema(
   {
     linkedinId: {
@@ -11,9 +12,7 @@ const quizMasterSchema = mongoose.Schema(
     microsoftId: {
       type: String,
     },
-    unitNo: {
-      type: Number,
-    },
+
     firstName: {
       type: String,
       required: true,
@@ -39,6 +38,8 @@ const quizMasterSchema = mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    resetPasswordToken: {type:String},
+    resetPasswordExpire: {type:Date},
   },
   {
     timestamps: true,
@@ -54,7 +55,20 @@ quizMasterSchema.pre("save", async function (next) {
 quizMasterSchema.methods.matchPassword = async function (enteredPass) {
   return await bcrypt.compare(enteredPass, this.password);
 };
+quizMasterSchema.methods.getResetPasswordToken = function () {
+  const resetToken = crypto.randomBytes(20).toString("hex");
 
+  // Hash token (private key) and save to database
+  this.resetPasswordToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
+
+  // Set token expire date
+  this.resetPasswordExpire = Date.now() + 10 * (60 * 1000); // Ten Minutes
+
+  return resetToken;
+};
 // Compile model from schema
 const QuizMaster = mongoose.model("QuizMaster", quizMasterSchema);
 module.exports = QuizMaster;

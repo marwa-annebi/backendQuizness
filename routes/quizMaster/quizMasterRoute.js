@@ -26,6 +26,7 @@ const {
   findAllQuiz,
   deleteQuiz,
 } = require("../../controllers/quizMaster/quizController");
+
 const router = express.Router();
 
 //category
@@ -63,5 +64,6 @@ router.route("/finishQuestion").post(finishQuestion);
 router.route("/createQuiz").post(createQuiz);
 router.route("/findAllQuiz").get(findAllQuiz);
 router.route("/quiz/:id").delete(deleteQuiz);
+
 
 module.exports = router;

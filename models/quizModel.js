@@ -1,7 +1,9 @@
 const mongoose = require("mongoose");
 const quizSchema = mongoose.Schema({
-  quiz_id: {
-    type: Number,
+
+  quiz_id : {
+    type:Number,    
+
   },
   quizmaster: {
     type: mongoose.Schema.Types.ObjectId,

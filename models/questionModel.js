@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
+
 var autoIncrement = require("mongoose-auto-increment-prefix");
+
 
 const questionSchema = mongoose.Schema({
   _id_question: {
@@ -77,7 +79,7 @@ questionSchema.pre("deleteOne", function (next) {
     });
 });
 
+
+
 const Question = mongoose.model("Question", questionSchema);
 module.exports = Question;
-// questionSchema.plugin(autoIncrement.plugin,{model : "Question", field: '_id_question' ,startAt: 001,
-// incrementBy: 001});

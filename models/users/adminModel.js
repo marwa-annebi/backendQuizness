@@ -1,5 +1,9 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
+
+const crypto =require ("crypto");
+const AutoIncrement = require("mongoose-sequence")(mongoose);
+
 const adminSchema = mongoose.Schema(
   {
     linkedinId: {
@@ -10,9 +14,6 @@ const adminSchema = mongoose.Schema(
     },
     microsoftId: {
       type: String,
-    },
-    unitNo: {
-      type: Number,
     },
     firstName: {
       type: String,
@@ -35,6 +36,10 @@ const adminSchema = mongoose.Schema(
       default:
         "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg",
     },
+
+    resetPasswordToken: {type:String},
+    resetPasswordExpire: {type:Date},
+
   },
   {
     timestamps: true,
@@ -50,7 +55,36 @@ adminSchema.pre("save", async function (next) {
 adminSchema.methods.matchPassword = async function (enteredPass) {
   return await bcrypt.compare(enteredPass, this.password);
 };
+adminSchema.methods.getResetPasswordToken = function () {
+  const resetToken = crypto.randomBytes(20).toString("hex");
 
+  // Hash token (private key) and save to database
+  this.resetPasswordToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
+
+  // Set token expire date
+  this.resetPasswordExpire = Date.now() + 10 * (60 * 1000); // Ten Minutes
+
+  return resetToken;
+};
+
+
+adminSchema.methods.getResetPasswordToken = function () {
+  const resetToken = crypto.randomBytes(20).toString("hex");
+
+  // Hash token (private key) and save to database
+  this.resetPasswordToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
+
+  // Set token expire date
+  this.resetPasswordExpire = Date.now() + 10 * (60 * 1000); // Ten Minutes
+
+  return resetToken;
+};
 // Compile model from schema
 const Admin = mongoose.model("Admin", adminSchema);
 module.exports = Admin;

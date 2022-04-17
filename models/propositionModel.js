@@ -7,8 +7,11 @@ const propositionSchema = mongoose.Schema({
     type: Number,
   },
   question: {
+
     type: mongoose.Schema.Types.ObjectId,
+
     // required: true,
+
     ref: "Question",
   },
   content: {
@@ -20,6 +23,7 @@ const propositionSchema = mongoose.Schema({
     required: true,
   },
 });
+
 autoIncrement.initialize(mongoose.connection);
 
 propositionSchema.pre("deleteOne", function (next) {
@@ -46,4 +50,5 @@ propositionSchema.plugin(autoIncrement.plugin, {
   startAt: 1,
   incrementBy: 1,
 });
+
 module.exports = Proposition = mongoose.model("Proposition", propositionSchema);

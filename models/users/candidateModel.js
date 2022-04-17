@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
+const crypto =require ("crypto");
 const candidateSchema = mongoose.Schema(
   {
     linkedinId: {
@@ -10,9 +11,6 @@ const candidateSchema = mongoose.Schema(
     },
     microsoftId: {
       type: String,
-    },
-    unitNo: {
-      type: Number,
     },
     firstName: {
       type: String,
@@ -39,6 +37,8 @@ const candidateSchema = mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    resetPasswordToken: {type:String},
+    resetPasswordExpire: {type:Date},
   },
   {
     timestamps: true,
@@ -54,7 +54,24 @@ candidateSchema.pre("save", async function (next) {
 candidateSchema.methods.matchPassword = async function (enteredPass) {
   return await bcrypt.compare(enteredPass, this.password);
 };
+candidateSchema.methods.getResetPasswordToken = function () {
+  const resetToken = crypto.randomBytes(20).toString("hex");
 
+
+
+
+
+  // Hash token (private key) and save to database
+  this.resetPasswordToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
+
+  // Set token expire date
+  this.resetPasswordExpire = Date.now() + 10 * (60 * 1000); // Ten Minutes
+
+  return resetToken;
+};
 // Compile model from schema
 const Candidate = mongoose.model("Candidate", candidateSchema);
 module.exports = Candidate;
