@@ -26,7 +26,7 @@ const {
   findAllQuiz,
   deleteQuiz,
 } = require("../../controllers/quizMaster/quizController");
-const{createVoucher} =require ("../../controllers/quizMaster/voucherController")
+const{createVoucher,updateVoucher,getVoucherById,deleteVoucher,getVoucherByIdCandidat} =require ("../../controllers/quizMaster/voucherController")
 const router = express.Router();
 
 //category
@@ -66,5 +66,11 @@ router.route("/findAllQuiz").get(findAllQuiz);
 router.route("/quiz/:id").delete(deleteQuiz);
 // voucher
 router.route("/createVoucher").post(createVoucher)
+router.route("/getVoucherByIdCandidat/:id").get(getVoucherByIdCandidat);
+router
+  .route("/voucher/:id")
+  .put(updateVoucher)
+  .delete(deleteVoucher)
+  .get(getVoucherById)
 
 module.exports = router;
