@@ -4,7 +4,7 @@ const propositionSchema = mongoose.Schema({
     type: Number,
   },
   question: {
-    type: mongoose.Schema.Types.ObjectId.get(_id_question),
+    type: mongoose.Schema.Types.ObjectId,
     required: true,
     ref: "Question",
   },

@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
-const bcrypt = require("bcryptjs");
-const adminSchema = mongoose.Schema(
+const options = { discriminatorKey: "kind" };
+const bcrypt = require("bcrypt")
+const userSchema = mongoose.Schema(
   {
     linkedinId: {
       type: String,
@@ -36,22 +37,24 @@ const adminSchema = mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    role: {
+        type: String
+    },
   },
   {
     timestamps: true,
-  }
+  },
+  options
 );
-adminSchema.pre("save", async function (next) {
+userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) {
     next();
   }
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
 });
-adminSchema.methods.matchPassword = async function (enteredPass) {
+userSchema.methods.matchPassword = async function (enteredPass) {
   return await bcrypt.compare(enteredPass, this.password);
 };
 
-// Compile model from schema
-const Admin = mongoose.model("Admin", adminSchema);
-module.exports = Admin;
+module.exports = User = mongoose.model("User", userSchema);

@@ -6,7 +6,7 @@ const quizSchema = mongoose.Schema({
   quizmaster: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
-    ref: "QuizMaster",
+    ref: "User",
   },
   validation_date: {
     type: Date,
