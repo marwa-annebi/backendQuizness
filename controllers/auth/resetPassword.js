@@ -1,4 +1,4 @@
-const Token = require("../../models/users/tokenModel");
+
 var mongoose = require("mongoose");
 const crypto = require("crypto");
 const bcrypt = require("bcrypt");
@@ -7,10 +7,9 @@ const passwordComplexity = require("joi-password-complexity");
 const sendEmail = require("../../utils/sendEmail");
 const myEnum = require("./enumUser");
 const Admin = require("../../models/users/adminModel");
-const Candidate = require("../../models/users/candidateModel");
-const QuizMaster = require("../../models/users/quizMasterModel");
 const generateToken = require("../../utils/generateToken");
-const { findById } = require("../../models/users/tokenModel");
+
+const User = require("../../models/users/userModel");
 
 
 const sendPasswordLink = async (req, res, next) => {
@@ -28,11 +27,11 @@ const sendPasswordLink = async (req, res, next) => {
       //console.log(user);
       break;
     case myEnum.CANDIDATE.value:
-      user = await Candidate.findOne({ email });
-      // console.log(user);
+      user = await User.findOne({ email ,isCandidat:true});
+      console.log(user);
       break;
     case myEnum.QUIZMASTER.value:
-      user = await QuizMaster.findOne({ email });
+      user = await User.findOne({ email ,isQuizmaster:true});
       // console.log(user);
       break;
   }
@@ -70,19 +69,21 @@ const confirmResetPassword = async (resetToken,type,id) => {
     .digest("hex");
 
   try {
-    const user = await Candidate.findOne({
+    const user = await User.findOne({
+      isCandidat:true,
       resetPasswordToken,
       resetPasswordExpire: { $gt: Date.now() },
     });
-
+    console.log(user);
     if (!user) {
       user = await Admin.findOne({
         resetPasswordToken,
         resetPasswordExpire: { $gt: Date.now() },
       });
-    }
+    } console.log(user);
     if (!user) {
-      user = await QuizMaster.findOne({
+      user = await User.findOne({
+        isQuizmaster:true,
         resetPasswordToken,
         resetPasswordExpire: { $gt: Date.now() },
       });
@@ -98,10 +99,12 @@ const confirmResetPassword = async (resetToken,type,id) => {
 
 const setNewPassword = async (req, res, next) => {
   try {
+   
     let user = await confirmResetPassword(req.params.resetToken,req.params.type,req.params.id);
+    console.log(user);
     let { password } = req.body;
  let {type,id}=req.params;
-
+ 
     if (user) {
       const hashedPassword = await bcrypt.hash(password, 10);
      //user.password = hashedPassword;
@@ -111,20 +114,22 @@ const setNewPassword = async (req, res, next) => {
       switch (type) {
        
         case myEnum.ADMIN.value:
-        
-         let newAdmin=  await Admin.updateOne({ password: hashedPassword });
+   
+        let  newAdmin= await Admin.findByIdAndUpdate(req.params.id,{ password: hashedPassword })
           //console.log(user);
           newAdmin.save();
           break;
         case myEnum.CANDIDATE.value:
-          let newCandidate = await Candidate.updateOne({ password: hashedPassword });
+          let newCandidate=await User.findByIdAndUpdate(req.params.id,{ password: hashedPassword })
+          // newCandidate.updateOne({ password: hashedPassword });
           // console.log(user);
           newCandidate.save();
           break;
         case myEnum.QUIZMASTER.value:
-           newQuizMaster=  await QuizMaster.updateOne({ password: hashedPassword })
+          // let newQuizMaster=await User.findById(req.params.id)
+           newQuizMaster= await User.findByIdAndUpdate(req.params.id,{ password: hashedPassword })
           //console.log( typeof newQuizMaster);
-          // newQuizMaster.save();
+          newQuizMaster.save();
          
          
          
@@ -133,7 +138,7 @@ const setNewPassword = async (req, res, next) => {
       return res.status(201).json({
         success: true,
         data: "Password Updated Success",
-        token : generateToken(user._id ,3,user.email),
+        token : generateToken(user._id ,type,user.email),
       });
     }
     return res.status(400).json({ msg: "user not exist!" });

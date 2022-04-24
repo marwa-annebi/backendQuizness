@@ -1,7 +1,8 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const crypto =require ("crypto");
-const candidateSchema = mongoose.Schema(
+const { boolean } = require("joi");
+const userSchema = mongoose.Schema(
   {
     linkedinId: {
       type: String,
@@ -37,6 +38,14 @@ const candidateSchema = mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    isCandidat:{
+        type:Boolean,
+        default: false,
+    },
+    isQuizmaster:{
+        type:Boolean,
+        default: false,
+    },
     resetPasswordToken: {type:String},
     resetPasswordExpire: {type:Date},
   },
@@ -44,17 +53,17 @@ const candidateSchema = mongoose.Schema(
     timestamps: true,
   }
 );
-candidateSchema.pre("save", async function (next) {
+userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) {
     next();
   }
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
 });
-candidateSchema.methods.matchPassword = async function (enteredPass) {
+userSchema.methods.matchPassword = async function (enteredPass) {
   return await bcrypt.compare(enteredPass, this.password);
 };
-candidateSchema.methods.getResetPasswordToken = function () {
+userSchema.methods.getResetPasswordToken = function () {
   const resetToken = crypto.randomBytes(20).toString("hex");
 
 
@@ -73,5 +82,5 @@ candidateSchema.methods.getResetPasswordToken = function () {
   return resetToken;
 };
 // Compile model from schema
-const Candidate = mongoose.model("Candidate", candidateSchema);
-module.exports = Candidate;
+const User = mongoose.model("User", userSchema);
+module.exports = User;

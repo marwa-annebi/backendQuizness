@@ -3,19 +3,18 @@
 const asyncHandler = require("express-async-handler");
 const { sendVerificationEmail } = require("../../mailer/mailer");
 const Admin = require("../../models/users/adminModel");
-const Candidate = require("../../models/users/candidateModel");
+
 const QuizMaster = require("../../models/users/quizMasterModel");
 const UserOtpVerification = require("../../models/users/userOtpVerification");
 const bcrypt = require("bcryptjs");
 var jwt = require('jsonwebtoken');
 const myEnum = require("./enumUser");
-
 const  generateToken = require("../../utils/generateToken");
 
 
 
-
 const crypto = require("crypto");
+const User = require("../../models/users/userModel");
 
 
 const registerAdmin = asyncHandler(async (req, res) => {
@@ -77,8 +76,8 @@ const registerAdmin = asyncHandler(async (req, res) => {
 
 const registerQuizMaster = asyncHandler(async (req, res) => {
   try {
-    let { firstName, lastName, email, password } = req.body;
-    const userExists = await QuizMaster.findOne({ email });
+    let { firstName, lastName, email, password} = req.body;
+    const userExists = await User.findOne({ email ,isQuizmaster:true});
     firstName = firstName.trim();
     lastName = lastName.trim();
     email = email.trim();
@@ -109,11 +108,12 @@ const registerQuizMaster = asyncHandler(async (req, res) => {
         message: "quizMaster with provided email exists ",
       });
     } else {
-      const quizMaster = new QuizMaster({
+      const quizMaster = new User({
         firstName,
         lastName,
         email,
         password,
+        isQuizmaster:true
       });
       quizMaster.save().then((result) => {
         sendVerificationEmail(result, res);
@@ -132,7 +132,7 @@ const registerQuizMaster = asyncHandler(async (req, res) => {
 const registerCandidate = asyncHandler(async (req, res) => {
   try {
     let { firstName, lastName, email, password } = req.body;
-    const userExists = await Candidate.findOne({ email });
+    const userExists = await User.findOne({ email,isCandidat:true });
     firstName = firstName.trim();
     lastName = lastName.trim();
     email = email.trim();
@@ -163,11 +163,12 @@ const registerCandidate = asyncHandler(async (req, res) => {
         message: "Candidate with provided email exists ",
       });
     } else {
-      const candidate = new Candidate({
+      const candidate = new User({
         firstName,
         lastName,
         email,
         password,
+        isCandidat:true
       });
       candidate.save().then((result) => {
         sendVerificationEmail(result, res);
@@ -212,8 +213,8 @@ const verifyOTP = asyncHandler(async (req, res) => {
           } else {
             //success
 
-            await QuizMaster.updateOne({ _id: userId }, { verified: true });
-            await Candidate.updateMany({ _id: userId }, { verified: true });
+            await User.updateOne({ _id: userId }, { verified: true });
+            // await Candidate.updateMany({ _id: userId }, { verified: true });
             await UserOtpVerification.deleteMany({ userId });
             res.json({
               status: "VERIFIED",
@@ -250,16 +251,13 @@ const resendverification = asyncHandler(async (req, res) => {
     });
   }
 });
-
-//login user
-
-const loginUser = asyncHandler(async (req, res) => {
+const loginAdmin=asyncHandler(async(req,res)=>{
   try {
-   
-    const {email,password,type} = req.body;
-    switch (type) {
-      case myEnum.ADMIN.value:
-        user = await Admin.findOne({
+
+    const {email,password,type}=req.body;
+switch(type){
+   case myEnum.ADMIN.value:
+        user = await User.findOne({
           email,
         });
         // console.log(user);
@@ -282,16 +280,50 @@ const loginUser = asyncHandler(async (req, res) => {
           }
         }
         break;
+}
+
+  }catch(error){
+    return res.status(400).json({
+      status: "FAILED",
+      message: error.message,
+    });
+  }
+})
+
+//login user
+
+const loginUser = asyncHandler(async (req, res) => {
+  try {
+   let user;
+    const {email,password,type} = req.body;
+    switch (type) {
       case myEnum.CANDIDATE.value:
-        user = await Candidate.findOne({
-          email,
-        });
+      user = await User.findOne({
+          email,isCandidat:true
+        })
+        
+        if (!user){
+          //user=await User.findOne({email,isQuizmaster:false})
+          {  user=await User.findOneAndUpdate({email:email,"isQuizmaster":"false"},{$set:{"isQuizmaster":"true"}},
+          
+          
+          )}
+          
+        }
+        
         break;
       case myEnum.QUIZMASTER.value:
-        user = await QuizMaster.findOne({
-          email: req.body.email,
+        user = await User.findOne({
+          email,isQuizmaster:true
         });
-        // console.log(user);
+        
+        if (!user){
+          // user=await User.findOne({email,isCandidat:false})
+          { user= await User.findOneAndUpdate({email:email,"isCandidat":"false"},{$set:{"isCandidat":"true"}},
+         
+          )}
+        
+        }
         break;
       default:
         throw console.error("user doesn't exist");
@@ -311,7 +343,7 @@ const loginUser = asyncHandler(async (req, res) => {
         return  res.status(400).json({
           message: "Please verify your account",
         });
-      } else if (await user.matchPassword(req.body.password)) {
+      } else if (await user.matchPassword(password)) {
         console.log(req.body.type);
        var token=generateToken(user._id,req.body.type,user.email);
        console.log(token);
@@ -348,7 +380,7 @@ module.exports = {
   resendverification,
   loginUser,
   logout,
-
+loginAdmin
 
 };
 
