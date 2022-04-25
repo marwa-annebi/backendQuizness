@@ -28,7 +28,15 @@ const {
 } = require("../../controllers/quizMaster/quizController");
 const{createVoucher,updateVoucher,getVoucherById,deleteVoucher,getVoucherByIdCandidat} =require ("../../controllers/quizMaster/voucherController")
 const router = express.Router();
-
+// candidat
+const {createCandidat,deleteCandidat,getAllCandidats,getCandidatById,updateCandidat} =require("../../controllers/quizMaster/crudCandidat");
+router.route("/createCandidat").post(createCandidat);
+router.route("/getCandidats").get(getAllCandidats);
+router
+  .route("/candidat/:id")
+  .put(updateCandidat)
+  .delete(deleteCandidat)
+  .get(getCandidatById);
 //category
 
 router.route("/createCategory").post(createCategory);

@@ -294,39 +294,40 @@ switch(type){
 
 const loginUser = asyncHandler(async (req, res) => {
   try {
-   let user;
+   
     const {email,password,type} = req.body;
     switch (type) {
       case myEnum.CANDIDATE.value:
       user = await User.findOne({
           email,isCandidat:true
         })
-        
+       // console.log(user);
+      
         if (!user){
-          //user=await User.findOne({email,isQuizmaster:false})
-          {  user=await User.findOneAndUpdate({email:email,"isQuizmaster":"false"},{$set:{"isQuizmaster":"true"}},
-          
-          
-          )}
-          
+         // user=await User.findOne({email,isQuizmaster:false})
+             user=await User.findOneAndUpdate({email:req.body.email,isCandidat:false},{$set:{isCandidat:true}},
+          {new: true}, )  
+          console.log(user);
         }
         
-        break;
+        // break;
       case myEnum.QUIZMASTER.value:
         user = await User.findOne({
           email,isQuizmaster:true
         });
+        //console.log(user);
         
         if (!user){
-          // user=await User.findOne({email,isCandidat:false})
-          { user= await User.findOneAndUpdate({email:email,"isCandidat":"false"},{$set:{"isCandidat":"true"}},
-         
-          )}
-        
+           //user=await User.findOne({email,isCandidat:false})
+           user= await User.findOneAndUpdate({email:req.body.email,isQuizmaster:false},{$set:{isQuizmaster:true}},
+          {new: true},
+           )
+          
+          console.log(user);
         }
         break;
       default:
-        throw console.error("user doesn't exist");
+        throw console.error("error provider");
        
     }
      if (!user) {
