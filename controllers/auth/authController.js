@@ -4,7 +4,7 @@ const asyncHandler = require("express-async-handler");
 const { sendVerificationEmail } = require("../../mailer/mailer");
 const Admin = require("../../models/users/adminModel");
 
-const QuizMaster = require("../../models/users/quizMasterModel");
+
 const UserOtpVerification = require("../../models/users/userOtpVerification");
 const bcrypt = require("bcryptjs");
 var jwt = require('jsonwebtoken');
@@ -366,12 +366,12 @@ const loginUser = asyncHandler(async (req, res) => {
 
 //logout 
 
-const logout = asyncHandler(async (req, res) => {
+// const logout = asyncHandler(async (req, res) => {
 
-  res.status(200).send({ auth: false,token:null });
+//   res.status(200).send({ auth: false,token:null });
 
 
-})
+// })
 
 module.exports = {
   registerAdmin,
@@ -380,7 +380,7 @@ module.exports = {
   verifyOTP,
   resendverification,
   loginUser,
-  logout,
+  //logout,
 loginAdmin
 
 };
