@@ -11,7 +11,8 @@ LINKEDIN_KEY = process.env.LINKEDIN_KEY ;
 LINKEDIN_SECRET= process.env.LINKEDIN_SECRET;
 MICROSOFT_CLIENT_ID = process.env.MICROSOFT_CLIENT_ID ;
 MICROSOFT_CLIENT_SECRET  = process.env.MICROSOFT_CLIENT_SECRET 
-// google 
+ 
+
 passport.use(
     'google-Quizmaster',
       new GoogleStrategy(

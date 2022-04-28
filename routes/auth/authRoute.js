@@ -1,6 +1,5 @@
 const express = require("express");
 const passport = require("passport");
-const myEnum = require("./../../controllers/auth/enumUser");
 const {
   sendPasswordLink,
   setNewPassword,
@@ -12,14 +11,15 @@ const {
   verifyOTP,
   resendverification,
   loginUser,
+  updateUserProfile,
   //logout,
   loginAdmin,
 } = require("../../controllers/auth/authController");
-require("../../controllers/auth/passport");
 const verifyToken = require("../../utils/verifyToken");
 const generateToken = require("../../utils/generateToken");
 const router = express.Router();
 router.route("/registerAdmin").post(registerAdmin);
+router.route("/updateProfile").put(updateUserProfile)
 router.route("/registerCandidate").post(registerCandidate);
 router.route("/registerQuizMaster").post(registerQuizMaster);
 router.route("/verifyOTP").post(verifyOTP);
@@ -28,7 +28,8 @@ router.route("/resendOtpVerificarion").post(resendverification);
 router.route("/sendpasswordlink").post(sendPasswordLink);
 router.route("/setNewPassword/:id/:resetToken/:type").post(setNewPassword);
 router.route("/verifyToken").get(verifyToken);
-//
+require("../../controllers/auth/passport");
+require("../../controllers/auth/quizMasterPassport");
 router.route("/loginUser").post(loginUser);
 router.route("/loginAdmin").post(loginAdmin);
 const CLIENT_URL = "http://localhost:3000";

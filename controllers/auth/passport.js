@@ -5,15 +5,14 @@ var GoogleStrategy = require("passport-google-oauth20").Strategy;var MicrosoftSt
 var LinkedInStrategy = require('passport-linkedin-oauth2').Strategy;
 
 dotenv.config();
-const User= require('./../../models/users/userModel');
-const myEnum = require("./enumUser");
-
+const User= require('../../models/users/userModel');
 GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
 LINKEDIN_KEY = process.env.LINKEDIN_KEY ;
 LINKEDIN_SECRET= process.env.LINKEDIN_SECRET;
 MICROSOFT_CLIENT_ID = process.env.MICROSOFT_CLIENT_ID ;
 MICROSOFT_CLIENT_SECRET  = process.env.MICROSOFT_CLIENT_SECRET 
+
 
 //google
 
@@ -26,18 +25,15 @@ MICROSOFT_CLIENT_SECRET  = process.env.MICROSOFT_CLIENT_SECRET
           callbackURL: "/auth/google/callbackCandidate",
         },
     
-         async (req,accessToken, refreshToken, profile,done) => { 
-       //console.log(req);
+         async (accessToken, refreshToken, profile,done) => { 
+      
           //check if user already exitsin our db
           User.findOne({ googleId: profile.id }).then( async function(currentUser) {
   
             if (currentUser) {
-              console.log(currentUser)
               if (!currentUser.isCandidat){
-              // currentUser.isCandidat=true
                  await User.findOneAndUpdate({googleId:profile.id,isCandidat:false},{$set:{isCandidat:true}},
                 {new: true}, ) 
-             // console.log("user is:", currentUser);
               done(null, currentUser);
             } else if (!currentUser) {
         

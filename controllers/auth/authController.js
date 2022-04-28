@@ -16,7 +16,30 @@ const  generateToken = require("../../utils/generateToken");
 const crypto = require("crypto");
 const User = require("../../models/users/userModel");
 
-
+const updateUserProfile = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id);
+  if (user) {
+    user.name = req.body.name || user.name;
+    user.lastName = req.body.lastName || user.lastName;
+    user.email = req.body.email || user.email;
+    user.image = req.body.image || user.image;
+    if (req.body.password) {
+      user.password = req.body.password;
+    }
+    const update = await user.save();
+    res.json({
+      _id: update._id,
+      name: update.name,
+      lastName: update.lastName,
+      email: update.email,
+      image: update.image,
+      // token: generateToken(update._id),
+    });
+  } else {
+    res.status(404);
+    throw new Error("User Not Found");
+  }
+});
 const registerAdmin = asyncHandler(async (req, res) => {
   try {
     let { firstName, lastName, email, password } = req.body;
@@ -380,6 +403,7 @@ module.exports = {
   verifyOTP,
   resendverification,
   loginUser,
+  updateUserProfile,
   //logout,
 loginAdmin
 
