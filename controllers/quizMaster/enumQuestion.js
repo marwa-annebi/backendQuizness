@@ -1,8 +1,8 @@
 var Enum = require("enum");
 
 var myEnum = new Enum({
-  TRUEFALSE: "1",
-  MULTIPLECHOICE: "2",
+  TF: "1",
+  MCQ: "2",
 });
 
 module.exports = myEnum;

@@ -11,6 +11,7 @@ const { createQuestion } = require("./questionController");
 const finishQuestion = async (req, res) => {
   const { question, proposition } = req.body;
   questionCreated = await createQuestion(question);
+  console.log(questionCreated);
   resultUpdateCategory = await Category.findByIdAndUpdate(
     questionCreated.category,
     {
