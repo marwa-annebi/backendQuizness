@@ -8,7 +8,7 @@ require("dotenv").config();
 
 // send verification email
 
-const sendVerificationEmail = async ({ _id, email, firstName }, res) => {
+const sendVerificationEmail = async ({ _id, email, firstName }, res, text) => {
   try {
     const otp = `${Math.floor(100000 + Math.random() * 900000)}`;
 
@@ -17,6 +17,7 @@ const sendVerificationEmail = async ({ _id, email, firstName }, res) => {
     const mailOptions = {
       from: process.env.EMAIL,
       to: email,
+      text: text,
       subject: "Verify Your Email",
       html: `
       <img src="cid:unique@kreata.ee"  
@@ -43,11 +44,13 @@ const sendVerificationEmail = async ({ _id, email, firstName }, res) => {
 
       The Quizness team
       </h4>
+      <br>
+      <a href=${text}>click here</a>
 `,
       attachments: [
         {
           filename: "logo.png",
-          path: __dirname + '/logo.png',
+          path: __dirname + "/logo.png",
           cid: "unique@kreata.ee", //same cid value as in the html img src
         },
       ],
@@ -65,17 +68,11 @@ const sendVerificationEmail = async ({ _id, email, firstName }, res) => {
     // save otp record
     await newOTPVerification.save();
     await transporter.sendMail(mailOptions);
-    res.json({
-      status: "PENDING",
+    res.status(202).send({
       message: "Verification otp email sent ",
-      data: {
-        userId: _id,
-        email,
-      },
     });
   } catch (error) {
-    res.json({
-      status: "FAILED",
+    res.status(500).send({
       message: error.message,
     });
   }

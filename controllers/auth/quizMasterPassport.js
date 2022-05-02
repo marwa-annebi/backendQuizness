@@ -117,10 +117,18 @@ passport.use(
             done(null, currentUser);
           } else {
             new User({
+<<<<<<< HEAD
             microsoftId: profile.id,
             firstName: profile._json.displayName,
             lastName : profile.name.family_name,
             email: profile._json.mail,
+=======
+              microsoftId: profile.id,
+              firstName: profile._json.givenName,
+              lastName : profile.name.familyName,
+              email: profile._json.mail,
+              // picture: profile.photos[0].value,
+>>>>>>> ee441b5b39edd2eaf91dfafb1560103f4170eeb6
               verified:true,
               isQuizmaster:true
             })
