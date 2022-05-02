@@ -22,6 +22,9 @@ const deleteQuestion = expressAsyncHandler(async (req, res) => {
     });
 });
 
+
+
+
 const findAll = expressAsyncHandler(async (req, res) => {
   // Question.find({ quizmaster: req.quizmaster._id })
   Question.find({ quizmaster: req.body.quizmaster })

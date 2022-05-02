@@ -1,5 +1,5 @@
 // create question and proposition and create relation between them
-
+const expressAsyncHandler = require("express-async-handler");
 const req = require("express/lib/request");
 const { default: mongoose } = require("mongoose");
 const Category = require("../../models/categoryModel");
@@ -42,4 +42,20 @@ else res.send({result:'true'})
   // console.log(propositionCreated);
 };
 
-module.exports = { finishQuestion };
+const nbofProposition = expressAsyncHandler(async (req,res)=>{
+  let nb=0;
+  const{ id_question}=req.body;
+  const proposition = await propositionModel.find({question:id_question})
+  console.log(proposition)
+  for (let index = 0; index < proposition.length; index++) {
+    nb=nb+1
+  }
+  res.json({
+    nb,
+    proposition,
+    
+})
+
+})
+
+module.exports = { finishQuestion ,nbofProposition};

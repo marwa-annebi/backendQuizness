@@ -19,7 +19,7 @@ const {
   findAll,
 } = require("../../controllers/quizMaster/questionController");
 const {
-  finishQuestion,
+  finishQuestion,nbofProposition
 } = require("../../controllers/quizMaster/questionMakerController");
 const {
   createQuiz,
@@ -66,6 +66,7 @@ router
 // question maker
 
 router.route("/finishQuestion").post(finishQuestion);
+router.route("/nbofproposition").post(nbofProposition);
 
 // quiz
 
