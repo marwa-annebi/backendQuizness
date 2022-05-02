@@ -121,7 +121,7 @@ passport.use(
               firstName: profile._json.givenName,
               lastName : profile.name.familyName,
               email: profile._json.mail,
-              picture: profile.photos[0].value,
+              // picture: profile.photos[0].value,
               verified:true,
               isQuizmaster:true
             })
