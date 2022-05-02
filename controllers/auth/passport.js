@@ -16,46 +16,49 @@ MICROSOFT_CLIENT_SECRET  = process.env.MICROSOFT_CLIENT_SECRET
 
 //google
 
-  passport.use(
-    'google-Candidate',
-      new GoogleStrategy(
-        {
-          clientID: GOOGLE_CLIENT_ID,
-          clientSecret: GOOGLE_CLIENT_SECRET,
-          callbackURL: "/auth/google/callbackCandidate",
-        },
-    
-         async (accessToken, refreshToken, profile,done) => { 
-      
-          //check if user already exitsin our db
-          User.findOne({ googleId: profile.id }).then( async function(currentUser) {
+passport.use(
+  'google-Candidate',
+    new GoogleStrategy(
+      {
+        clientID: GOOGLE_CLIENT_ID,
+        clientSecret: GOOGLE_CLIENT_SECRET,
+        callbackURL: "/auth/google/callbackCandidate",
+      },
   
-            if (currentUser) {
+       async (accessToken, refreshToken, profile,done) => { 
+    
+        //check if user already exitsin our db
+        User.findOne({ googleId: profile.id }).then( async function(currentUser)  {
+
+          if (currentUser) {
+              //check if  quizmaster is false to update him to true without creation new account 
               if (!currentUser.isCandidat){
-                 await User.findOneAndUpdate({googleId:profile.id,isCandidat:false},{$set:{isCandidat:true}},
-                {new: true}, ) 
-              done(null, currentUser);
-            } else if (!currentUser) {
-        
-              new User({
-                googleId: profile.id,
-                firstName: profile._json.given_name,
-                lastName : profile._json.family_name,
-                email: profile.emails[0].value,
-                picture: profile.photos[0].value,
-                verified:true,
-                isCandidat:true
-                
-              })
-                .save()
-                .then((newUser) => {
-                 done(null, newUser);
-                });
-            }
-          }});
-        }
-      )
-    );
+            await   User.findOneAndUpdate({google:profile.id,isCandidat:false},{$set:{isCandidat:true}},
+                      {new: true},)
+              }
+            console.log("user is:", currentUser);
+            done(null, currentUser);
+          } else if (!currentUser) {
+      
+            new User({
+              googleId: profile.id,
+              firstName: profile._json.given_name,
+              lastName : profile._json.family_name,
+              email: profile.emails[0].value,
+              picture: profile.photos[0].value,
+              verified:true,
+              isCandidat:true
+              
+            })
+              .save()
+              .then((newUser) => {
+            done(null, newUser);
+              });
+          }
+        });
+      }
+    )
+  );
   
 // login with microsoft
 
@@ -66,23 +69,24 @@ passport.use(
       clientID: process.env.MICROSOFT_CLIENT_ID,
       clientSecret: process.env.MICROSOFT_CLIENT_SECRET,
       callbackURL: "http://localhost:5000/auth/microsoft/callbackCandidate",
-      scope: ['openid', 'profile', 'email']  
+      scope: ['openid', 'profile']  
     },
     function (accessToken, refreshToken, profile, done) {
-      User.findOne({ googleId: profile.id }).then( async function(currentUser)  {
+      User.findOne({  microsoftId: profile.id }).then( async function(currentUser)  {
+        console.log(profile);
         if (currentUser) {
           if (!currentUser.isCandidat){
-            await User.findOneAndUpdate({microsoftId:profile.id,isCandidat:false},{$set:{isCandidat:true}},
+            await User.findOneAndUpdate({ microsoftId:profile.id,isCandidat:false},{$set:{isCandidat:true}},
                 {new: true}, ) 
           }
           done(null, currentUser);
         } else {
           new User({
             microsoftId: profile.id,
-            FirstName: profile._json.givenName,
-            lastName : profile.name.familyName,
+            firstName: profile._json.displayName,
+            lastName : profile.name.family_name,
             email: profile._json.mail,
-            picture: profile.photos[0].value,
+            
             verified:true,
             isCandidat:true
           })
@@ -100,7 +104,7 @@ passport.use(
 // login with linkedin 
 
 passport.use(
-  'Linkedin-Candidate',
+  'linkedin-Candidate',
   new LinkedInStrategy({
   clientID: process.env.LINKEDIN_KEY,
   clientSecret: process.env.LINKEDIN_SECRET,
