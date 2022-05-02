@@ -65,7 +65,7 @@ router.route("/google/callbackQuizmaster").get(
 router.route("/google/callbackCandidate").get(
   passport.authenticate("google-Candidate", {
     successRedirect: CLIENT_URL,
-    failureRedirect: "/login/failed",
+    failureRedirect: `https://localhost:3000/login`,
   })
 );
 

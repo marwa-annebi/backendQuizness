@@ -30,7 +30,7 @@ passport.use(
             if (currentUser) {
                 //check if  quizmaster is false to update him to true without creation new account 
                 if (!currentUser.isQuizmaster){
-              await   User.findOneAndUpdate({google:profile.id,isCandidat:false},{$set:{isQuizmaster:true}},
+              await   User.findOneAndUpdate({google:profile.id,isQuizmaster:false},{$set:{isQuizmaster:true}},
                         {new: true},)
                 }
               console.log("user is:", currentUser);
@@ -111,17 +111,24 @@ passport.use(
         User.findOne({ microsoftId: profile.id }).then( async function (currentUser)  {
           if (currentUser) {
             if (!currentUser.isQuizmaster){
-                await  User.findOneAndUpdate({microsoftId:profile.id,isQuizmaster:false},{$set:{isQuizmaster:true}},
+                await  User.findOneAndUpdate({ microsoftId:profile.id,isQuizmaster:false},{$set:{isQuizmaster:true}},
                         {new: true},)
                 }
             done(null, currentUser);
           } else {
             new User({
+<<<<<<< HEAD
+            microsoftId: profile.id,
+            firstName: profile._json.displayName,
+            lastName : profile.name.family_name,
+            email: profile._json.mail,
+=======
               microsoftId: profile.id,
               firstName: profile._json.givenName,
               lastName : profile.name.familyName,
               email: profile._json.mail,
               // picture: profile.photos[0].value,
+>>>>>>> ee441b5b39edd2eaf91dfafb1560103f4170eeb6
               verified:true,
               isQuizmaster:true
             })
