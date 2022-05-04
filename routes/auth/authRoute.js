@@ -15,37 +15,25 @@ const {
   //logout,
   loginAdmin,
 } = require("../../controllers/auth/authController");
-const CLIENT_URL = "http://localhost:3000";
 const verifyToken = require("../../utils/verifyToken");
 const generateToken = require("../../utils/generateToken");
 const router = express.Router();
-require("../../controllers/auth/passport");
-require("../../controllers/auth/quizMasterPassport");
-
-//register
-
 router.route("/registerAdmin").post(registerAdmin);
+router.route("/updateProfile").put(updateUserProfile)
 router.route("/registerCandidate").post(registerCandidate);
 router.route("/registerQuizMaster").post(registerQuizMaster);
 router.route("/verifyOTP").post(verifyOTP);
 router.route("/resendOtpVerificarion").post(resendverification);
 
-//login
-
-router.route("/loginUser").post(loginUser);
-router.route("/loginAdmin").post(loginAdmin);
-
-//update profile
-
-router.route("/updateProfile").put(updateUserProfile);
-
 router.route("/sendpasswordlink").post(sendPasswordLink);
 router.route("/setNewPassword/:id/:resetToken/:type").post(setNewPassword);
-
 router.route("/verifyToken").get(verifyToken);
-
-//google
-
+require("../../controllers/auth/passport");
+require("../../controllers/auth/quizMasterPassport");
+router.route("/loginUser").post(loginUser);
+router.route("/loginAdmin").post(loginAdmin);
+const CLIENT_URL = "http://localhost:3000";
+//google 
 router
   .route("/google/Quizmaster")
   .get(
@@ -68,9 +56,7 @@ router.route("/google/callbackCandidate").get(
     failureRedirect: "/login/failed",
   })
 );
-
-// linkedin
-
+// linkedin 
 router.get(
   "/linkedin/Quizmaster",
   passport.authenticate("linkedin-Quizmaster", { state: "SOME STATE" })
@@ -91,8 +77,7 @@ router.route("/linkedin/callbackCandidate").get(
     failureRedirect: `https://localhost:3000/login`,
   })
 );
-// microsoft
-
+// microsoft 
 router.get(
   "/microsoft/Quizmaster",
   passport.authenticate("microsoft-Quizmaster", { session: false })
@@ -104,11 +89,11 @@ router.route("/microsoft/callbackQuizmaster").get(
     failureRedirect: `https://localhost:3000/login`,
   })
 );
-
 router.get(
   "/microsoft/Candidate",
   passport.authenticate("microsoft-Candidate", { session: false })
 );
+
 
 router.route("/microsoft/callbackCandidate").get(
   passport.authenticate("microsoft-Candidate", {
@@ -116,19 +101,16 @@ router.route("/microsoft/callbackCandidate").get(
     failureRedirect: `https://localhost:3000/login`,
   })
 );
-
 router.get("/login/failed", (req, res) => {
   res.status(401).json({
     success: false,
     message: "failure",
   });
 });
-
 router.get("/logout", (req, res) => {
   req.logout();
   res.redirect(CLIENT_URL);
 });
-
 router.get("/login/success", (req, res) => {
   if (req.user) {
     res.status(200).json({
