@@ -34,12 +34,12 @@ const answerValidation = (data) => {
       res.status(400).send(error.message);
     }
   });
-  const getAnswerController = async (req, res) => {
+  const getAnswerController = async (id) => {
     try {
-      const results = await answerCandidatModel.findById(req.params.answerId);
-      res.json(results);
+      const results = await answerCandidatModel.findById({_id:id});
+      return results;
     } catch (error) {
-      res.status(400).send(error.message);
+      throw new Error(error)
     }
   };
   const correctAnswerController=expressAsyncHandler(async (req,res)=>{
@@ -47,7 +47,7 @@ const answerValidation = (data) => {
       try{
         const {id_answer,id_proposition } = req.body;
       const proposition = await Proposition.findById({_id:id_proposition});
-      const answerCandidate=await answerCandidatModel.findById({_id:id_answer})
+      const answerCandidate=await getAnswerController(id_answer)
       const voucher = answerCandidate.voucher
       console.log(voucher)
 
