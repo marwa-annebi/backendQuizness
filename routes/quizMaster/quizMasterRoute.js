@@ -1,4 +1,5 @@
 const express = require("express");
+const {subscriptionPayment}=require("../../controllers/quizMaster/subcriptionPayment")
 const {
   createCategory,
   updateCategory,
@@ -37,6 +38,7 @@ router
   .put(updateCandidat)
   .delete(deleteCandidat)
   .get(getCandidatById);
+  router.route("/subscriptionPayment").post(subscriptionPayment);
 //category
 
 router.route("/createCategory").post(createCategory);

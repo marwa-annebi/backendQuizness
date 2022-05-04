@@ -9,9 +9,12 @@ const quizMasterRoute=require("./routes/quizMaster/quizMasterRoute")
 const candidateRoute=require("./routes/candidate/candidateRoute")
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }))
-app.use(express.json())
+app.use(express.json({
+  verify:(req,res,buffer)=> req['rawBody']=buffer,
+}))
 // parse application/json
 app.use(bodyParser.json())
+
 const cors = require("cors");
 dotenv.config();
 connectDB();
