@@ -1,4 +1,5 @@
 const express = require("express");
+const {subscriptionPayment}=require("../../controllers/quizMaster/subcriptionPayment")
 const {
   createCategory,
   updateCategory,
@@ -19,7 +20,7 @@ const {
   findAll,
 } = require("../../controllers/quizMaster/questionController");
 const {
-  finishQuestion,
+  finishQuestion,nbofProposition
 } = require("../../controllers/quizMaster/questionMakerController");
 const {
   createQuiz,
@@ -37,6 +38,7 @@ router
   .put(updateCandidat)
   .delete(deleteCandidat)
   .get(getCandidatById);
+  router.route("/subscriptionPayment").post(subscriptionPayment);
 //category
 
 router.route("/createCategory").post(createCategory);
@@ -66,6 +68,7 @@ router
 // question maker
 
 router.route("/finishQuestion").post(finishQuestion);
+router.route("/nbofproposition").post(nbofProposition);
 
 // quiz
 
