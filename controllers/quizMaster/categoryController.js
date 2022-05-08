@@ -86,12 +86,13 @@ const deleteCategory = expressAsyncHandler(async (req, res) => {
 
 // getCategories for candidat
 const getCategoriesForCandidat = expressAsyncHandler(async (req, res) => {
-  let { quizmaster } = req.body;
-  const isTrailer=await User.findOne({quizmaster})
-  const categories = await Category.find().then((result)=>{
-    console.log(result); 
-  })
-  // res.json(categories);
+  const isTrailer=await Category.find({isTrailer:false})
+  for (let index = 0; index < isTrailer.length; index++) {
+        
+  res.json(isTrailer)
+  }
+  
+ 
  
 });
 

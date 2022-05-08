@@ -11,7 +11,7 @@ const categorySchema = mongoose.Schema({
   },
   isTrailer:{
       type:Boolean,
-      //default:true
+      default:false
   },
   questions: [
     {
