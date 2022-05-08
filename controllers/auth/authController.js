@@ -389,7 +389,8 @@ const loginUser = asyncHandler(async (req, res) => {
         }
         var token = generateToken(user._id, req.body.type, user.email);
        // console.log(token);
-        res.status(200).send({ auth: true, token: token });
+
+        res.status(200).send({ auth: true, token: token ,isTrialer:user.isTrialer});
 
       } else {
         console.log("invalid");
