@@ -1,5 +1,5 @@
 // register for admin
-
+const moment = require("moment");
 const asyncHandler = require("express-async-handler");
 const { sendVerificationEmail } = require("../../mailer/mailer");
 const Admin = require("../../models/users/adminModel");
@@ -129,6 +129,8 @@ const registerQuizMaster = asyncHandler(async (req, res) => {
         email,
         password,
         isQuizmaster: true,
+        isTrialer: true
+        
       });
       quizMaster.save().then((result) => {
         const url = `${process.env.CLIENT_URL}/sendVerification/${result._id}`;
@@ -136,9 +138,10 @@ const registerQuizMaster = asyncHandler(async (req, res) => {
       });
     }
   } catch (error) {
-    res.status(500).send({
+    return  res.status(500).send({
       message: error.message,
     });
+    
   }
 });
 
@@ -189,6 +192,7 @@ const registerCandidate = asyncHandler(async (req, res) => {
     res.status(500).send({
       message: error.message,
     });
+   
   }
 });
 
@@ -306,6 +310,8 @@ const loginAdmin = asyncHandler(async (req, res) => {
 //login user
 
 const loginUser = asyncHandler(async (req, res) => {
+
+
   try {
     const { email, password, type } = req.body;
     let user;
@@ -327,19 +333,21 @@ const loginUser = asyncHandler(async (req, res) => {
           console.log(user);
         }
 
-      // break;
+      break;
       case myEnum.QUIZMASTER.value:
         user = await User.findOne({
           email,
           isQuizmaster: true,
         });
         //console.log(user);
+       
 
         if (!user) {
           //user=await User.findOne({email,isCandidat:false})
           user = await User.findOneAndUpdate(
             { email: req.body.email, isQuizmaster: false },
-            { $set: { isQuizmaster: true } },
+            { $set: { isQuizmaster: true 
+        } },
             { new: true }
           );
 
@@ -359,17 +367,27 @@ const loginUser = asyncHandler(async (req, res) => {
 
     console.log(user);
     if (user) {
+      
       console.log(user);
       if (!user.verified) {
         res.status(400).send({
           message: "Please verify your account , check your inbox",
         });
-        // sendVerificationEmail(user._id,user.email,user.firstName)
+
   
       } else if (await user.matchPassword(password)) {
-        console.log(req.body.type);
+  
+       //
+       let date = user.createdAt;
+        let date1 =date.setDate(date.getDate()+6)
+
+        if( new Date(+ date1) < new Date ( +Date.now()))
+        {
+          await   User.findOneAndUpdate({_id:user._id},{$set:{isTrialer:false}},
+            {new: true},)
+        }
         var token = generateToken(user._id, req.body.type, user.email);
-        console.log(token);
+       // console.log(token);
         res.status(200).send({ auth: true, token: token });
       } else {
         console.log("invalid");

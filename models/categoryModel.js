@@ -9,6 +9,10 @@ const categorySchema = mongoose.Schema({
     type: String,
     required: true,
   },
+  isTrailer:{
+      type:Boolean,
+      //default:true
+  },
   questions: [
     {
       type: mongoose.Schema.Types.ObjectId,

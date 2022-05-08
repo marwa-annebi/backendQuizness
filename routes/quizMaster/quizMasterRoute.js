@@ -6,6 +6,7 @@ const {
   deleteCategory,
   getCategories,
   getCategoryById,
+  getCategoriesForCandidat,
 } = require("../../controllers/quizMaster/categoryController");
 const {
   createProposition,
@@ -42,7 +43,7 @@ router
 //category
 
 router.route("/createCategory").post(createCategory);
-router.route("/getAll").get(getCategories);
+router.route("/getAll").get(getCategoriesForCandidat);
 router
   .route("/category/:id")
   .put(updateCategory)

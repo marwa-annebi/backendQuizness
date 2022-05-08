@@ -42,6 +42,7 @@ else res.send({result:'true'})
   // console.log(propositionCreated);
 };
 
+
 const nbofProposition = expressAsyncHandler(async (req,res)=>{
   let nb=0;
   const{ id_question}=req.body;
