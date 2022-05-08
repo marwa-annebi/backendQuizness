@@ -1,16 +1,34 @@
 const expressAsyncHandler = require("express-async-handler");
 const Category = require("./../../models/categoryModel");
+const User = require("../../models/users/userModel");
 const createCategory = expressAsyncHandler(async (req, res) => {
   try {
     let { quizmaster, category_name } = req.body;
-    const categoryExists = await Category.findOne({ category_name });
+    const categoryExists = await Category.findOne({ category_name ,quizmaster});
     console.log(categoryExists);
     if (categoryExists) {
       res.json({
         status: "FAILED",
         message: "Category with provided category name exists",
       });
-    } else {
+    } 
+ else if ( await User.findOne({quizmaster,isTrailer:true})){
+  const newCategory = new Category({
+    // quizmaster: req.quizmaster._id,
+    quizmaster,
+    category_name,
+    isTrailer:true
+    
+  });
+  newCategory.save().then(() => {
+    res.json({
+      status: "SUCCESS",
+      message: "Category saved",
+    });
+  });
+ }
+
+    else   {
       const newCategory = new Category({
         // quizmaster: req.quizmaster._id,
         quizmaster,
@@ -65,15 +83,30 @@ const deleteCategory = expressAsyncHandler(async (req, res) => {
   }
 });
 
+
+// getCategories for candidat
+const getCategoriesForCandidat = expressAsyncHandler(async (req, res) => {
+  let { quizmaster } = req.body;
+  const isTrailer=await User.findOne({quizmaster})
+  const categories = await Category.find().then((result)=>{
+    console.log(result); 
+  })
+  // res.json(categories);
+ 
+});
+
+
 //read all by id quizmaster
 
 const getCategories = expressAsyncHandler(async (req, res) => {
   let { quizmaster } = req.body;
+  
   const categories = await Category.find({
     // quizmaster: req.quizmaster._id
-    quizmaster,
+    quizmaster
   });
   res.json(categories);
+ 
 });
 
 const getCategoryById = expressAsyncHandler(async (id) => {
@@ -92,4 +125,5 @@ module.exports = {
   deleteCategory,
   getCategories,
   getCategoryById,
+  getCategoriesForCandidat
 };
