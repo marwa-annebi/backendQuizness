@@ -7,9 +7,6 @@ const authRoute = require("./routes/auth/authRoute");
 const adminRoute = require("./routes/admin/adminRoute");
 const quizMasterRoute=require("./routes/quizMaster/quizMasterRoute")
 const candidateRoute=require("./routes/candidate/candidateRoute")
-
-
-
 // socket 
 const {Server} =require("socket.io")
 

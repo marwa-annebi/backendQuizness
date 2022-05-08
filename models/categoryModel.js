@@ -3,15 +3,11 @@ const categorySchema = mongoose.Schema({
   quizmaster: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
-    ref: "QuizMaster",
+    ref: "User",
   },
   category_name: {
     type: String,
     required: true,
-  },
-  isTrailer:{
-      type:Boolean,
-      default:false
   },
   questions: [
     {

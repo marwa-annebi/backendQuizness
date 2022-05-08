@@ -68,7 +68,7 @@ passport.use(
     {
       clientID: process.env.MICROSOFT_CLIENT_ID,
       clientSecret: process.env.MICROSOFT_CLIENT_SECRET,
-      callbackURL: "http://localhost:5000/auth/microsoft/callbackCandidate",
+      callbackURL: "/auth/microsoft/callbackCandidate",
       scope: ['openid', 'profile']  
     },
     function (accessToken, refreshToken, profile, done) {

@@ -20,6 +20,7 @@
     "enum": "^3.0.4",
     "express": "^4.17.3",
     "express-async-handler": "^1.2.0",
+    "html-to-json": "^0.6.0",
     "i": "^0.3.7",
     "joi": "^17.6.0",
     "joi-password-complexity": "^5.1.0",
