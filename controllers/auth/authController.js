@@ -6,7 +6,6 @@ const Admin = require("../../models/users/adminModel");
 
 const UserOtpVerification = require("../../models/users/userOtpVerification");
 const bcrypt = require("bcryptjs");
-var jwt = require("jsonwebtoken");
 const myEnum = require("./enumUser");
 const generateToken = require("../../utils/generateToken");
 
@@ -327,7 +326,7 @@ const loginUser = asyncHandler(async (req, res) => {
           console.log(user);
         }
 
-      // break;
+      break;
       case myEnum.QUIZMASTER.value:
         user = await User.findOne({
           email,
@@ -359,18 +358,23 @@ const loginUser = asyncHandler(async (req, res) => {
 
     console.log(user);
     if (user) {
-      console.log(user);
+      // console.log(user);
       if (!user.verified) {
         res.status(400).send({
           message: "Please verify your account , check your inbox",
         });
         // sendVerificationEmail(user._id,user.email,user.firstName)
-  
+ 
       } else if (await user.matchPassword(password)) {
-        console.log(req.body.type);
-        var token = generateToken(user._id, req.body.type, user.email);
+        // console.log(req.body.type);
+        console.log(type);
+        console.log(email);
+        console.log(user._id);
+        // console.log("user");
+        var token = generateToken(user._id, type, email);
         console.log(token);
         res.status(200).send({ auth: true, token: token });
+
       } else {
         console.log("invalid");
         res.status(401).send({ message: "Invalid Email or Password" });
@@ -378,7 +382,7 @@ const loginUser = asyncHandler(async (req, res) => {
     }
   } catch (error) {
     // console.log(error);
-    res.status(500).send({ message: error });
+    res.status(500).send({ message: "internal server error" });
   }
 });
 
