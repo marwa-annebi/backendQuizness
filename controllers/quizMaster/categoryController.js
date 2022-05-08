@@ -1,21 +1,37 @@
 const expressAsyncHandler = require("express-async-handler");
 const Category = require("./../../models/categoryModel");
+const User = require("../../models/users/userModel");
 const createCategory = expressAsyncHandler(async (req, res) => {
   try {
     let { quizmaster, category_name } = req.body;
-    const categoryExists = await Category.findOne({ category_name });
+    const categoryExists = await Category.findOne({
+      category_name,
+      quizmaster,
+    });
     console.log(categoryExists);
     if (categoryExists) {
       res.json({
         status: "FAILED",
         message: "Category with provided category name exists",
       });
+    } else if (await User.findOne({ quizmaster, isTrailer: true })) {
+      const newCategory = new Category({
+        // quizmaster: req.quizmaster._id,
+        quizmaster,
+        category_name,
+        isTrailer: true,
+      });
+      newCategory.save().then(() => {
+        res.json({
+          status: "SUCCESS",
+          message: "Category saved",
+        });
+      });
     } else {
       const newCategory = new Category({
         // quizmaster: req.quizmaster._id,
         quizmaster,
         category_name,
-        
       });
       newCategory.save().then(() => {
         res.json({
@@ -65,10 +81,28 @@ const deleteCategory = expressAsyncHandler(async (req, res) => {
   }
 });
 
+// getCategories for candidat
+const getCategoriesForCandidat = expressAsyncHandler(async (req, res) => {
+  var array = [];
+
+  await Category.find()
+    .populate({ path: "quizmaster", match: { isTrialer: false } })
+    .exec(function (err, result) {
+      if (err) return handleError(err);
+      for (let index = 0; index < result.length; index++) {
+        const element = result[index];
+        array.push(element);
+      }
+      return res.status(200).send(array);
+    });
+  // res.json(categories);
+});
+
 //read all by id quizmaster
 
 const getCategories = expressAsyncHandler(async (req, res) => {
   let { quizmaster } = req.body;
+
   const categories = await Category.find({
     // quizmaster: req.quizmaster._id
     quizmaster,
@@ -92,4 +126,5 @@ module.exports = {
   deleteCategory,
   getCategories,
   getCategoryById,
+  getCategoriesForCandidat,
 };
