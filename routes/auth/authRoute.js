@@ -12,7 +12,7 @@ const {
   resendverification,
   loginUser,
   updateUserProfile,
-  //logout,
+  logout,
   loginAdmin,
 } = require("../../controllers/auth/authController");
 const verifyToken = require("../../utils/verifyToken");
@@ -20,65 +20,107 @@ const router = express.Router();
 require("../../controllers/auth/passport");
 require("../../controllers/auth/quizMasterPassport");
 const CLIENT_URL = "http://localhost:3000";
-const QUIZMASTER_URL= "http://localhost:3000/dashboard/quizMaster";
+const QUIZMASTER_URL = "http://localhost:3000/dashboard/quizMaster";
+
+//register Admin
 
 router.route("/registerAdmin").post(registerAdmin);
-router.route("/updateProfile").put(updateUserProfile)
+
+//update User Profile
+
+router.route("/updateProfile").put(updateUserProfile);
+
+//register Candidate
+
 router.route("/registerCandidate").post(registerCandidate);
+
+//register QuizMaster
+
 router.route("/registerQuizMaster").post(registerQuizMaster);
+//verify OTP
+
 router.route("/verifyOTP").post(verifyOTP);
+
+//resend verification
+
 router.route("/resendOtpVerificarion").post(resendverification);
 
+//forgot password
+
 router.route("/sendpasswordlink").post(sendPasswordLink);
+
+//set new password
+
 router.route("/setNewPassword/:id/:resetToken/:type").post(setNewPassword);
+
+//verify token
+
 router.route("/verifyToken").get(verifyToken);
+
+//login quizmaster and candidate
+
 router.route("/loginUser").post(loginUser);
+
+//login admin
+
 router.route("/loginAdmin").post(loginAdmin);
-//google 
+
+//google
+
 router
   .route("/google/Quizmaster")
   .get(
     passport.authenticate("google-Quizmaster", { scope: ["email", "profile"] })
   );
+
 router
   .route("/google/Candidate")
   .get(
     passport.authenticate("google-Candidate", { scope: ["email", "profile"] })
   );
+
 router.route("/google/callbackQuizmaster").get(
   passport.authenticate("google-Quizmaster", {
     successRedirect: QUIZMASTER_URL,
     failureRedirect: "/login/failed",
   })
 );
+
 router.route("/google/callbackCandidate").get(
   passport.authenticate("google-Candidate", {
     successRedirect: CLIENT_URL,
     failureRedirect: `https://localhost:3000/login`,
   })
 );
-// linkedin 
+
+// linkedin
+
 router.get(
   "/linkedin/Quizmaster",
   passport.authenticate("linkedin-Quizmaster", { state: "SOME STATE" })
 );
+
 router.get(
   "/linkedin/Candidate",
   passport.authenticate("linkedin-Candidate", { state: "SOME STATE" })
 );
+
 router.route("/linkedin/callbackQuizmaster").get(
   passport.authenticate("linkedin-Quizmaster", {
     successRedirect: QUIZMASTER_URL,
     failureRedirect: `https://localhost:3000`,
   })
 );
+
 router.route("/linkedin/callbackCandidate").get(
   passport.authenticate("linkedin-Candidate", {
     successRedirect: CLIENT_URL,
     failureRedirect: `https://localhost:3000`,
   })
 );
-// microsoft 
+
+// microsoft
+
 router.get(
   "/microsoft/Quizmaster",
   passport.authenticate("microsoft-Quizmaster", { session: false })
@@ -90,11 +132,11 @@ router.route("/microsoft/callbackQuizmaster").get(
     failureRedirect: `https://localhost:3000`,
   })
 );
+
 router.get(
   "/microsoft/Candidate",
   passport.authenticate("microsoft-Candidate", { session: false })
 );
-
 
 router.route("/microsoft/callbackCandidate").get(
   passport.authenticate("microsoft-Candidate", {
@@ -102,16 +144,21 @@ router.route("/microsoft/callbackCandidate").get(
     failureRedirect: `https://localhost:3000`,
   })
 );
+
+//login failed
+
 router.get("/login/failed", (req, res) => {
   res.status(401).json({
     success: false,
     message: "failure",
   });
 });
-router.get("/logout", (req, res) => {
-  req.logout();
-  res.redirect(CLIENT_URL);
-});
+
+//logout
+
+router.route("/logout").get(logout);
+//login success
+
 router.get("/login/success", (req, res) => {
   if (req.user) {
     res.status(200).json({

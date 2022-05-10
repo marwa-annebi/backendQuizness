@@ -404,11 +404,11 @@ const loginUser = asyncHandler(async (req, res) => {
 
 //logout
 
-// const logout = asyncHandler(async (req, res) => {
+const logout = asyncHandler(async (req, res) => {
 
-//   res.status(200).send({ auth: false,token:null });
+  res.status(200).send({ auth: false,token:null });
 
-// })
+})
 
 module.exports = {
   registerAdmin,
@@ -418,6 +418,6 @@ module.exports = {
   resendverification,
   loginUser,
   updateUserProfile,
-  //logout,
+  logout,
   loginAdmin,
 };
