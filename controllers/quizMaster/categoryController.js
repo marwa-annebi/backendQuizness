@@ -83,9 +83,8 @@ const deleteCategory = expressAsyncHandler(async (req, res) => {
 
 // getCategories for candidat
 const getCategoriesForCandidat = expressAsyncHandler(async (req, res) => {
-  var array = [];
-
-  await Category.find()
+ var array = [];
+ await Category.find()
     .populate({ path: "quizmaster", match: { isTrialer: false } })
     .exec(function (err, result) {
       if (err) return handleError(err);
@@ -96,6 +95,7 @@ const getCategoriesForCandidat = expressAsyncHandler(async (req, res) => {
       return res.status(200).send(array);
     });
   // res.json(categories);
+
 });
 
 //read all by id quizmaster
