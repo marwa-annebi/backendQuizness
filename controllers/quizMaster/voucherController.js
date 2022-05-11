@@ -8,7 +8,6 @@ const expressAsyncHandler = require("express-async-handler");
 const createVoucher= async(req,res)=>{
    let _id_voucher;
     try{
-    
     const {creation_date,validation_date,quiz,candidat}=req.body;
     const newVoucher = new voucherModel({
     creation_date:moment(creation_date).format("yyyy-MM-DD"),

@@ -4,10 +4,10 @@ const User = require("../../models/users/userModel");
 const verifToken =require("../../utils/verifyToken")
 const createCategory = async (req, res) => {
   try {
-    let { quizmaster, category_name } = req.body;
+    let {category_name } = req.body;
     const categoryExists = await Category.findOne({
       category_name,
-      quizmaster,
+      quizmaster:req.user._id,
     });
     console.log(categoryExists);
     if (categoryExists) {
@@ -15,10 +15,10 @@ const createCategory = async (req, res) => {
         status: "FAILED",
         message: "Category with provided category name exists",
       });
-    } else if (await User.findOne({ quizmaster, isTrailer: true })) {
+    } else if (await User.findOne({ quizmaster:req.user._id, isTrailer: true })) {
       const newCategory = new Category({
-        // quizmaster: req.quizmaster._id,
-        quizmaster,
+        quizmaster:req.user._id,
+       
         category_name,
         isTrailer: true,
       });
@@ -30,8 +30,7 @@ const createCategory = async (req, res) => {
       });
     } else {
       const newCategory = new Category({
-        // quizmaster: req.quizmaster._id,
-        quizmaster,
+        quizmaster:req.user._id,
         category_name,
       });
       newCategory.save().then(() => {
@@ -70,7 +69,7 @@ const updateCategory = expressAsyncHandler(async (req, res) => {
 
 // delete category
 
-const deleteCategory = expressAsyncHandler( verifToken ,async (req, res) => {
+const deleteCategory = expressAsyncHandler(async (req, res) => {
   const category = await Category.findById(req.params.id);
 
   if (category) {
@@ -83,7 +82,7 @@ const deleteCategory = expressAsyncHandler( verifToken ,async (req, res) => {
 });
 
 // getCategories for candidat
-const getCategoriesForCandidat = expressAsyncHandler( verifToken ,async (req, res) => {
+const getCategoriesForCandidat = expressAsyncHandler(async (req, res) => {
  var array = [];
  await Category.find()
     .populate({ path: "quizmaster", match: { isTrialer: false } })
@@ -101,12 +100,9 @@ const getCategoriesForCandidat = expressAsyncHandler( verifToken ,async (req, re
 
 //read all by id quizmaster
 
-const getCategories = expressAsyncHandler( verifToken ,async (req, res) => {
-  let { quizmaster } = req.body;
-
+const getCategories = expressAsyncHandler(async (req, res) => {
   const categories = await Category.find({
-    // quizmaster: req.quizmaster._id
-    quizmaster,
+    quizmaster:req.user._id,
   });
   res.json(categories);
 });

@@ -27,7 +27,7 @@ const deleteQuestion = expressAsyncHandler(async (req, res) => {
 
 const findAll = expressAsyncHandler(async (req, res) => {
   // Question.find({ quizmaster: req.quizmaster._id })
-  Question.find({ quizmaster: req.body.quizmaster })
+  Question.find({quizmaster:req.user._id })
     .populate("propositions")
     .then((data) => {
       res.send(data);

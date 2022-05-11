@@ -1,5 +1,6 @@
 const expressAsyncHandler = require("express-async-handler");
 const jwt = require("jsonwebtoken");
+const User =require("../models/users/userModel")
 const verifToken = expressAsyncHandler(async (req, res, next) => {
   let token;
   if (
@@ -12,13 +13,16 @@ const verifToken = expressAsyncHandler(async (req, res, next) => {
       //decodes token id
       console.log("hello");
       if (token) {
+
+
+
         console.log("hii");
          decoded = jwt.verify(
           token,
           process.env.JWT_SECRET,
           function (err, decoded) {
             console.log(decoded);
-            req.user = decoded.id;
+            req.user = await User.findById(decoded.id).select("-password")
           }
         );
       }
