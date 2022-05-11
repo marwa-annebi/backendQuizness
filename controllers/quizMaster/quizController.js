@@ -5,9 +5,9 @@ const moment = require("moment");
 // create quiz
 
 const createQuiz = async (req, res) => {
-  const { quizmaster, creation_date, validation_date, questions } = req.body;
+  const { creation_date, validation_date, questions } = req.body;
 await new Quiz({
-    quizmaster,
+  quizmaster:req.user._id,
     creation_date: moment(creation_date).format("yyyy-MM-DD"),
     validation_date: moment(validation_date).format("yyyy-MM-DD"),
     questions,
@@ -51,8 +51,7 @@ const updateQuiz = expressAsyncHandler(async(req,res)=>{
 
 //find all
 const findAllQuiz = expressAsyncHandler(async (req, res) => {
-  // Quiz.find({ quizmaster: req.quizmaster._id })
-  Quiz.find({ quizmaster: req.body.quizmaster })
+  Quiz.find({  quizmaster:req.user._id})
     .populate("questions")
     .then((data) => {
       res.send(data);
