@@ -5,10 +5,6 @@ const moment = require("moment");
 // create quiz
 
 const createQuiz = async (req, res) => {
-  // return Quiz.create(quiz).then((docquiz) => {
-  //     console.log("\n>> Created Tutorial:\n", docquiz);
-  //   return docquestion;
-  // });
   const { quizmaster, creation_date, validation_date, questions } = req.body;
 await new Quiz({
     quizmaster,
