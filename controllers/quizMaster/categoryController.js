@@ -1,12 +1,13 @@
 const expressAsyncHandler = require("express-async-handler");
 const Category = require("./../../models/categoryModel");
 const User = require("../../models/users/userModel");
-const createCategory = expressAsyncHandler(async (req, res) => {
+const verifToken =require("../../utils/verifyToken")
+const createCategory = async (req, res) => {
   try {
-    let { quizmaster, category_name } = req.body;
+    let {category_name } = req.body;
     const categoryExists = await Category.findOne({
       category_name,
-      quizmaster,
+      quizmaster:req.user._id,
     });
     console.log(categoryExists);
     if (categoryExists) {
@@ -14,10 +15,10 @@ const createCategory = expressAsyncHandler(async (req, res) => {
         status: "FAILED",
         message: "Category with provided category name exists",
       });
-    } else if (await User.findOne({ quizmaster, isTrailer: true })) {
+    } else if (await User.findOne({ quizmaster:req.user._id, isTrailer: true })) {
       const newCategory = new Category({
-        // quizmaster: req.quizmaster._id,
-        quizmaster,
+        quizmaster:req.user._id,
+       
         category_name,
         isTrailer: true,
       });
@@ -29,8 +30,7 @@ const createCategory = expressAsyncHandler(async (req, res) => {
       });
     } else {
       const newCategory = new Category({
-        // quizmaster: req.quizmaster._id,
-        quizmaster,
+        quizmaster:req.user._id,
         category_name,
       });
       newCategory.save().then(() => {
@@ -46,7 +46,7 @@ const createCategory = expressAsyncHandler(async (req, res) => {
       message: error.message,
     });
   }
-});
+};
 
 // update category
 
@@ -94,18 +94,24 @@ const getCategoriesForCandidat = expressAsyncHandler(async (req, res) => {
       }
       return res.status(200).send(array);
     });
-  // res.json(categories);
+
 
 });
 
 //read all by id quizmaster
 
 const getCategories = expressAsyncHandler(async (req, res) => {
+<<<<<<< HEAD
   const categories = await Category.find({quizmaster:req.user._id});
+=======
+  const categories = await Category.find({
+    quizmaster:req.user._id,
+  });
+>>>>>>> f8482660cddf7c0ca98a40befd1bf09a8500e72c
   res.json(categories);
 });
 
-const getCategoryById = expressAsyncHandler(async (id) => {
+const getCategoryById = expressAsyncHandler( async (id) => {
   const category = await Category.findById(id);
 
   if (category) {

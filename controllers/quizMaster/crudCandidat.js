@@ -1,7 +1,7 @@
 const express = require("express");
 const User = require("../../models/users/userModel");
-
-const createCandidat = async (req, res) => {
+const verifyToken =require("../../utils/verifyToken")
+const createCandidat =   ( async (verifyToken ,req, res) => {
   let { firstName, lastName, email, password } = req.body;
 
   const newUser = new User({
@@ -18,8 +18,9 @@ const createCandidat = async (req, res) => {
   } catch (error) {
     console.error(error);
   }
-};
 
+}
+);
 // read data
 
 const getAllCandidats = async (req, res) => {
