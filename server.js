@@ -10,7 +10,6 @@ const candidateRoute=require("./routes/candidate/candidateRoute")
 // socket 
 const {Server} =require("socket.io")
 
-
 const io = new Server({
   cors: {
     origin: "http://localhost:3000",
@@ -54,6 +53,7 @@ io.listen(4000);
 // parse application/x-www-form-urlencoded
 app.set('socketio', io);
 app.use(bodyParser.urlencoded({ extended: false }))
+//app.use(verifyToken)
 app.use(express.json({
   verify:(req,res,buffer)=> req['rawBody']=buffer,
 }))
@@ -61,6 +61,8 @@ app.use(express.json({
 app.use(bodyParser.json())
 
 const cors = require("cors");
+
+
 dotenv.config();
 connectDB();
 app.use(

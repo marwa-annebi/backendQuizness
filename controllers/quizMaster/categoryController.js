@@ -1,7 +1,8 @@
 const expressAsyncHandler = require("express-async-handler");
 const Category = require("./../../models/categoryModel");
 const User = require("../../models/users/userModel");
-const createCategory = expressAsyncHandler(async (req, res) => {
+const verifToken =require("../../utils/verifyToken")
+const createCategory = async (req, res) => {
   try {
     let { quizmaster, category_name } = req.body;
     const categoryExists = await Category.findOne({
@@ -46,7 +47,7 @@ const createCategory = expressAsyncHandler(async (req, res) => {
       message: error.message,
     });
   }
-});
+};
 
 // update category
 
@@ -69,7 +70,7 @@ const updateCategory = expressAsyncHandler(async (req, res) => {
 
 // delete category
 
-const deleteCategory = expressAsyncHandler(async (req, res) => {
+const deleteCategory = expressAsyncHandler( verifToken ,async (req, res) => {
   const category = await Category.findById(req.params.id);
 
   if (category) {
@@ -82,7 +83,7 @@ const deleteCategory = expressAsyncHandler(async (req, res) => {
 });
 
 // getCategories for candidat
-const getCategoriesForCandidat = expressAsyncHandler(async (req, res) => {
+const getCategoriesForCandidat = expressAsyncHandler( verifToken ,async (req, res) => {
  var array = [];
  await Category.find()
     .populate({ path: "quizmaster", match: { isTrialer: false } })
@@ -94,13 +95,13 @@ const getCategoriesForCandidat = expressAsyncHandler(async (req, res) => {
       }
       return res.status(200).send(array);
     });
-  // res.json(categories);
+
 
 });
 
 //read all by id quizmaster
 
-const getCategories = expressAsyncHandler(async (req, res) => {
+const getCategories = expressAsyncHandler( verifToken ,async (req, res) => {
   let { quizmaster } = req.body;
 
   const categories = await Category.find({
@@ -110,7 +111,7 @@ const getCategories = expressAsyncHandler(async (req, res) => {
   res.json(categories);
 });
 
-const getCategoryById = expressAsyncHandler(async (id) => {
+const getCategoryById = expressAsyncHandler( async (id) => {
   const category = await Category.findById(id);
 
   if (category) {

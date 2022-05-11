@@ -1,7 +1,7 @@
 const expressAsyncHandler = require("express-async-handler");
 const Proposition = require("../../models/propositionModel");
 
-const createProposition = function (proposition) {
+const createProposition =async  function (proposition) {
   // console.log(proposition.body);
   return Proposition.create(proposition).then((docProposition) => {
     // console.log(docProposition);
