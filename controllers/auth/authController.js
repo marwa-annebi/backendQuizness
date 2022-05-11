@@ -132,8 +132,7 @@ const registerQuizMaster = asyncHandler(async (req, res) => {
         
       });
       quizMaster.save().then((result) => {
-        const url = `${process.env.CLIENT_URL}/sendVerification/${result._id}`;
-        res.status(200).send(sendVerificationEmail(result, res, url));
+      sendVerificationEmail(result, res);
       });
     }
   } catch (error) {
@@ -183,8 +182,8 @@ const registerCandidate = asyncHandler(async (req, res) => {
         isCandidat: true,
       });
       candidate.save().then((result) => {
-        const url = `${process.env.CLIENT_URL}/sendVerification/${result._id}`;
-        sendVerificationEmail(result, res, url);
+        // const url = `${process.env.CLIENT_URL}/sendVerification/${result._id}`;
+        sendVerificationEmail(result, res);
       });
     }
   } catch (error) {
@@ -390,7 +389,7 @@ const loginUser = asyncHandler(async (req, res) => {
         var token = generateToken(user._id, req.body.type, user.email);
        // console.log(token);
 
-        res.status(200).send({ auth: true, token: token ,isTrialer:user.isTrialer});
+        res.status(200).send({ auth: true, token: token ,isTrialer:user.isTrialer,_id:user._id});
 
       } else {
         console.log("invalid");

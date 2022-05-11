@@ -1,5 +1,8 @@
+const verifyToken = require("./../../utils/verifyToken");
 const express = require("express");
-const {subscriptionPayment}=require("../../controllers/quizMaster/subcriptionPayment")
+const {
+  subscriptionPayment,
+} = require("../../controllers/quizMaster/subcriptionPayment");
 const {
   createCategory,
   updateCategory,
@@ -21,17 +24,30 @@ const {
   findAll,
 } = require("../../controllers/quizMaster/questionController");
 const {
-  finishQuestion,nbofProposition
+  finishQuestion,
+  nbofProposition,
 } = require("../../controllers/quizMaster/questionMakerController");
 const {
   createQuiz,
   findAllQuiz,
   deleteQuiz,
 } = require("../../controllers/quizMaster/quizController");
-const{createVoucher,updateVoucher,getVoucherById,deleteVoucher,getVoucherByIdCandidat} =require ("../../controllers/quizMaster/voucherController")
+const {
+  createVoucher,
+  updateVoucher,
+  getVoucherById,
+  deleteVoucher,
+  getVoucherByIdCandidat,
+} = require("../../controllers/quizMaster/voucherController");
 const router = express.Router();
 // candidat
-const {createCandidat,deleteCandidat,getAllCandidats,getCandidatById,updateCandidat} =require("../../controllers/quizMaster/crudCandidat");
+const {
+  createCandidat,
+  deleteCandidat,
+  getAllCandidats,
+  getCandidatById,
+  updateCandidat,
+} = require("../../controllers/quizMaster/crudCandidat");
 router.route("/createCandidat").post(createCandidat);
 router.route("/getCandidats").get(getAllCandidats);
 router
@@ -39,7 +55,7 @@ router
   .put(updateCandidat)
   .delete(deleteCandidat)
   .get(getCandidatById);
-  router.route("/subscriptionPayment").post(subscriptionPayment);
+router.route("/subscriptionPayment").post(subscriptionPayment);
 //category
 
 router.route("/createCategory").post(createCategory);
@@ -49,6 +65,7 @@ router
   .put(updateCategory)
   .delete(deleteCategory)
   .get(getCategoryById);
+router.route("/getCategories").get(verifyToken, getCategories);
 
 //question
 
@@ -77,12 +94,12 @@ router.route("/createQuiz").post(createQuiz);
 router.route("/findAllQuiz").get(findAllQuiz);
 router.route("/quiz/:id").delete(deleteQuiz);
 // voucher
-router.route("/createVoucher").post(createVoucher)
+router.route("/createVoucher").post(createVoucher);
 router.route("/getVoucherByIdCandidat/:id").get(getVoucherByIdCandidat);
 router
   .route("/voucher/:id")
   .put(updateVoucher)
   .delete(deleteVoucher)
-  .get(getVoucherById)
+  .get(getVoucherById);
 
 module.exports = router;

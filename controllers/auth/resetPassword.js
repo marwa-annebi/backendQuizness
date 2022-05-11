@@ -2,13 +2,8 @@ var mongoose = require("mongoose");
 const crypto = require("crypto");
 const bcrypt = require("bcrypt");
 const Joi = require("joi");
-var http = require("http"),
-  fs = require("fs");
-
 const myEnum = require("./enumUser");
 const Admin = require("../../models/users/adminModel");
-const generateToken = require("../../utils/generateToken");
-
 const User = require("../../models/users/userModel");
 const sendEmail = require("../../mailer/sendEmail");
 

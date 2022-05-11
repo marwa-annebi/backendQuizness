@@ -101,12 +101,7 @@ const getCategoriesForCandidat = expressAsyncHandler(async (req, res) => {
 //read all by id quizmaster
 
 const getCategories = expressAsyncHandler(async (req, res) => {
-  let { quizmaster } = req.body;
-
-  const categories = await Category.find({
-    // quizmaster: req.quizmaster._id
-    quizmaster,
-  });
+  const categories = await Category.find({quizmaster:req.user._id});
   res.json(categories);
 });
 

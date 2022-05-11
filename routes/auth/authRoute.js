@@ -15,7 +15,6 @@ const {
   logout,
   loginAdmin,
 } = require("../../controllers/auth/authController");
-const verifyToken = require("../../utils/verifyToken");
 const router = express.Router();
 require("../../controllers/auth/passport");
 require("../../controllers/auth/quizMasterPassport");
@@ -55,7 +54,7 @@ router.route("/setNewPassword/:id/:resetToken/:type").post(setNewPassword);
 
 //verify token
 
-router.route("/verifyToken").get(verifyToken);
+// router.route("/verifyToken").get(verifyToken);
 
 //login quizmaster and candidate
 

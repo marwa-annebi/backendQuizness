@@ -56,7 +56,7 @@ const updateQuiz = expressAsyncHandler(async(req,res)=>{
 //find all
 const findAllQuiz = expressAsyncHandler(async (req, res) => {
   // Quiz.find({ quizmaster: req.quizmaster._id })
-  Quiz.find({ quizmaster: req.body.quizmaster })
+  Quiz.find({ quizmaster: req.user })
     .populate("questions")
     .then((data) => {
       res.send(data);
