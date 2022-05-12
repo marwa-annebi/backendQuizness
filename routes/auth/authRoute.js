@@ -46,11 +46,11 @@ router.route("/resendOtpVerificarion").post(resendverification);
 
 //forgot password
 
-router.route("/sendpasswordlink").post(sendPasswordLink);
+// router.route("/sendpasswordlink").post(sendPasswordLink);
 
 //set new password
 
-router.route("/setNewPassword/:id/:resetToken/:type").post(setNewPassword);
+// router.route("/setNewPassword/:id/:resetToken/:type").post(setNewPassword);
 
 //verify token
 

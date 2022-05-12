@@ -1,8 +1,7 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
-const crypto =require ("crypto");
-const { boolean } = require("joi");
-const userSchema = mongoose.Schema(
+const crypto = require("crypto");
+const quizmasterSchema = mongoose.Schema(
   {
     linkedinId: {
       type: String,
@@ -29,7 +28,7 @@ const userSchema = mongoose.Schema(
       type: String,
       // required: true,
     },
-    picture: {
+    logo: {
       type: String,
       default:
         "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg",
@@ -38,42 +37,29 @@ const userSchema = mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    isCandidat:{
-        type:Boolean,
-        default: false,
+    domain_name: {
+      type: String,
     },
-    isQuizmaster:{
-        type:Boolean,
-        default: false,
-    },
-    isTrialer:{
-      type:Boolean,
-     //default: false,
-    },
-    resetPasswordToken: {type:String},
-    resetPasswordExpire: {type:Date},
+    colors: [{ c1: String, c2: String }],
+    resetPasswordToken: { type: String },
+    resetPasswordExpire: { type: Date },
   },
   {
     timestamps: true,
   }
 );
-userSchema.pre("save", async function (next) {
+quizmasterSchema.pre("save", async function (next) {
   if (!this.isModified("password")) {
     next();
   }
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
 });
-userSchema.methods.matchPassword = async function (enteredPass) {
+quizmasterSchema.methods.matchPassword = async function (enteredPass) {
   return await bcrypt.compare(enteredPass, this.password);
 };
-userSchema.methods.getResetPasswordToken = function () {
+quizmasterSchema.methods.getResetPasswordToken = function () {
   const resetToken = crypto.randomBytes(20).toString("hex");
-
-
-
-
-
   // Hash token (private key) and save to database
   this.resetPasswordToken = crypto
     .createHash("sha256")
@@ -86,5 +72,5 @@ userSchema.methods.getResetPasswordToken = function () {
   return resetToken;
 };
 // Compile model from schema
-const User = mongoose.model("User", userSchema);
-module.exports = User;
+const Quizmaster = mongoose.model("Quizmaster", quizmasterSchema);
+module.exports = Quizmaster;

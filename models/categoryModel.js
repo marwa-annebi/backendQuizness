@@ -3,7 +3,7 @@ const categorySchema = mongoose.Schema({
   quizmaster: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
-    ref: "User",
+    ref: "Quizmaster",
   },
   category_name: {
     type: String,

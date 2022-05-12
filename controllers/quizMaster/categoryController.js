@@ -1,7 +1,6 @@
 const expressAsyncHandler = require("express-async-handler");
 const Category = require("./../../models/categoryModel");
-const User = require("../../models/users/userModel");
-const verifToken = require("../../utils/verifyToken");
+const Quizmaster = require("../../models/users/quizmasterModel");
 const createCategory = async (req, res) => {
   try {
     let { category_name } = req.body;
@@ -14,27 +13,13 @@ const createCategory = async (req, res) => {
       res.status(400).send({
         message: "Category with provided category name exists",
       });
-    } else if (
-      await User.findOne({ quizmaster: req.user._id, isTrailer: true })
-    ) {
+    } else if (await Quizmaster.findOne({ quizmaster: req.user._id })) {
       const newCategory = new Category({
         quizmaster: req.user._id,
         category_name,
-        isTrailer: true,
       });
       newCategory.save().then(() => {
         res.status(201).send({
-          message: "Category saved",
-        });
-      });
-    } else {
-      const newCategory = new Category({
-        quizmaster: req.user._id,
-        category_name,
-      });
-      newCategory.save().then(() => {
-        res.json({
-          status: "SUCCESS",
           message: "Category saved",
         });
       });
@@ -83,17 +68,17 @@ const deleteCategory = expressAsyncHandler(async (req, res) => {
 });
 // getCategories for candidat
 const getCategoriesForCandidat = expressAsyncHandler(async (req, res) => {
-  var array = [];
-  await Category.find()
-    .populate({ path: "quizmaster", match: { isTrialer: false } })
-    .exec(function (err, result) {
-      if (err) return handleError(err);
-      for (let index = 0; index < result.length; index++) {
-        const element = result[index];
-        array.push(element);
-      }
-      return res.status(200).send(array);
-    });
+  // var array = [];
+  // await Category.find()
+  //   .populate({ path: "quizmaster", match: { isTrialer: false } })
+  //   .exec(function (err, result) {
+  //     if (err) return handleError(err);
+  //     for (let index = 0; index < result.length; index++) {
+  //       const element = result[index];
+  //       array.push(element);
+  //     }
+  //     return res.status(200).send(array);
+  //   });
 });
 
 //read all by id quizmaster

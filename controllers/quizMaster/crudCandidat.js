@@ -1,30 +1,26 @@
 const express = require("express");
-const User = require("../../models/users/userModel");
-const verifyToken =require("../../utils/verifyToken")
-const createCandidat =   ( async (verifyToken ,req, res) => {
+const Candidate = require("../../models/users/candidateModel");
+const createCandidat = async (req, res) => {
   let { firstName, lastName, email, password } = req.body;
-
-  const newUser = new User({
+  const newUser = new Candidate({
     firstName,
     lastName,
     email,
     password,
-    isCandidat:true
   });
   try {
     newUser.save().then((result) => {
-      newUser._id;
+      result;
     });
   } catch (error) {
     console.error(error);
   }
+};
 
-}
-);
 // read data
 
 const getAllCandidats = async (req, res) => {
-   User.find({isCandidat:true}, (error, result) => {
+  Candidate.find((error, result) => {
     if (error) {
       res.send(error);
     }
@@ -35,18 +31,10 @@ const getAllCandidats = async (req, res) => {
 //delete
 
 const deleteCandidat = async (req, res) => {
-const {id}=req.params
-let user = await User.findOne({id,isCandidat:true,isQuizmaster:false});
+  const { id } = req.params;
+  let user = await Candidate.findOne({ id });
 
-console.log(user);
-if (!user){
-  user=await User.findOne({id,isQuizmaster:true,isCandidat:true})
-  await  user.updateOne({isCandidat:false});
-  return  res.json({ message: "candidat Removed" });
-  
-}
   if (user) {
-      
     await user.remove();
     res.json({ message: "user Removed" });
   } else {
@@ -59,7 +47,7 @@ if (!user){
 
 const updateCandidat = async (req, res) => {
   try {
-    const updatedUser = await User.findByIdAndUpdate(
+    const updatedUser = await Candidate.findByIdAndUpdate(
       req.params.id,
       { ...req.body },
       { new: true }
@@ -74,7 +62,7 @@ const updateCandidat = async (req, res) => {
 
 const getCandidatById = async (req, res) => {
   try {
-    const user = await User.findById(req.params.id);
+    const user = await Candidate.findById(req.params.id);
     res.send(user);
   } catch (error) {
     console.error(error);
