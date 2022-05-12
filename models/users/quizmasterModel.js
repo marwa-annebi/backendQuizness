@@ -14,7 +14,7 @@ const quizmasterSchema = mongoose.Schema(
     },
     firstName: {
       type: String,
-      required: true,
+     required: true,
     },
     lastName: {
       type: String,
@@ -22,25 +22,28 @@ const quizmasterSchema = mongoose.Schema(
     email: {
       type: String,
       required: true,
-      // unique: true,
+       unique: true,
     },
     password: {
       type: String,
       // required: true,
     },
-    logo: {
-      type: String,
-      default:
-        "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg",
-    },
     verified: {
       type: Boolean,
       default: false,
     },
-    domain_name: {
+    account:
+    [
+     { 
+       domain_name:{type: String,},
+       logo: {
       type: String,
+      default:
+        "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg",
     },
-    colors: [{ c1: String, c2: String }],
+       colors: [{ c1: String, c2: String }],
+    }
+    ],
     resetPasswordToken: { type: String },
     resetPasswordExpire: { type: Date },
   },

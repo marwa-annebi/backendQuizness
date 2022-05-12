@@ -1,6 +1,7 @@
 const expressAsyncHandler = require("express-async-handler");
 const jwt = require("jsonwebtoken");
 const Quizmaster = require("../models/users/quizmasterModel");
+const Candidate=require("../models/users/candidateModel")
 const verifTokenQuizmaster = expressAsyncHandler(async (req, res, next) => {
   let token;
   if (
@@ -35,7 +36,7 @@ const verifTokenCandidate = expressAsyncHandler(async (req, res, next) => {
       token = req.headers.authorization.split(" ")[1];
       if (token) {
         decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = await Quizmaster.findById(decoded.id).select("-password");
+        req.user = await Candidate.findById(decoded.id).select("-password");
         console.log(req.user);
       }
 
