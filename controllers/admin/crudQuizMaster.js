@@ -3,18 +3,22 @@ const Quizmaster = require("../../models/users/quizmasterModel");
 
 const createUser = async (req, res) => {
   let { firstName, lastName, email, password } = req.body;
-
+  
   const newUser = new Quizmaster({
     firstName,
     lastName,
     email,
     password,
-    isQuizmaster: true,
+    verified:true,
   });
-  try {
-    newUser.save().then((result) => {
-      newUser._id;
+  try{
+    newUser.save().then(() => {
+      res.status(201).send({
+        message: " user saved",
+      });
+     
     });
+
   } catch (error) {
     console.error(error);
   }
