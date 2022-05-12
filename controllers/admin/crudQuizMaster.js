@@ -1,15 +1,15 @@
 const express = require("express");
-const User = require("../../models/users/userModel");
+const Quizmaster = require("../../models/users/quizmasterModel");
 
 const createUser = async (req, res) => {
   let { firstName, lastName, email, password } = req.body;
 
-  const newUser = new User({
+  const newUser = new Quizmaster({
     firstName,
     lastName,
     email,
     password,
-    isQuizmaster:true
+    isQuizmaster: true,
   });
   try {
     newUser.save().then((result) => {
@@ -23,7 +23,7 @@ const createUser = async (req, res) => {
 // read data
 
 const getAllUsers = async (req, res) => {
-   User.find({isQuizmaster:true}, (error, result) => {
+  Quizmaster.find((error, result) => {
     if (error) {
       res.send(error);
     }
@@ -34,18 +34,9 @@ const getAllUsers = async (req, res) => {
 //delete
 
 const deleteUser = async (req, res) => {
-const {id}=req.params
-let user = await User.findOne({id,isQuizmaster:true,isCandidat:false});
-
-console.log(user);
-if (!user){
-  user=await User.findOne({id,isQuizmaster:true,isCandidat:true})
-  await  user.updateOne({isQuizmaster:false});
-  return  res.json({ message: "quizmaster Removed" });
-  
-}
+  const { id } = req.params;
+  let user = await Quizmaster.findOne({ id});
   if (user) {
-      
     await user.remove();
     res.json({ message: "user Removed" });
   } else {
@@ -58,7 +49,7 @@ if (!user){
 
 const updateUser = async (req, res) => {
   try {
-    const updatedUser = await User.findByIdAndUpdate(
+    const updatedUser = await Quizmaster.findByIdAndUpdate(
       req.params.id,
       { ...req.body },
       { new: true }
@@ -73,7 +64,7 @@ const updateUser = async (req, res) => {
 
 const getUserById = async (req, res) => {
   try {
-    const user = await User.findById(req.params.id);
+    const user = await Quizmaster.findById(req.params.id);
     res.send(user);
   } catch (error) {
     console.error(error);

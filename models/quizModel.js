@@ -1,14 +1,12 @@
 const mongoose = require("mongoose");
 const quizSchema = mongoose.Schema({
-
-  quiz_id : {
-    type:Number,    
-
+  quiz_id: {
+    type: Number,
   },
   quizmaster: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
-    ref: "User",
+    ref: "Quizmaster",
   },
   validation_date: {
     type: Date,
@@ -18,8 +16,6 @@ const quizSchema = mongoose.Schema({
   },
   questions: [{ type: mongoose.Schema.Types.ObjectId, ref: "Question" }],
 });
-
-
 
 const Quiz = mongoose.model("Quiz", quizSchema);
 module.exports = Quiz;

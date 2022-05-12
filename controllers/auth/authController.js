@@ -3,91 +3,35 @@ const moment = require("moment");
 const asyncHandler = require("express-async-handler");
 const { sendVerificationEmail } = require("../../mailer/mailer");
 const Admin = require("../../models/users/adminModel");
-
 const UserOtpVerification = require("../../models/users/userOtpVerification");
 const bcrypt = require("bcryptjs");
 const myEnum = require("./enumUser");
 const generateToken = require("../../utils/generateToken");
-
-const crypto = require("crypto");
-const User = require("../../models/users/userModel");
-const verifToken =require("../../utils/verifyToken")
-const updateUserProfile = asyncHandler(verifToken ,async (req, res) => {
-  const user = await User.findById(req.user._id);
+const { registerValidation } = require("./../../validation/userValidation");
+const Quizmaster = require("../../models/users/quizmasterModel");
+const Candidate = require("./../../models/users/candidateModel");
+const updateUserProfile = asyncHandler(async (req, res) => {
+  const user = await Quizmaster.findById(req.user._id);
   if (user) {
-    user.name = req.body.name || user.name;
+    user.firstName = req.body.firstName || user.firstName;
     user.lastName = req.body.lastName || user.lastName;
     user.email = req.body.email || user.email;
-    user.image = req.body.image || user.image;
+    user.logo = req.body.logo || user.logo;
     if (req.body.password) {
       user.password = req.body.password;
     }
     const update = await user.save();
     res.json({
       _id: update._id,
-      name: update.name,
+      firstName: update.firstName,
       lastName: update.lastName,
       email: update.email,
-      image: update.image,
+      logo: update.logo,
       // token: generateToken(update._id),
     });
   } else {
     res.status(404);
-    throw new Error("User Not Found");
-  }
-});
-const registerAdmin = asyncHandler(async (req, res) => {
-  try {
-    let { firstName, lastName, email, password } = req.body;
-    const userExists = await Admin.findOne({ email });
-    firstName = firstName.trim();
-    lastName = lastName.trim();
-    email = email.trim();
-    password = password.trim();
-    if (firstName == "" || lastName == "" || email == "" || password == "") {
-      res.json({
-        status: "FAILED",
-        message: "Empty input fields !",
-      });
-    } else if (!/^[a-zA-Z]*$/.test(firstName)) {
-      res.json({
-        status: "FAILED",
-        message: "Invalid firstName entered",
-      });
-    } else if (!/^[a-zA-Z]*$/.test(lastName)) {
-      res.json({
-        status: "FAILED",
-        message: "Invalid last name entered",
-      });
-    } else if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)) {
-      res.json({
-        status: "FAILED",
-        message: "Invalid email",
-      });
-    } else if (userExists) {
-      res.json({
-        status: "FAILED",
-        message: "admin with provided email exists ",
-      });
-    } else {
-      const admin = new Admin({
-        firstName,
-        lastName,
-        email,
-        password,
-      });
-      admin.save().then(() => {
-        res.json({
-          status: "SUCCESS",
-          admin,
-        });
-      });
-    }
-  } catch (error) {
-    res.json({
-      status: "FAILED",
-      message: error.message,
-    });
+    throw new Error("Quiz Master Not Found");
   }
 });
 
@@ -95,51 +39,38 @@ const registerAdmin = asyncHandler(async (req, res) => {
 
 const registerQuizMaster = asyncHandler(async (req, res) => {
   try {
-    let { firstName, lastName, email, password } = req.body;
-    const userExists = await User.findOne({ email, isQuizmaster: true });
-    firstName = firstName.trim();
-    lastName = lastName.trim();
-    email = email.trim();
-    password = password.trim();
-    if (firstName == "" || lastName == "" || email == "" || password == "") {
-      res.status(400).send({
-        message: "Empty input fields !",
-      });
-    } else if (!/^[a-zA-Z]*$/.test(firstName)) {
-      res.status(400).send({
-        message: "Invalid firstName entered",
-      });
-    } else if (!/^[a-zA-Z]*$/.test(lastName)) {
-      res.status(400).send({
-        message: "Invalid last name entered",
-      });
-    } else if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)) {
-      res.status(400).send({
-        message: "Invalid email",
-      });
-    } else if (userExists) {
+    let { firstName, lastName, email, password, password_confirmation } =
+      req.body;
+    const userExists = await Quizmaster.findOne({ email });
+    const { error } = registerValidation({
+      firstName,
+      lastName,
+      email,
+      password,
+      password_confirmation,
+    });
+    if (error) return res.status(400).send({ msg: "error" });
+    if (userExists) {
       res.status(400).send({
         message: "quizMaster with provided email exists ",
       });
     } else {
-      const quizMaster = new User({
+      if (password != verifPassword)
+        return res.status(400).json({ msg: "passsword not valid" });
+      const quizMaster = new Quizmaster({
         firstName,
         lastName,
         email,
         password,
-        isQuizmaster: true,
-        isTrialer: true
-        
       });
       quizMaster.save().then((result) => {
-      sendVerificationEmail(result, res);
+        sendVerificationEmail(result, res);
       });
     }
   } catch (error) {
-    return  res.status(500).send({
+    return res.status(500).send({
       message: error.message,
     });
-    
   }
 });
 
@@ -147,50 +78,36 @@ const registerQuizMaster = asyncHandler(async (req, res) => {
 
 const registerCandidate = asyncHandler(async (req, res) => {
   try {
-    let { firstName, lastName, email, password } = req.body;
-    const userExists = await User.findOne({ email, isCandidat: true });
-    firstName = firstName.trim();
-    lastName = lastName.trim();
-    email = email.trim();
-    password = password.trim();
-    if (firstName == "" || lastName == "" || email == "" || password == "") {
-      res.status(400).send({
-        message: "Empty input fields !",
-      });
-    } else if (!/^[a-zA-Z]*$/.test(firstName)) {
-      res.status(400).send({
-        message: "Invalid firstName entered",
-      });
-    } else if (!/^[a-zA-Z]*$/.test(lastName)) {
-      res.status(400).send({
-        message: "Invalid last name entered",
-      });
-    } else if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)) {
-      res.status(400).send({
-        message: "Invalid email",
-      });
-    } else if (userExists) {
+    let { firstName, lastName, email, password, password_confirmation } =
+      req.body;
+    const userExists = await Candidate.findOne({ email });
+    const { error } = registerValidation({
+      firstName,
+      lastName,
+      email,
+      password,
+      password_confirmation,
+    });
+    if (error) return res.status(400).send({ msg: "error" });
+    if (userExists) {
       res.status(400).send({
         message: "Candidate with provided email exists ",
       });
     } else {
-      const candidate = new User({
+      const candidate = new Candidate({
         firstName,
         lastName,
         email,
         password,
-        isCandidat: true,
       });
       candidate.save().then((result) => {
-        // const url = `${process.env.CLIENT_URL}/sendVerification/${result._id}`;
-        sendVerificationEmail(result, res);
+        res.status(201).send(result);
       });
     }
   } catch (error) {
     res.status(500).send({
       message: error.message,
     });
-   
   }
 });
 
@@ -230,7 +147,7 @@ const verifyOTP = asyncHandler(async (req, res) => {
           } else {
             //success
 
-            await User.updateOne({ _id: userId }, { verified: true });
+            await Quizmaster.updateOne({ _id: userId }, { verified: true });
             // await Candidate.updateMany({ _id: userId }, { verified: true });
             await UserOtpVerification.deleteMany({ userId });
             res.status(200).send({
@@ -267,13 +184,14 @@ const resendverification = asyncHandler(async (req, res) => {
     });
   }
 });
+
 const loginAdmin = asyncHandler(async (req, res) => {
   try {
     const { email, password, type } = req.body;
     let user;
     switch (type) {
       case myEnum.ADMIN.value:
-        user = await User.findOne({
+        user = await Admin.findOne({
           email,
         });
         // console.log(user);
@@ -308,49 +226,22 @@ const loginAdmin = asyncHandler(async (req, res) => {
 //login user
 
 const loginUser = asyncHandler(async (req, res) => {
-
-
   try {
     const { email, password, type } = req.body;
+    //validate the data
+    const { error } = loginValidation(req.body);
+    if (error) return res.status(400).json({ msg: error.details[0].message });
     let user;
     switch (type) {
       case myEnum.CANDIDATE.value:
-        user = await User.findOne({
+        user = await Candidate.findOne({
           email,
-          isCandidat: true,
         });
-        // console.log(user);
-
-        if (!user) {
-          // user=await User.findOne({email,isQuizmaster:false})
-          user = await User.findOneAndUpdate(
-            { email: req.body.email, isCandidat: false },
-            { $set: { isCandidat: true } },
-            { new: true }
-          );
-          console.log(user);
-        }
-
-      break;
+        break;
       case myEnum.QUIZMASTER.value:
-        user = await User.findOne({
+        user = await Quizmaster.findOne({
           email,
-          isQuizmaster: true,
         });
-        //console.log(user);
-       
-
-        if (!user) {
-          //user=await User.findOne({email,isCandidat:false})
-          user = await User.findOneAndUpdate(
-            { email: req.body.email, isQuizmaster: false },
-            { $set: { isQuizmaster: true 
-        } },
-            { new: true }
-          );
-
-          console.log(user);
-        }
         break;
       default:
         return res.status(404).send({
@@ -362,42 +253,25 @@ const loginUser = asyncHandler(async (req, res) => {
         message: "user doesn't exist",
       });
     }
-
-    console.log(user);
     if (user) {
-
-      
-      console.log(user);
-      if (!user.verified) {
-        res.status(400).send({
-          message: "Please verify your account , check your inbox",
-        });
-
-
-  
-      } else if (await user.matchPassword(password)) {
-  
-       //
-       let date = user.createdAt;
-        let date1 =date.setDate(date.getDate()+6)
-
-        if( new Date(+ date1) < new Date ( +Date.now()))
-        {
-          await   User.findOneAndUpdate({_id:user._id},{$set:{isTrialer:false}},
-            {new: true},)
-        }
+      // if (!user.verified) {
+      //   res.status(400).send({
+      //     message: "Please verify your account , check your inbox",
+      //   });
+      // }
+      if (await user.matchPassword(password)) {
         var token = generateToken(user._id, req.body.type, user.email);
-       // console.log(token);
 
-        res.status(200).send({ auth: true, token: token ,isTrialer:user.isTrialer,_id:user._id});
-
+        res.status(200).send({
+          auth: true,
+          token: token,
+          user: user,
+        });
       } else {
-        console.log("invalid");
         res.status(401).send({ message: "Invalid Email or Password" });
       }
     }
   } catch (error) {
-    // console.log(error);
     res.status(500).send({ message: "internal server error" });
   }
 });
@@ -405,11 +279,47 @@ const loginUser = asyncHandler(async (req, res) => {
 //logout
 
 const logout = asyncHandler(async (req, res) => {
+  res.status(200).send({ auth: false, token: null, user: null });
+});
 
-  res.status(200).send({ auth: false,token:null });
-
-})
-
+const registerAdmin = asyncHandler(async (req, res) => {
+  try {
+    let { firstName, lastName, email, password, password_confirmation } =
+      req.body;
+    const { error } = registerValidation({
+      firstName,
+      lastName,
+      email,
+      password,
+      password_confirmation,
+    });
+    if (error) return res.status(400).send({ msg: "error" });
+    if (userExists) {
+      res.json({
+        status: "FAILED",
+        message: "admin with provided email exists ",
+      });
+    } else {
+      const admin = new Admin({
+        firstName,
+        lastName,
+        email,
+        password,
+      });
+      admin.save().then(() => {
+        res.json({
+          status: "SUCCESS",
+          admin: admin,
+        });
+      });
+    }
+  } catch (error) {
+    res.json({
+      status: "FAILED",
+      message: error.message,
+    });
+  }
+});
 module.exports = {
   registerAdmin,
   registerQuizMaster,

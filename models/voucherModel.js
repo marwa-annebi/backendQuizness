@@ -7,7 +7,7 @@ const voucherSchema = mongoose.Schema({
   candidat: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
-    ref: "User",
+    ref: "Candidate",
   },
   quiz: {
     type: mongoose.Schema.Types.ObjectId,

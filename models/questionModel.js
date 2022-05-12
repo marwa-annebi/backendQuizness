@@ -11,7 +11,7 @@ const questionSchema = mongoose.Schema({
   quizmaster: {
     type: mongoose.Schema.Types.ObjectId,
     // required: true,
-    ref: "User",
+    ref: "Quizmaster",
   },
   category: {
     type: mongoose.Schema.Types.ObjectId,

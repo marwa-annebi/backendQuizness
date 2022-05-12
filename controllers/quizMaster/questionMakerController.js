@@ -1,13 +1,10 @@
 // create question and proposition and create relation between them
 const expressAsyncHandler = require("express-async-handler");
-const req = require("express/lib/request");
-const { default: mongoose } = require("mongoose");
 const Category = require("../../models/categoryModel");
 const propositionModel = require("../../models/propositionModel");
 const Question = require("../../models/questionModel");
-const verifToken = require("../../utils/verifyToken");
 const { createProposition } = require("./propositionController");
-const { createQuestion } = require("./questionController");
+
 
 const finishQuestion = async (req, res) => {
   const {
