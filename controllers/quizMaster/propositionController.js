@@ -6,6 +6,7 @@ const createProposition =async  function (proposition) {
   return Proposition.create(proposition).then((docProposition) => {
     // console.log(docProposition);
     return docProposition;
+    
     // return Question.findByIdAndUpdate(
     //   questionId,
     //   { $push: { propositions: docProposition._id } },

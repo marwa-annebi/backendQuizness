@@ -10,12 +10,12 @@ const questionSchema = mongoose.Schema({
   },
   quizmaster: {
     type: mongoose.Schema.Types.ObjectId,
-    required: true,
+    // required: true,
     ref: "User",
   },
   category: {
     type: mongoose.Schema.Types.ObjectId,
-    required: true,
+    // required: true,
     ref: "Category",
   },
   typeQuestion: {
@@ -25,7 +25,7 @@ const questionSchema = mongoose.Schema({
     {
       type: mongoose.Schema.Types.ObjectId,
 
-      required: true,
+      // required: true,
       ref: "Proposition",
     },
   ],

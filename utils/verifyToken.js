@@ -12,32 +12,18 @@ const verifToken = expressAsyncHandler(async (req, res, next) => {
     try {
       token = req.headers.authorization.split(" ")[1];
       if (token) {
-         decoded = jwt.verify(token,process.env.JWT_SECRET)
-          const decoded=req.user = await User.findById(decoded.id).select("-password")
-          console.log(req.user)
-          }
-        
-        next();
+        decoded = jwt.verify(token, process.env.JWT_SECRET);
+        req.user = await User.findById(decoded.id).select("-password");
+        console.log(req.user);
       }
 
-     catch (error) {
-      res.status(401);
-      throw new Error("Not authorized, token failed");
-    }}
-    if (!token)
-       res.status(401).send("not token");
-  
-});
-module.exports =verifToken;
-
->>>>>>> f8482660cddf7c0ca98a40befd1bf09a8500e72c
-
-        next();
-      // }
+      next();
     } catch (error) {
       res.status(401);
       throw new Error("Not authorized, token failed");
     }
   }
+  if (!token) res.status(401).send("not token");
 });
+
 module.exports = verifToken;

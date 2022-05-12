@@ -1,36 +1,35 @@
 const expressAsyncHandler = require("express-async-handler");
 const Category = require("./../../models/categoryModel");
 const User = require("../../models/users/userModel");
-const verifToken =require("../../utils/verifyToken")
+const verifToken = require("../../utils/verifyToken");
 const createCategory = async (req, res) => {
   try {
-    let {category_name } = req.body;
+    let { category_name } = req.body;
     const categoryExists = await Category.findOne({
       category_name,
-      quizmaster:req.user._id,
+      quizmaster: req.user._id,
     });
     console.log(categoryExists);
     if (categoryExists) {
-      res.json({
-        status: "FAILED",
+      res.status(400).send({
         message: "Category with provided category name exists",
       });
-    } else if (await User.findOne({ quizmaster:req.user._id, isTrailer: true })) {
+    } else if (
+      await User.findOne({ quizmaster: req.user._id, isTrailer: true })
+    ) {
       const newCategory = new Category({
-        quizmaster:req.user._id,
-       
+        quizmaster: req.user._id,
         category_name,
         isTrailer: true,
       });
       newCategory.save().then(() => {
-        res.json({
-          status: "SUCCESS",
+        res.status(201).send({
           message: "Category saved",
         });
       });
     } else {
       const newCategory = new Category({
-        quizmaster:req.user._id,
+        quizmaster: req.user._id,
         category_name,
       });
       newCategory.save().then(() => {
@@ -41,8 +40,7 @@ const createCategory = async (req, res) => {
       });
     }
   } catch (error) {
-    res.json({
-      status: "FAILED",
+    res.status(500).send({
       message: error.message,
     });
   }
@@ -71,20 +69,22 @@ const updateCategory = expressAsyncHandler(async (req, res) => {
 
 const deleteCategory = expressAsyncHandler(async (req, res) => {
   const category = await Category.findById(req.params.id);
+  if (category.quizmaster.toString() !== req.user._id.toString()) {
+    res.status(401);
+    throw new Error("You can't perform this action");
+  }
 
   if (category) {
     await category.remove();
-    res.json({ message: "category Removed" });
+    res.status(200).send({ message: "category Removed" });
   } else {
-    res.status(404);
-    res.json({ message: "category not Found" });
+    res.status(404).send({ message: "category not Found" });
   }
 });
-
 // getCategories for candidat
 const getCategoriesForCandidat = expressAsyncHandler(async (req, res) => {
- var array = [];
- await Category.find()
+  var array = [];
+  await Category.find()
     .populate({ path: "quizmaster", match: { isTrialer: false } })
     .exec(function (err, result) {
       if (err) return handleError(err);
@@ -94,24 +94,18 @@ const getCategoriesForCandidat = expressAsyncHandler(async (req, res) => {
       }
       return res.status(200).send(array);
     });
-
-
 });
 
 //read all by id quizmaster
 
 const getCategories = expressAsyncHandler(async (req, res) => {
-<<<<<<< HEAD
-  const categories = await Category.find({quizmaster:req.user._id});
-=======
   const categories = await Category.find({
-    quizmaster:req.user._id,
+    quizmaster: req.user._id,
   });
->>>>>>> f8482660cddf7c0ca98a40befd1bf09a8500e72c
   res.json(categories);
 });
 
-const getCategoryById = expressAsyncHandler( async (id) => {
+const getCategoryById = expressAsyncHandler(async (id) => {
   const category = await Category.findById(id);
 
   if (category) {
