@@ -115,16 +115,13 @@ const setNewPassword = async (req, res, next) => {
           let newCandidate = await Candidate.findByIdAndUpdate(req.params.id, {
             password: hashedPassword,
           });
-          // newCandidate.updateOne({ password: hashedPassword });
-          // console.log(user);
           newCandidate.save();
           break;
         case myEnum.QUIZMASTER.value:
-          // let newQuizMaster=await User.findById(req.params.id)
           newQuizMaster = await Quizmaster.findByIdAndUpdate(req.params.id, {
             password: hashedPassword,
           });
-          //console.log( typeof newQuizMaster);
+         
           newQuizMaster.save();
           break;
       }
