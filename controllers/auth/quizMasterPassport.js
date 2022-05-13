@@ -39,14 +39,6 @@ passport.use(
             currentUser
           ) {
             if (currentUser) {
-              //check if  quizmaster is false to update him to true without creation new account
-            //   if (!currentUser.isQuizmaster) {
-            //     await User.findOneAndUpdate(
-            //       { google: profile.id, isQuizmaster: false },
-            //       { $set: { isQuizmaster: true } },
-            //       { new: true }
-            //     );
-            //   }
               console.log("user is:", currentUser);
               done(null, currentUser);
             } else if (!currentUser) {
@@ -57,7 +49,6 @@ passport.use(
                 email: profile.emails[0].value,
                 picture: profile.photos[0].value,
                 verified: true,
-                // isQuizmaster: true,
               })
                 .save()
                 .then((newUser) => {
@@ -98,13 +89,6 @@ passport.use(
         currentUser
       ) {
         if (currentUser) {
-        //   if (!currentUser.isQuizmaster) {
-        //     await User.findOneAndUpdate(
-        //       { linkedinId: profile.id, isQuizmaster: false },
-        //       { $set: { isQuizmaster: true } },
-        //       { new: true }
-        //     );
-        //   }
           console.log("user is:", currentUser);
           done(null, currentUser);
         } else {
