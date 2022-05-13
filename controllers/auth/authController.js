@@ -227,8 +227,8 @@ const loginUser = asyncHandler(async (req, res) => {
   try {
     const { email, password, type } = req.body;
     //validate the data
-    const { error } = loginValidation(req.body);
-    if (error) return res.status(400).json({ msg: error.details[0].message });
+    // const { error } = loginValidation(req.body);
+    // if (error) return res.status(400).json({ msg: error.details[0].message });
     let user;
     switch (type) {
       case myEnum.CANDIDATE.value:
