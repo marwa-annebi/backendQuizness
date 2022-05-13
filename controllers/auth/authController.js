@@ -38,35 +38,33 @@ const updateUserProfile = asyncHandler(async (req, res) => {
 // register QuizMaster
 
 const registerQuizMaster = asyncHandler(async (req, res) => {
+  let { firstName, lastName, email, password } = req.body;
+  const userExists = await Quizmaster.findOne({ email });
+  // if (!firstName || !lastName || !email || !email) {
+  //   res.status(400).send({ message: "empty fields" });
+  // }
+  const { error } = registerValidation({
+    firstName,
+    lastName,
+    email,
+    password,
+  });
+  if (error) return res.status(400).send({ message: error.message });
+  if (userExists) {
+    res.status(400).send({
+      message: "quizMaster with provided email exists ",
+    });
+  }
   try {
-    let { firstName, lastName, email, password, password_confirmation } =
-      req.body;
-    const userExists = await Quizmaster.findOne({ email });
-    const { error } = registerValidation({
+    const quizMaster = new Quizmaster({
       firstName,
       lastName,
       email,
       password,
-      password_confirmation,
     });
-    if (error) return res.status(400).send({ msg: "error" });
-    if (userExists) {
-      res.status(400).send({
-        message: "quizMaster with provided email exists ",
-      });
-    } else {
-      if (password != verifPassword)
-        return res.status(400).json({ msg: "passsword not valid" });
-      const quizMaster = new Quizmaster({
-        firstName,
-        lastName,
-        email,
-        password,
-      });
-      quizMaster.save().then((result) => {
-        sendVerificationEmail(result, res);
-      });
-    }
+    quizMaster.save().then((result) => {
+      sendVerificationEmail(result, res);
+    });
   } catch (error) {
     return res.status(500).send({
       message: error.message,
