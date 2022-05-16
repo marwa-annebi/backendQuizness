@@ -1,5 +1,7 @@
 // register for admin
 const moment = require("moment");
+const { ObjectId } = require('mongodb');
+const mongoose=require('mongoose')
 const asyncHandler = require("express-async-handler");
 const { sendVerificationEmail } = require("../../mailer/mailer");
 const Admin = require("../../models/users/adminModel");
@@ -73,32 +75,41 @@ const registerQuizMaster = asyncHandler(async (req, res) => {
 
 const registerCandidate = asyncHandler(async (req, res) => {
   try {
-    let { firstName, lastName, email, password, password_confirmation } =
+    let { firstName, lastName, email, password ,quizmaster} =
       req.body;
-    const userExists = await Candidate.findOne({ email });
+    const userExists = await Candidate.findOne({ email})
+    const idQuizMasterExists=await Candidate.findOne({'quizmaster':quizmaster})
     const { error } = registerValidation({
       firstName,
       lastName,
       email,
       password,
-      password_confirmation,
+
     });
     if (error) return res.status(400).send({ msg: "error" });
-    if (userExists) {
+    if (userExists && (!idQuizMasterExists)) {
+      const user= await Candidate.findOneAndUpdate({email},
+        {$push:{quizmaster:quizmaster}},
+        {new:true})
+        return res.status(201).send(user)
+    } 
+    else if(idQuizMasterExists && userExists ){
       res.status(400).send({
-        message: "Candidate with provided email exists ",
-      });
-    } else {
-      const candidate = new Candidate({
+              message: "quizmaster with provided id exists ",
+            });
+    }
+    else {
+       const candidate = new Candidate({
         firstName,
         lastName,
         email,
         password,
+        quizmaster
       });
       candidate.save().then((result) => {
         res.status(201).send(result);
-      });
-    }
+      });}
+    // }
   } catch (error) {
     res.status(500).send({
       message: error.message,
@@ -171,7 +182,7 @@ const updateAccount =asyncHandler(async(req,res) =>{
     "account.colors.c1": req.body.account.colors.c1,"account.colors.c2": req.body.account.colors.c2})
     user.save();
     
-    return res.status(201).send({
+    return res.status(200).send({
       message: "Updated Success",
       user
     });

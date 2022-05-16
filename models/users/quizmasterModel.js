@@ -26,7 +26,7 @@ const quizmasterSchema = mongoose.Schema(
     },
     password: {
       type: String,
-      // required: true,
+      required: true,
     },
     verified: {
       type: Boolean,

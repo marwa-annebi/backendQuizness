@@ -4,10 +4,14 @@ const Quizmaster = require("../../models/users/quizmasterModel");
 const createUser = async (req, res) => {
   let { firstName, lastName, email, password } = req.body;
   
+  const user = await Quizmaster.findOne({email : req.body.email});
+  if  (user) return res.status(500).json({msg : 'email used'})
+  
   const newUser = new Quizmaster({
     firstName,
     lastName,
     email,
+    password,
     verified:true,
   });
   try{
@@ -52,14 +56,15 @@ const deleteUser = async (req, res) => {
 
 const updateUser = async (req, res) => {
   try {
-    const updatedUser = await Quizmaster.findByIdAndUpdate(
+    const updatedUser = await Quizmaster.findOneAndUpdate(
       req.params.id,
       { ...req.body },
       { new: true }
     );
-    res.send(updatedUser);
+    res.status(200).json(updatedUser);
   } catch (error) {
     console.error(error);
+    res.status(400).json({msg :error});
   }
 };
 

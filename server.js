@@ -9,6 +9,7 @@ const quizMasterRoute=require("./routes/quizMaster/quizMasterRoute")
 const candidateRoute=require("./routes/candidate/candidateRoute")
 // socket 
 const {Server} =require("socket.io")
+const cors = require("cors");
 
 const io = new Server({
   cors: {
@@ -60,7 +61,6 @@ app.use(express.json({
 // parse application/json
 app.use(bodyParser.json())
 
-const cors = require("cors");
 
 
 dotenv.config();
