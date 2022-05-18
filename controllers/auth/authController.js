@@ -1,5 +1,7 @@
 // register for admin
 const moment = require("moment");
+const { ObjectId } = require("mongodb");
+const mongoose = require("mongoose");
 const asyncHandler = require("express-async-handler");
 const { sendVerificationEmail } = require("../../mailer/mailer");
 const Admin = require("../../models/users/adminModel");
@@ -74,20 +76,28 @@ const registerQuizMaster = asyncHandler(async (req, res) => {
 
 const registerCandidate = asyncHandler(async (req, res) => {
   try {
-    let { firstName, lastName, email, password, password_confirmation } =
-      req.body;
+    let { firstName, lastName, email, password, quizmaster } = req.body;
     const userExists = await Candidate.findOne({ email });
+    const idQuizMasterExists = await Candidate.findOne({
+      quizmaster: quizmaster,
+    });
     const { error } = registerValidation({
       firstName,
       lastName,
       email,
       password,
-      password_confirmation,
     });
     if (error) return res.status(400).send({ msg: "error" });
-    if (userExists) {
+    if (userExists && !idQuizMasterExists) {
+      const user = await Candidate.findOneAndUpdate(
+        { email },
+        { $push: { quizmaster: quizmaster } },
+        { new: true }
+      );
+      return res.status(201).send(user);
+    } else if (idQuizMasterExists && userExists) {
       res.status(400).send({
-        message: "Candidate with provided email exists ",
+        message: "quizmaster with provided id exists ",
       });
     } else {
       const candidate = new Candidate({
@@ -95,11 +105,13 @@ const registerCandidate = asyncHandler(async (req, res) => {
         lastName,
         email,
         password,
+        quizmaster,
       });
       candidate.save().then((result) => {
         res.status(201).send(result);
       });
     }
+    // }
   } catch (error) {
     res.status(500).send({
       message: error.message,
@@ -125,8 +137,7 @@ const verifyOTP = asyncHandler(async (req, res) => {
           message:
             "Account record doesn't exist or has been verified already .Please sign up or sign in",
         });
-      } 
-      else {
+      } else {
         // user otp record exists
         const { expiresAt } = UserOtpVerificationRecords[0];
         const hashedOtp = UserOtpVerificationRecords[0].otp;
@@ -167,24 +178,21 @@ const verifyOTP = asyncHandler(async (req, res) => {
 
 const updateAccount = asyncHandler(async (req, res) => {
   const {
-    account: { domain_name, logo, colors },
+    account: { domain_name, logo, colors, businessName },
     id,
   } = req.body;
-  console.log({ account: { domain_name, logo, colors } });
+  console.log({ account: { domain_name, logo, colors, businessName } });
   try {
-    if (!domain_name || !logo || !colors) {
+    if (!domain_name || !logo || !colors || !businessName) {
       throw Error("Empty account details are not allowed");
-    }
-    else if (domain_name.length>15){
+    } else if (domain_name.length > 15) {
       throw Error("max 15 charachter must be");
-
-    }
-    else {
+    } else {
       const user = await Quizmaster.findByIdAndUpdate(id, {
         "account.domain_name": domain_name,
         "account.logo": logo,
         "account.colors": colors,
-        // "account.colors.c2": req.body.account.colors.c2,
+        "account.businessName": businessName,
       });
       await user.save();
       console.log(user);
