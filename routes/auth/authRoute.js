@@ -14,6 +14,7 @@ const {
   updateUserProfile,
   logout,
   loginAdmin,
+  updateAccount
 } = require("../../controllers/auth/authController");
 const router = express.Router();
 require("../../controllers/auth/passport");
@@ -41,7 +42,7 @@ router.route("/registerQuizMaster").post(registerQuizMaster);
 router.route("/verifyOTP").post(verifyOTP);
 
 //resend verification
-
+router.route("/updateAccount").put(updateAccount);
 router.route("/resendOtpVerificarion").post(resendverification);
 
 //forgot password

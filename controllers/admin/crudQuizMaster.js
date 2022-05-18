@@ -8,7 +8,6 @@ const createUser = async (req, res) => {
     firstName,
     lastName,
     email,
-    password,
     verified:true,
   });
   try{
