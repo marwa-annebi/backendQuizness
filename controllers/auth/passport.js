@@ -1,6 +1,7 @@
 
 const dotenv = require("dotenv");
 const passport = require("passport");
+const generateToken =require("../../utils/generateToken")
 var GoogleStrategy = require("passport-google-oauth20").Strategy;
 var MicrosoftStrategy = require("passport-microsoft").Strategy;
 var LinkedInStrategy = require('passport-linkedin-oauth2').Strategy;
@@ -33,11 +34,13 @@ passport.use(
                 { $set: { googleId: profile.id } },
                 { new: true }
               );
-    
-              console.log("user is:", currentUser);
+               
+        var token = generateToken(currentUser._id,2,currentUser.email);
+        // console.log(token);
+        //       console.log("user is:", currentUser ,token);
               done(null, currentUser);
             }else if (!currentUser) {
-      
+    
             new Candidate({
               googleId: profile.id,
               firstName: profile._json.given_name,
@@ -45,12 +48,13 @@ passport.use(
               email: profile.emails[0].value,
               picture: profile.photos[0].value,
               verified:true,
-              isCandidat:true
               
             })
               .save()
               .then((newUser) => {
             done(null, newUser);
+            var token = generateToken(newUser._id,2,newUser.email);
+               console.log(token)
               });
           }
         });
@@ -91,6 +95,7 @@ passport.use(
           })
             .save()
             .then((newUser) => {
+              
              done(null, newUser);
             });
         }
@@ -117,7 +122,7 @@ passport.use(
             { $set: { googleId: profile.id } },
             { new: true }
           );
-
+          
           console.log("user is:", currentUser);
           done(null, currentUser);
         }  else {

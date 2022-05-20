@@ -4,13 +4,13 @@ const {
   subscriptionPayment,
 } = require("../../controllers/quizMaster/subcriptionPayment");
 const {
-  createCategory,
-  updateCategory,
-  deleteCategory,
-  getCategories,
-  getCategoryById,
-  getCategoriesForCandidat,
-} = require("../../controllers/quizMaster/categoryController");
+  createSkill,
+  updateSkill,
+  deleteSkill,
+  getSkillsByIdQuizMaster,
+  getSkillById,
+  getSkillsForCandidat,
+} = require("../../controllers/quizMaster/skillController");
 const {
   createProposition,
   deleteProposition,
@@ -22,6 +22,7 @@ const {
   createQuestion,
   deleteQuestion,
   findAll,
+  updateQuestion,
 } = require("../../controllers/quizMaster/questionController");
 const {
   finishQuestion,
@@ -62,23 +63,23 @@ router
 
 //category
 
-router.route("/createCategory").post(verifTokenQuizmaster, createCategory);
-router.route("/getAll").get(verifTokenQuizmaster, getCategoriesForCandidat);
-router.route("/getCategories").get(verifTokenQuizmaster, getCategories);
+router.route("/createSkill").post(verifTokenQuizmaster, createSkill);
+router.route("/getSkills").get(verifTokenQuizmaster, getSkillsByIdQuizMaster);
 
 router
-  .route("/category/:id")
-  .put(verifTokenQuizmaster, updateCategory)
-  .delete(verifTokenQuizmaster, deleteCategory)
-  .get(verifTokenQuizmaster, getCategoryById);
+  .route("/skill/:id")
+  .put(verifTokenQuizmaster, updateSkill)
+  .delete(verifTokenQuizmaster, deleteSkill)
+  .get(verifTokenQuizmaster, getSkillById);
 
 //question
 
-router.route("/createQuestion").post(verifTokenQuizmaster, createQuestion);
+router.route("/createQuestion").post(createQuestion);
 router.route("/getAllQuestions").get(verifTokenQuizmaster, findAll);
 router
-  .route("/deleteQuestion/:id")
-  .delete(verifTokenQuizmaster, deleteQuestion);
+  .route("/Question/:id")
+  .put(updateQuestion)
+  .delete(deleteQuestion);
 
 //proposition
 
@@ -94,12 +95,12 @@ router
 
 // question maker
 
-router.route("/finishQuestion").post(verifTokenQuizmaster, finishQuestion);
+router.route("/finishQuestion").post(finishQuestion);
 router.route("/nbofproposition").post(nbofProposition);
 
 // quiz
 
-router.route("/createQuiz").post(verifTokenQuizmaster, createQuiz);
+router.route("/createQuiz").post(createQuiz);
 router.route("/findAllQuiz").get(verifTokenQuizmaster, findAllQuiz);
 router.route("/quiz/:id").delete(verifTokenQuizmaster, deleteQuiz);
 // voucher

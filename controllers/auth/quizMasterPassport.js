@@ -1,5 +1,6 @@
 const dotenv = require("dotenv");
 const passport = require("passport");
+const generateToken =require("../../utils/generateToken");
 var GoogleStrategy = require("passport-google-oauth20").Strategy;
 var MicrosoftStrategy = require("passport-microsoft").Strategy;
 var LinkedInStrategy = require("passport-linkedin-oauth2").Strategy;
@@ -30,8 +31,9 @@ passport.use(
             { $set: { googleId: profile.id } },
             { new: true }
           );
-
-          console.log("user is:", currentUser);
+          var token = generateToken(currentUser._id,2,currentUser.email);
+          console.log(token);
+          console.log("user is:", currentUser,token);
           done(null, currentUser);
         } else {
           //check if user already exitsin our db
@@ -39,8 +41,9 @@ passport.use(
             currentUser
           ) {
             if (currentUser) {
-              console.log("user is:", currentUser);
-              done(null, currentUser);
+              var token = generateToken(currentUser._id,2,currentUser.email);
+              console.log("user is:", currentUser,token);
+              res.status(200).send({auth:true,token:token})
             } else if (!currentUser) {
               new QuizMaster({
                 googleId: profile.id,
@@ -53,6 +56,8 @@ passport.use(
                 .save()
                 .then((newUser) => {
                   done(null, newUser);
+                  var token = generateToken(newUser._id,2,newUser.email);
+                 console.log(token);
                 });
             }
           });
@@ -81,7 +86,7 @@ passport.use(
                 { $set: { googleId: profile.id } },
                 { new: true }
               );
-    
+              var token = generateToken(currentUser._id,2,currentUser.email);
               console.log("user is:", currentUser);
               done(null, currentUser);
             } else {
@@ -99,11 +104,13 @@ passport.use(
             email: profile.emails[0].value,
             picture: profile.photos[0].value,
             verified: true,
-            // isQuizmaster: true,
+    
           })
             .save()
             .then((newUser) => {
               done(null, newUser);
+              var token = generateToken(newUser._id,2,newUser.email);
+              console.log(token);
             });
         }
 

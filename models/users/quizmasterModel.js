@@ -1,6 +1,10 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
+const Proposition = require("../propositionModel");
+const Question = require("../questionModel");
+const deleteProposition = require("../../controllers/quizMaster/propositionController");
+const propositionModel = require("../propositionModel");
 const quizmasterSchema = mongoose.Schema(
   {
     linkedinId: {
@@ -26,11 +30,15 @@ const quizmasterSchema = mongoose.Schema(
     },
     password: {
       type: String,
-      required: true,
+      //required: true,
     },
     verified: {
       type: Boolean,
       default: false,
+    },
+    isTrialer: {
+      type: Boolean,
+      default: true,
     },
     account: {
       domain_name: { type: String },
@@ -41,10 +49,12 @@ const quizmasterSchema = mongoose.Schema(
       },
       colors: [],
       businessName: String,
+
     },
     resetPasswordToken: { type: String },
     resetPasswordExpire: { type: Date },
   },
+
   {
     timestamps: true,
   }
@@ -72,6 +82,50 @@ quizmasterSchema.methods.getResetPasswordToken = function () {
 
   return resetToken;
 };
+
+quizmasterSchema.pre("deleteOne", function (next) {
+  const quizmasterId = this.getQuery()["_id"];
+  // const questionId = this.getQuery()["_id"];
+
+  mongoose
+    .model("Quiz")
+    .deleteMany({ quizmaster: quizmasterId }, function (err, result) {
+      if (err) {
+        console.log(`[error] ${err}`);
+        next(err);
+      } else {
+        console.log("success");
+        next();
+      }
+    });
+  mongoose
+    .model("Skill")
+    .deleteMany({ quizmaster: quizmasterId }, function (err, result) {
+      if (err) {
+        console.log(`[error] ${err}`);
+        next(err);
+      } else {
+        console.log("success");
+        next();
+      }
+    });
+  mongoose
+    .model("Candidate")
+    .update(
+      {},
+      { $pull: { quizmaster: quizmasterId } },
+      function (err, result) {
+        if (err) {
+          console.log(`[error] ${err}`);
+          next(err);
+        } else {
+          console.log("success");
+          next();
+        }
+      }
+    );
+});
+
 // Compile model from schema
 const Quizmaster = mongoose.model("Quizmaster", quizmasterSchema);
 module.exports = Quizmaster;
