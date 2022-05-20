@@ -1,7 +1,7 @@
 // register for admin
 const moment = require("moment");
-const { ObjectId } = require('mongodb');
-const mongoose=require('mongoose')
+const { ObjectId } = require("mongodb");
+const mongoose = require("mongoose");
 const asyncHandler = require("express-async-handler");
 const { sendVerificationEmail } = require("../../mailer/mailer");
 const Admin = require("../../models/users/adminModel");
@@ -42,28 +42,29 @@ const updateUserProfile = asyncHandler(async (req, res) => {
 const registerQuizMaster = asyncHandler(async (req, res) => {
   let { firstName, lastName, email, password } = req.body;
   const userExists = await Quizmaster.findOne({ email });
-  const { error } = registerValidation({
-    firstName,
-    lastName,
-    email,
-    password,
-  });
-  if (error) return res.status(400).send({ message: error.message });
-  if (userExists) {
-    res.status(400).send({
-      message: "quizMaster with provided email exists ",
-    });
-  }
   try {
-    const quizMaster = new Quizmaster({
+    const { error } = registerValidation({
       firstName,
       lastName,
       email,
       password,
     });
-    quizMaster.save().then((result) => {
-      sendVerificationEmail(result, res);
-    });
+    if (error) return res.status(400).send({ message: error.message });
+    if (userExists) {
+      res.status(400).send({
+        message: "quizMaster with provided email exists ",
+      });
+    } else {
+      const quizMaster = new Quizmaster({
+        firstName,
+        lastName,
+        email,
+        password,
+      });
+      quizMaster.save().then((result) => {
+        sendVerificationEmail(result, res);
+      });
+    }
   } catch (error) {
     return res.status(500).send({
       message: error.message,
@@ -75,40 +76,41 @@ const registerQuizMaster = asyncHandler(async (req, res) => {
 
 const registerCandidate = asyncHandler(async (req, res) => {
   try {
-    let { firstName, lastName, email, password ,quizmaster} =
-      req.body;
-    const userExists = await Candidate.findOne({ email})
-    const idQuizMasterExists=await Candidate.findOne({'quizmaster':quizmaster})
+    let { firstName, lastName, email, password, quizmaster } = req.body;
+    const userExists = await Candidate.findOne({ email });
+    const idQuizMasterExists = await Candidate.findOne({
+      quizmaster: quizmaster,
+    });
     const { error } = registerValidation({
       firstName,
       lastName,
       email,
       password,
-
     });
     if (error) return res.status(400).send({ msg: "error" });
-    if (userExists && (!idQuizMasterExists)) {
-      const user= await Candidate.findOneAndUpdate({email},
-        {$push:{quizmaster:quizmaster}},
-        {new:true})
-        return res.status(201).send(user)
-    } 
-    else if(idQuizMasterExists && userExists ){
+    if (userExists && !idQuizMasterExists) {
+      const user = await Candidate.findOneAndUpdate(
+        { email },
+        { $push: { quizmaster: quizmaster } },
+        { new: true }
+      );
+      return res.status(201).send(user);
+    } else if (idQuizMasterExists && userExists) {
       res.status(400).send({
-              message: "quizmaster with provided id exists ",
-            });
-    }
-    else {
-       const candidate = new Candidate({
+        message: "quizmaster with provided id exists ",
+      });
+    } else {
+      const candidate = new Candidate({
         firstName,
         lastName,
         email,
         password,
-        quizmaster
+        quizmaster,
       });
       candidate.save().then((result) => {
         res.status(201).send(result);
-      });}
+      });
+    }
     // }
   } catch (error) {
     res.status(500).send({
@@ -121,7 +123,8 @@ const registerCandidate = asyncHandler(async (req, res) => {
 
 const verifyOTP = asyncHandler(async (req, res) => {
   try {
-    let { otp, userId } = req.body;
+    let { userId, otp } = req.body;
+    console.log({ userId, otp });
     if (!otp) {
       throw Error("Empty otp details are not allowed");
     } else {
@@ -130,7 +133,7 @@ const verifyOTP = asyncHandler(async (req, res) => {
       });
       if (UserOtpVerificationRecords.length <= 0) {
         //no record found
-        res.status(400).send({
+        res.status(200).send({
           message:
             "Account record doesn't exist or has been verified already .Please sign up or sign in",
         });
@@ -142,7 +145,7 @@ const verifyOTP = asyncHandler(async (req, res) => {
           // user otp record has expired
           await UserOtpVerification.deleteMany({ userId });
           res
-            .status(400)
+            .status(200)
             .send({ message: "Code has expired please request again" });
         } else {
           const validOTP = bcrypt.compare(otp, hashedOtp);
@@ -173,27 +176,38 @@ const verifyOTP = asyncHandler(async (req, res) => {
 
 // resend verification
 
-
-const updateAccount =asyncHandler(async(req,res) =>{
-  const { account: {domain_name ,logo,colors:c1,c2},id } = req.body;
+const updateAccount = asyncHandler(async (req, res) => {
+  const {
+    account: { domain_name, logo, colors, businessName },
+    id,
+  } = req.body;
+  console.log({ account: { domain_name, logo, colors, businessName } });
   try {
-   const user = await Quizmaster.findByIdAndUpdate(
-    id ,{"account.domain_name":req.body.account.domain_name,"account.logo":req.body.account.logo,
-    "account.colors.c1": req.body.account.colors.c1,"account.colors.c2": req.body.account.colors.c2})
-    user.save();
-    
-    return res.status(200).send({
-      message: "Updated Success",
-      user
-    });
-  }
-  catch(error){
+    if (!domain_name || !logo || !colors || !businessName) {
+      throw Error("Empty account details are not allowed");
+    } else if (domain_name.length > 15) {
+      throw Error("max 15 charachter must be");
+    } else {
+      const user = await Quizmaster.findByIdAndUpdate(id, {
+        "account.domain_name": domain_name,
+        "account.logo": logo,
+        "account.colors": colors,
+        "account.businessName": businessName,
+      });
+      await user.save();
+      console.log(user);
+      return res.status(201).send({
+        message: "Updated Success",
+        user,
+      });
+    }
+  } catch (error) {
     res.status(500).send({
       status: "FAILED",
       message: error.message,
     });
   }
-})
+});
 const resendverification = asyncHandler(async (req, res) => {
   try {
     let { userId, email } = req.body;
@@ -386,5 +400,5 @@ module.exports = {
   updateUserProfile,
   logout,
   loginAdmin,
-  updateAccount
+  updateAccount,
 };

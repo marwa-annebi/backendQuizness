@@ -47,7 +47,9 @@ const quizmasterSchema = mongoose.Schema(
         default:
           "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg",
       },
-      colors: { c1: String, c2: String },
+      colors: [],
+      businessName: String,
+
     },
     resetPasswordToken: { type: String },
     resetPasswordExpire: { type: Date },
