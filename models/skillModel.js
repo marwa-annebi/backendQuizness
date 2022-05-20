@@ -1,11 +1,11 @@
 const mongoose = require("mongoose");
-const categorySchema = mongoose.Schema({
+const skillSchema = mongoose.Schema({
   quizmaster: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
     ref: "Quizmaster",
   },
-  category_name: {
+  skill_name: {
     type: String,
     required: true,
   },
@@ -18,5 +18,5 @@ const categorySchema = mongoose.Schema({
 });
 
 // Compile model from schema
-const Category = mongoose.model("Category", categorySchema);
-module.exports = Category;
+const Skill = mongoose.model("Skill", skillSchema);
+module.exports = Skill;

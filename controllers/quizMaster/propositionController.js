@@ -1,17 +1,11 @@
 const expressAsyncHandler = require("express-async-handler");
 const Proposition = require("../../models/propositionModel");
 
-const createProposition =async  function (proposition) {
-  // console.log(proposition.body);
-  return Proposition.create(proposition).then((docProposition) => {
-    // console.log(docProposition);
-    return docProposition;
-    
-    // return Question.findByIdAndUpdate(
-    //   questionId,
-    //   { $push: { propositions: docProposition._id } },
-    //   { new: true, useFindAndModify: false }
-    // );
+const createProposition =async  function (proposition,_id,id) {
+const i="."+(await Proposition.count({question:_id})+1)
+  return Proposition.create({...proposition,question:_id,_id_proposition:id+i}).then((docProposition) => {
+  return docProposition;
+
   });
 };
 
@@ -19,7 +13,7 @@ const createProposition =async  function (proposition) {
 
 const deleteProposition = expressAsyncHandler(async (req, res) => {
   // const id = req.params.id;
-  await Proposition.deleteOne({ _id: req.params.id })
+  await Proposition.deleteOne({ _id})
     .then(res.send({ message: "Proposition was deleted successfully!" }))
     .catch((err) => {
       res.status(500).send({
@@ -49,7 +43,8 @@ const updateProposition = expressAsyncHandler(async (req, res) => {
       res.status(500).send({
         message: "Error updating Proposition with ",
       });
-    });
+    }
+    );
 });
 
 //get Proposition by id

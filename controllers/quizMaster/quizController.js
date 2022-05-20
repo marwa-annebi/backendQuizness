@@ -5,9 +5,10 @@ const moment = require("moment");
 // create quiz
 
 const createQuiz = async (req, res) => {
-  const { creation_date, validation_date, questions } = req.body;
+  const { id,creation_date, validation_date, questions } = req.body;
 await new Quiz({
-  quizmaster:req.user._id,
+  // quizmaster:req.user._id,
+  quizmaster:id,
     creation_date: moment(creation_date).format("yyyy-MM-DD"),
     validation_date: moment(validation_date).format("yyyy-MM-DD"),
     questions,

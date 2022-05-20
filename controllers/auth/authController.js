@@ -264,6 +264,24 @@ const loginUser = asyncHandler(async (req, res) => {
         user = await Candidate.findOne({
           email,
         });
+        if (!user) {
+          return res.status(404).send({
+            message: "candidate doesn't exist",
+          });
+        } 
+         else if (user) {
+          if (await user.matchPassword(password)) {
+            var token = generateToken(user._id, user.email);
+    console.log(token)
+            res.status(200).send({
+              auth: true,
+              token: token,
+            });
+          } else {
+            res.status(401).send({ message: "Invalid Email or Password" });
+          }
+        }
+
         break;
       case myEnum.QUIZMASTER.value:
         user = await Quizmaster.findOne({
@@ -281,21 +299,32 @@ const loginUser = asyncHandler(async (req, res) => {
       });
     }
     if (user) {
-      // if (!user.verified) {
-      //   res.status(400).send({
-      //     message: "Please verify your account , check your inbox",
-      //   });
-      // }
+      if (!user.verified) {
+       return   res.status(400).send({
+          message: "Please verify your account , check your inbox",
+        });
+      }
       if (await user.matchPassword(password)) {
-        var token = generateToken(user._id, req.body.type, user.email);
 
-        res.status(200).send({
+        let date = user.createdAt;
+        let date1 =date.setDate(date.getDate()+6)
+
+        if( new Date(+ date1) < new Date ( +Date.now()))
+        {
+          await  Quizmaster.findOneAndUpdate({_id:user._id},{$set:{isTrialer:false}},
+            {new: true},)
+        }
+
+
+        var token = generateToken(user._id,user.email);
+
+        return  res.status(200).send({
           auth: true,
           token: token,
           user: user,
         });
       } else {
-        res.status(401).send({ message: "Invalid Email or Password" });
+        return  res.status(401).send({ message: "Invalid Email or Password" });
       }
     }
   } catch (error) {
