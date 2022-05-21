@@ -4,7 +4,7 @@ var autoIncrement = require("mongoose-auto-increment-prefix");
 
 const propositionSchema = mongoose.Schema({
   _id_proposition: {
-    type: Number,
+    type: String,
   },
   question: {
 
@@ -12,7 +12,7 @@ const propositionSchema = mongoose.Schema({
 
     // required: true,
 
-    ref: "Question",
+    ref: "Question"
   },
   content: {
     type: String,
@@ -24,7 +24,7 @@ const propositionSchema = mongoose.Schema({
   },
 });
 
-autoIncrement.initialize(mongoose.connection);
+// autoIncrement.initialize(mongoose.connection);
 
 propositionSchema.pre("deleteOne", function (next) {
   const propositionId = this.getQuery()["_id"];
@@ -44,11 +44,11 @@ propositionSchema.pre("deleteOne", function (next) {
       }
     );
 });
-propositionSchema.plugin(autoIncrement.plugin, {
-  model: "Proposition",
-  field: "_id_proposition",
-  startAt: 1,
-  incrementBy: 1,
-});
+// propositionSchema.plugin(autoIncrement.plugin, {
+//   model: "Proposition",
+//   field: "_id_proposition",
+//   startAt: 1,
+//   incrementBy: 1,
+// });
 
 module.exports = Proposition = mongoose.model("Proposition", propositionSchema);

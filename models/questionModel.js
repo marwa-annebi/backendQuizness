@@ -2,21 +2,19 @@ const mongoose = require("mongoose");
 
 var autoIncrement = require("mongoose-auto-increment-prefix");
 
-
 const questionSchema = mongoose.Schema({
   _id_question: {
-    type: Number,
-    // default:0
+    type: String,
   },
   quizmaster: {
     type: mongoose.Schema.Types.ObjectId,
     // required: true,
     ref: "Quizmaster",
   },
-  category: {
+  skill: {
     type: mongoose.Schema.Types.ObjectId,
     // required: true,
-    ref: "Category",
+    ref: "Skill",
   },
   typeQuestion: {
     type: String,
@@ -24,7 +22,6 @@ const questionSchema = mongoose.Schema({
   propositions: [
     {
       type: mongoose.Schema.Types.ObjectId,
-
       // required: true,
       ref: "Proposition",
     },
@@ -45,14 +42,7 @@ const questionSchema = mongoose.Schema({
     type: Date,
   },
 });
-autoIncrement.initialize(mongoose.connection);
-questionSchema.plugin(autoIncrement.plugin, {
-  model: "Question",
-  field: "_id_question",
-  startAt: 1,
-  incrementBy: 1,
-  prefix: "Q",
-});
+
 questionSchema.pre("deleteOne", function (next) {
   const questionId = this.getQuery()["_id"];
   mongoose
@@ -78,8 +68,6 @@ questionSchema.pre("deleteOne", function (next) {
       }
     });
 });
-
-
 
 const Question = mongoose.model("Question", questionSchema);
 module.exports = Question;
