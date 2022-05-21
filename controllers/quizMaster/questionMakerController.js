@@ -5,7 +5,6 @@ const propositionModel = require("../../models/propositionModel");
 const Question = require("../../models/questionModel");
 const { createProposition } = require("./propositionController");
 
-
 const finishQuestion = async (req, res) => {
   const {
     question: { category, tronc, typeQuestion },
@@ -17,8 +16,10 @@ const finishQuestion = async (req, res) => {
     category,
     tronc,
     typeQuestion,
-    quizmaster :req.user._id
-  }).save()
+    quizmaster: req.user._id,
+    _id_question:
+      "q" + ((await Question.count({ quizmaster: req.user._id })) + 1),
+  }).save();
   console.log(questionCreated);
   resultUpdateCategory = await Category.findByIdAndUpdate(
     questionCreated.category,

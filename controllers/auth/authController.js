@@ -325,14 +325,13 @@ const logout = asyncHandler(async (req, res) => {
 
 const registerAdmin = asyncHandler(async (req, res) => {
   try {
-    let { firstName, lastName, email, password, password_confirmation } =
-      req.body;
+    let { firstName, lastName, email, password } = req.body;
     const { error } = registerValidation({
       firstName,
       lastName,
       email,
       password,
-      password_confirmation,
+      // password_confirmation,
     });
     if (error) return res.status(400).send({ msg: "error" });
     if (userExists) {
@@ -361,6 +360,15 @@ const registerAdmin = asyncHandler(async (req, res) => {
     });
   }
 });
+
+const getCompanySettings = async (req, res) => {
+  const domain_name = req.query.domain_name;
+  const settings = await Quizmaster.findOne({
+    "account.domain_name": domain_name,
+  });
+  console.log(settings);
+  res.json(settings);
+};
 module.exports = {
   registerAdmin,
   registerQuizMaster,
@@ -372,4 +380,5 @@ module.exports = {
   logout,
   loginAdmin,
   updateAccount,
+  getCompanySettings,
 };

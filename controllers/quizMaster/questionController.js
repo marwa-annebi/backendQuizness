@@ -1,16 +1,14 @@
 const expressAsyncHandler = require("express-async-handler");
 const Question = require("./../../models/questionModel");
 
-const createQuestion = function (category,tronc,typeQuestion) {
+const createQuestion = function (category, tronc, typeQuestion) {
   // console.log(question);
   // add control
   // const {category,typeQuestion,propositions,tronc}=req.body
-  return Question.create(category,tronc,typeQuestion).then(
-    (docquestion) => {
-      // console.log(docquestion);
-      return docquestion;
-    }
-  );
+  return Question.create(category, tronc, typeQuestion).then((docquestion) => {
+    // console.log(docquestion);
+    return docquestion;
+  });
 };
 
 const deleteQuestion = expressAsyncHandler(async (req, res) => {
@@ -30,7 +28,6 @@ const findAll = expressAsyncHandler(async (req, res) => {
     .populate("propositions")
     .populate("category")
     .then((data) => {
-
       res.send(data);
     })
     .catch((err) => {

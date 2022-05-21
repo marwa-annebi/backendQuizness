@@ -33,7 +33,7 @@ const quizmasterSchema = mongoose.Schema(
       default: false,
     },
     account: {
-      domain_name: { type: String },
+      domain_name: String,
       logo: {
         type: String,
         default:
