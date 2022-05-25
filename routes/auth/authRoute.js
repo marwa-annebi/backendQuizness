@@ -14,7 +14,8 @@ const {
   updateUserProfile,
   logout,
   loginAdmin,
-  updateAccount
+  updateAccount,
+  getCompanySettings,
 } = require("../../controllers/auth/authController");
 const router = express.Router();
 require("../../controllers/auth/passport");
@@ -43,6 +44,7 @@ router.route("/verifyOTP").post(verifyOTP);
 
 //resend verification
 router.route("/updateAccount").put(updateAccount);
+
 router.route("/resendOtpVerificarion").post(resendverification);
 
 //forgot password
@@ -170,4 +172,7 @@ router.get("/login/success", (req, res) => {
   }
 });
 
+// GET company settings
+
+router.route("/getCompanySettings").get(getCompanySettings);
 module.exports = router;

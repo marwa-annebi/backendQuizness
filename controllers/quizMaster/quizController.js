@@ -5,12 +5,14 @@ const moment = require("moment");
 // create quiz
 
 const createQuiz = async (req, res) => {
-  const { id,creation_date, validation_date, questions } = req.body;
-await new Quiz({
-  // quizmaster:req.user._id,
-  quizmaster:id,
-    creation_date: moment(creation_date).format("yyyy-MM-DD"),
-    validation_date: moment(validation_date).format("yyyy-MM-DD"),
+  const { creation_date, validation_date, questions, nbQuestion } = req.body;
+  console.log({ creation_date, validation_date, questions, nbQuestion });
+  await new Quiz({
+    quizmaster: req.user._id,
+    nbQuestion: nbQuestion,
+    // quizmaster: id,
+    creation_date: moment(creation_date).format("MM-DD-yyyy"),
+    validation_date: moment(validation_date).format("MM-DD-yyyy"),
     questions,
   })
     .save()
@@ -24,10 +26,11 @@ await new Quiz({
           { new: true, useFindAndModify: false }
         );
       }
-      res.sendStatus(201);
+      res.status(201).send({ message: "quiz created" });
     })
-    .catch(() => {
-      res.sendStatus(500)
+    .catch((error) => {
+      res.status(500).send(error);
+      console.log(error);
     });
 };
 
@@ -46,14 +49,11 @@ const deleteQuiz = expressAsyncHandler(async (req, res) => {
 
 //update quiz
 
-const updateQuiz = expressAsyncHandler(async(req,res)=>{
-
-})
+const updateQuiz = expressAsyncHandler(async (req, res) => {});
 
 //find all
 const findAllQuiz = expressAsyncHandler(async (req, res) => {
-
-  Quiz.find({  quizmaster:req.user._id})
+  Quiz.find({ quizmaster: req.user._id })
     .populate("questions")
     .then((data) => {
       res.send(data);

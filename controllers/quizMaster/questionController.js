@@ -1,16 +1,14 @@
 const expressAsyncHandler = require("express-async-handler");
 const Question = require("./../../models/questionModel");
 
-const createQuestion = function (skill,tronc,typeQuestion) {
+const createQuestion = function (skill, tronc, typeQuestion) {
   // console.log(question);
   // add control
   // const {category,typeQuestion,propositions,tronc}=req.body
-  return Question.create(skill,tronc,typeQuestion).then(
-    (docquestion) => {
-      // console.log(docquestion);
-      return docquestion;
-    }
-  );
+  return Question.create(skill, tronc, typeQuestion).then((docquestion) => {
+    // console.log(docquestion);
+    return docquestion;
+  });
 };
 
 const deleteQuestion = expressAsyncHandler(async (req, res) => {
@@ -30,7 +28,6 @@ const findAll = expressAsyncHandler(async (req, res) => {
     .populate("propositions")
     .populate("skill")
     .then((data) => {
-
       res.send(data);
     })
     .catch((err) => {
@@ -40,8 +37,8 @@ const findAll = expressAsyncHandler(async (req, res) => {
       });
     });
 });
-const updateQuestion = expressAsyncHandler(async(req,res)=>{
-  const id=req.params.id
+const updateQuestion = expressAsyncHandler(async (req, res) => {
+  const id = req.params.id;
   Question.findByIdAndUpdate(id, req.body, { useFindAndModify: false })
     .then((data) => {
       if (!data) {
@@ -54,11 +51,8 @@ const updateQuestion = expressAsyncHandler(async(req,res)=>{
       res.status(500).send({
         message: "Error updating Question with ",
       });
-    }
-    );
-}
-
-)
+    });
+});
 
 module.exports = {
   createQuestion,

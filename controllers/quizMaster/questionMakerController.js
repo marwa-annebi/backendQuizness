@@ -6,27 +6,27 @@ const Question = require("../../models/questionModel");
 const { createProposition } = require("./propositionController");
 const Quizmaster = require("../../models/users/quizmasterModel");
 
-
-
-
-
-
 const finishQuestion = async (req, res) => {
   const {
-    question: {quizmaster, skill, tronc, typeQuestion },
+    question: { skill, tronc, typeQuestion },
     proposition,
   } = req.body;
+  console.log({
+    question: { skill, tronc, typeQuestion },
+    proposition,
+  });
+  // var query=Question.find
   questionCreated = await new Question({
     skill,
     tronc,
     typeQuestion,
-    quizmaster,
-    _id_question : "Q"+(await Question.count({quizmaster})+1)
-  
-  }).save()
- 
+    quizmaster: req.user._id,
+    _id_question:
+      "Q" + ((await Question.find({ quizmaster: req.user._id }).count()) + 1),
+  }).save();
+
   console.log(questionCreated);
-  resultUpdateSkill  = await Skill.findByIdAndUpdate(
+  resultUpdateSkill = await Skill.findByIdAndUpdate(
     questionCreated.skill,
     {
       $push: { questions: questionCreated._id },
@@ -34,7 +34,11 @@ const finishQuestion = async (req, res) => {
     { new: true, useFindAndModify: false }
   );
   for (let index = 0; index < proposition.length; index++) {
-    propositionCreated = await createProposition(proposition[index],questionCreated._id,questionCreated._id_question);
+    propositionCreated = await createProposition(
+      proposition[index],
+      questionCreated._id,
+      questionCreated._id_question
+    );
     resultUpdateQuestion = await Question.findByIdAndUpdate(
       questionCreated._id,
       { $push: { propositions: propositionCreated._id } },
@@ -44,7 +48,6 @@ const finishQuestion = async (req, res) => {
   if (!questionCreated || !propositionCreated) {
     res.send({ result: "false" });
   } else res.send({ result: "true" });
-
 };
 
 const nbofProposition = expressAsyncHandler(async (req, res) => {
@@ -61,4 +64,4 @@ const nbofProposition = expressAsyncHandler(async (req, res) => {
   });
 });
 
-module.exports = { finishQuestion, nbofProposition};
+module.exports = { finishQuestion, nbofProposition };

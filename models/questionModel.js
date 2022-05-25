@@ -5,6 +5,7 @@ var autoIncrement = require("mongoose-auto-increment-prefix");
 const questionSchema = mongoose.Schema({
   _id_question: {
     type: String,
+    // unique: false,
   },
   quizmaster: {
     type: mongoose.Schema.Types.ObjectId,

@@ -74,12 +74,9 @@ router
 
 //question
 
-router.route("/createQuestion").post(verifTokenQuizmaster, createQuestion);
+router.route("/createQuestion").post(createQuestion);
 router.route("/getAllQuestions").get(verifTokenQuizmaster, findAll);
-router
-  .route("/Question/:id")
-  .put(verifTokenQuizmaster, updateQuestion)
-  .delete(verifTokenQuizmaster, deleteQuestion);
+router.route("/Question/:id").put(updateQuestion).delete(deleteQuestion);
 
 //proposition
 
@@ -89,14 +86,14 @@ router
   .get(verifTokenQuizmaster, findAllProposition);
 router
   .route("/proposition/:id")
-  .delete(verifTokenQuizmaster, deleteProposition)
-  .put(verifTokenQuizmaster, updateProposition)
-  .get(verifTokenQuizmaster, getPropositionById);
+  .delete(deleteProposition)
+  .put(updateProposition)
+  .get(getPropositionById);
 
 // question maker
 
 router.route("/finishQuestion").post(verifTokenQuizmaster, finishQuestion);
-router.route("/nbofproposition").post(verifTokenQuizmaster, nbofProposition);
+router.route("/nbofproposition").post(nbofProposition);
 
 // quiz
 

@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const voucherSchema = mongoose.Schema({
   _id_voucher: {
     type: String,
-    required:true
+    required: true,
   },
   candidat: {
     type: mongoose.Schema.Types.ObjectId,
@@ -19,15 +19,14 @@ const voucherSchema = mongoose.Schema({
   },
   creation_date: {
     type: Date,
-    required:true
+    required: true,
   },
   validation_date: {
     type: Date,
-    required:true
+    required: true,
   },
   remark: {
     type: String,
-
   },
 });
 

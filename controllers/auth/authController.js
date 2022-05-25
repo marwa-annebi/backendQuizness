@@ -40,7 +40,7 @@ const updateUserProfile = asyncHandler(async (req, res) => {
 // register QuizMaster
 
 const registerQuizMaster = asyncHandler(async (req, res) => {
-  let { firstName, lastName, email, password } = req.body;
+  let { firstName, lastName, email, password, confirmpassword } = req.body;
   const userExists = await Quizmaster.findOne({ email });
   try {
     const { error } = registerValidation({
@@ -48,6 +48,7 @@ const registerQuizMaster = asyncHandler(async (req, res) => {
       lastName,
       email,
       password,
+      confirmpassword,
     });
     if (error) return res.status(400).send({ message: error.message });
     if (userExists) {
@@ -124,7 +125,7 @@ const registerCandidate = asyncHandler(async (req, res) => {
 const verifyOTP = asyncHandler(async (req, res) => {
   try {
     let { userId, otp } = req.body;
-    console.log({ userId, otp });
+    // console.log({ userId, otp });
     if (!otp) {
       throw Error("Empty otp details are not allowed");
     } else {
@@ -133,29 +134,31 @@ const verifyOTP = asyncHandler(async (req, res) => {
       });
       if (UserOtpVerificationRecords.length <= 0) {
         //no record found
-        res.status(200).send({
+        res.status(400).send({
           message:
             "Account record doesn't exist or has been verified already .Please sign up or sign in",
         });
       } else {
         // user otp record exists
         const { expiresAt } = UserOtpVerificationRecords[0];
-        const hashedOtp = UserOtpVerificationRecords[0].otp;
+        const hashedOtp = await UserOtpVerificationRecords[0].otp;
         if (expiresAt < Date.now()) {
           // user otp record has expired
           await UserOtpVerification.deleteMany({ userId });
           res
-            .status(200)
+            .status(400)
             .send({ message: "Code has expired please request again" });
         } else {
-          const validOTP = bcrypt.compare(otp, hashedOtp);
+          console.log(hashedOtp);
+          const validOTP = await bcrypt.compare(otp, hashedOtp);
+          console.log("hello");
           if (!validOTP) {
             res
               .status(400)
-              .send({ message: "Invalid code passed . Check your inbox" });
+              .send({ message: "Invalid code passed .Check your inbox" });
+            // console.log({ message: "Invalid code passed .Check your inbox" });
           } else {
             //success
-
             await Quizmaster.updateOne({ _id: userId }, { verified: true });
             // await Candidate.updateMany({ _id: userId }, { verified: true });
             await UserOtpVerification.deleteMany({ userId });
@@ -178,10 +181,12 @@ const verifyOTP = asyncHandler(async (req, res) => {
 
 const updateAccount = asyncHandler(async (req, res) => {
   const {
-    account: { domain_name, logo, lightColor, darkColor, businessName },
+    account: { domain_name, logo, darkColor, lightColor, businessName },
     id,
   } = req.body;
-
+  console.log({
+    account: { domain_name, logo, darkColor, lightColor, businessName },
+  });
   try {
     if (!domain_name || !logo || !lightColor || !darkColor || !businessName) {
       throw Error("Empty account details are not allowed");
@@ -191,15 +196,14 @@ const updateAccount = asyncHandler(async (req, res) => {
       const user = await Quizmaster.findByIdAndUpdate(id, {
         "account.domain_name": domain_name,
         "account.logo": logo,
-        "account.lightColor": lightColor,
         "account.darkColor": darkColor,
+        "account.lightColor": lightColor,
         "account.businessName": businessName,
       });
       await user.save();
-      console.log(user);
+      // console.log(user);
       return res.status(201).send({
         message: "Updated Success",
-        user,
       });
     }
   } catch (error) {
@@ -245,23 +249,21 @@ const loginAdmin = asyncHandler(async (req, res) => {
         // console.log(user);
         else if (user) {
           if (await user.matchPassword(req.body.password)) {
-            var token = generateToken(user._id, user.email);
-            console.log(token);
-            res.status(200).send({
-              auth: true,
-              token: token,
+            return res.send({
               email,
+              password,
             });
           } else {
-            return res
-              .status(400)
-              .send({ message: "Invalid Email or Password" });
+            return res.send({
+              message: "Invalid email or password",
+            });
           }
         }
         break;
     }
   } catch (error) {
-    return res.status(500).send({
+    return res.status(400).send({
+      status: "FAILED",
       message: error.message,
     });
   }
@@ -356,14 +358,13 @@ const logout = asyncHandler(async (req, res) => {
 
 const registerAdmin = asyncHandler(async (req, res) => {
   try {
-    let { firstName, lastName, email, password, password_confirmation } =
-      req.body;
+    let { firstName, lastName, email, password } = req.body;
     const { error } = registerValidation({
       firstName,
       lastName,
       email,
       password,
-      password_confirmation,
+      // password_confirmation,
     });
     if (error) return res.status(400).send({ msg: "error" });
     if (userExists) {
@@ -392,6 +393,15 @@ const registerAdmin = asyncHandler(async (req, res) => {
     });
   }
 });
+
+const getCompanySettings = async (req, res) => {
+  const domain_name = req.query.domain_name;
+  const settings = await Quizmaster.findOne({
+    "account.domain_name": domain_name,
+  });
+  console.log(settings);
+  res.json(settings);
+};
 module.exports = {
   registerAdmin,
   registerQuizMaster,
@@ -403,4 +413,5 @@ module.exports = {
   logout,
   loginAdmin,
   updateAccount,
+  getCompanySettings,
 };

@@ -3,30 +3,33 @@ const Skill = require("../../models/skillModel");
 const Quizmaster = require("../../models/users/quizmasterModel");
 const createSkill = async (req, res) => {
   try {
-    let { skill_name ,quizmaster} = req.body;
+    let { skill_name, quizmaster, requirements } = req.body;
     const skillExists = await Skill.findOne({
       skill_name,
-      // quizmaster: req.user._id,
-      quizmaster
+      quizmaster: req.user._id,
+      // requirements,
+      // // quizmaster,
     });
     console.log(skillExists);
     if (skillExists) {
       res.status(400).send({
         message: "skill with provided skill name exists",
       });
-    } else  {
+    } else {
       const newSkill = new Skill({
-        quizmaster,
+        quizmaster: req.user._id,
         skill_name,
+        requirements,
       });
       newSkill.save().then(() => {
         res.status(201).send({
           message: "Category saved",
-          skill_id:newSkill._id
+          skill_id: newSkill._id,
         });
       });
     }
   } catch (error) {
+    console.log(error);
     res.status(500).send({
       message: error.message,
     });
@@ -37,7 +40,7 @@ const createSkill = async (req, res) => {
 
 const updateSkill = expressAsyncHandler(async (req, res) => {
   try {
-    const updateSkill  = await Skill.findByIdAndUpdate(
+    const updateSkill = await Skill.findByIdAndUpdate(
       req.params.id,
       { ...req.body },
       { new: true }
@@ -54,7 +57,7 @@ const updateSkill = expressAsyncHandler(async (req, res) => {
 
 // delete category
 
-const deleteSkill  = expressAsyncHandler(async (req, res) => {
+const deleteSkill = expressAsyncHandler(async (req, res) => {
   const skill = await Skill.findById(req.params.id);
   if (skill.quizmaster.toString() !== req.user._id.toString()) {
     res.status(401);
@@ -93,7 +96,7 @@ const getSkillsByIdQuizMaster = expressAsyncHandler(async (req, res) => {
 });
 
 const getSkillById = expressAsyncHandler(async (id) => {
-  const skill  = await Skill.findById(id);
+  const skill = await Skill.findById(id);
 
   if (skill) {
     res.json(skill);
@@ -108,5 +111,5 @@ module.exports = {
   deleteSkill,
   getSkillsByIdQuizMaster,
   getSkillById,
-  getSkillsForCandidat
+  getSkillsForCandidat,
 };
