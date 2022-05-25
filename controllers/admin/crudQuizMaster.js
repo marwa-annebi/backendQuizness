@@ -4,7 +4,13 @@ const Question = require("../../models/questionModel");
 const Quizmaster = require("../../models/users/quizmasterModel");
 
 const createUser = async (req, res) => {
-  let { firstName, lastName, email, password } = req.body;
+  let {
+    firstName,
+    lastName,
+    email,
+    password,
+    account: { domain_name, logo, lightColor, darkColor, businessName },
+  } = req.body;
 
   const user = await Quizmaster.findOne({ email: req.body.email });
   if (user) return res.status(500).json({ msg: "email used" });
@@ -15,6 +21,13 @@ const createUser = async (req, res) => {
     email,
     password,
     verified: true,
+    account: {
+      domain_name,
+      logo,
+      lightColor,
+      darkColor,
+      businessName,
+    },
   });
   try {
     newUser.save().then(() => {
