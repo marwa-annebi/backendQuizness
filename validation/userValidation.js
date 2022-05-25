@@ -4,14 +4,15 @@ const Joi = require("joi");
 
 const registerValidation = (data) => {
   const schema = Joi.object({
-    firstName: Joi.string().min(3).max(10).required(),
+    firstName: Joi.string().alphanum().min(3).max(25).trim(true).required(),
     lastName: Joi.string().min(3).max(10).required(),
     email: Joi.string().required().email(),
-    password: Joi.string().min(6),
-    // password_confirmation: Joi.any()
-    //   .valid(Joi.ref("password"))
-    //   .required()
-    //   .options({ language: { any: { allowOnly: "must match password" } } }),
+    password: Joi.string().min(7).label("password"),
+    confirmpassword: Joi.any()
+      .equal(Joi.ref("password"))
+      .required()
+      .label("confirmpassword")
+      .messages({ "any.only": "{{#label}} does not match" }),
   });
   return schema.validate(data);
 };

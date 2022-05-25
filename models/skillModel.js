@@ -15,6 +15,9 @@ const skillSchema = mongoose.Schema({
       ref: "Question",
     },
   ],
+  requirements: {
+    type: String,
+  },
 });
 
 // Compile model from schema

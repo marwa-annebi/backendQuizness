@@ -44,6 +44,7 @@ router.route("/verifyOTP").post(verifyOTP);
 
 //resend verification
 router.route("/updateAccount").put(updateAccount);
+
 router.route("/resendOtpVerificarion").post(resendverification);
 
 //forgot password

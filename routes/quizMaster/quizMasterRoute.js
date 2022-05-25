@@ -76,10 +76,7 @@ router
 
 router.route("/createQuestion").post(createQuestion);
 router.route("/getAllQuestions").get(verifTokenQuizmaster, findAll);
-router
-  .route("/Question/:id")
-  .put(updateQuestion)
-  .delete(deleteQuestion);
+router.route("/Question/:id").put(updateQuestion).delete(deleteQuestion);
 
 //proposition
 
@@ -95,12 +92,12 @@ router
 
 // question maker
 
-router.route("/finishQuestion").post(finishQuestion);
+router.route("/finishQuestion").post(verifTokenQuizmaster, finishQuestion);
 router.route("/nbofproposition").post(nbofProposition);
 
 // quiz
 
-router.route("/createQuiz").post(createQuiz);
+router.route("/createQuiz").post(verifTokenQuizmaster, createQuiz);
 router.route("/findAllQuiz").get(verifTokenQuizmaster, findAllQuiz);
 router.route("/quiz/:id").delete(verifTokenQuizmaster, deleteQuiz);
 // voucher

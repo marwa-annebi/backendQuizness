@@ -8,16 +8,21 @@ const Quizmaster = require("../../models/users/quizmasterModel");
 
 const finishQuestion = async (req, res) => {
   const {
-    question: { quizmaster, skill, tronc, typeQuestion },
+    question: { skill, tronc, typeQuestion },
     proposition,
   } = req.body;
+  console.log({
+    question: { skill, tronc, typeQuestion },
+    proposition,
+  });
+  // var query=Question.find
   questionCreated = await new Question({
     skill,
     tronc,
     typeQuestion,
-
-    quizmaster,
-    _id_question: "Q" + ((await Question.count({ quizmaster })) + 1),
+    quizmaster: req.user._id,
+    _id_question:
+      "Q" + ((await Question.find({ quizmaster: req.user._id }).count()) + 1),
   }).save();
 
   console.log(questionCreated);

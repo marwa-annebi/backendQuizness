@@ -15,6 +15,7 @@ const quizSchema = mongoose.Schema({
     type: Date,
   },
   questions: [{ type: mongoose.Schema.Types.ObjectId, ref: "Question" }],
+  nbQuestion: Number,
 });
 
 const Quiz = mongoose.model("Quiz", quizSchema);
