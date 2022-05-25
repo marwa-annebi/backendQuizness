@@ -178,12 +178,12 @@ const verifyOTP = asyncHandler(async (req, res) => {
 
 const updateAccount = asyncHandler(async (req, res) => {
   const {
-    account: { domain_name, logo, colors, businessName },
+    account: { domain_name, logo, lightColor, darkColor, businessName },
     id,
   } = req.body;
-  console.log({ account: { domain_name, logo, colors, businessName } });
+
   try {
-    if (!domain_name || !logo || !colors || !businessName) {
+    if (!domain_name || !logo || !lightColor || !darkColor || !businessName) {
       throw Error("Empty account details are not allowed");
     } else if (domain_name.length > 15) {
       throw Error("max 15 charachter must be");
@@ -191,7 +191,8 @@ const updateAccount = asyncHandler(async (req, res) => {
       const user = await Quizmaster.findByIdAndUpdate(id, {
         "account.domain_name": domain_name,
         "account.logo": logo,
-        "account.colors": colors,
+        "account.lightColor": lightColor,
+        "account.darkColor": darkColor,
         "account.businessName": businessName,
       });
       await user.save();
@@ -244,21 +245,23 @@ const loginAdmin = asyncHandler(async (req, res) => {
         // console.log(user);
         else if (user) {
           if (await user.matchPassword(req.body.password)) {
-            return res.send({
+            var token = generateToken(user._id, user.email);
+            console.log(token);
+            res.status(200).send({
+              auth: true,
+              token: token,
               email,
-              password,
             });
           } else {
-            return res.send({
-              message: "Invalid email or password",
-            });
+            return res
+              .status(400)
+              .send({ message: "Invalid Email or Password" });
           }
         }
         break;
     }
   } catch (error) {
-    return res.status(400).send({
-      status: "FAILED",
+    return res.status(500).send({
       message: error.message,
     });
   }
@@ -282,11 +285,10 @@ const loginUser = asyncHandler(async (req, res) => {
           return res.status(404).send({
             message: "candidate doesn't exist",
           });
-        } 
-         else if (user) {
+        } else if (user) {
           if (await user.matchPassword(password)) {
             var token = generateToken(user._id, user.email);
-    console.log(token)
+            console.log(token);
             res.status(200).send({
               auth: true,
               token: token,
@@ -314,31 +316,31 @@ const loginUser = asyncHandler(async (req, res) => {
     }
     if (user) {
       if (!user.verified) {
-       return   res.status(400).send({
+        return res.status(400).send({
           message: "Please verify your account , check your inbox",
         });
       }
       if (await user.matchPassword(password)) {
-
         let date = user.createdAt;
-        let date1 =date.setDate(date.getDate()+6)
+        let date1 = date.setDate(date.getDate() + 6);
 
-        if( new Date(+ date1) < new Date ( +Date.now()))
-        {
-          await  Quizmaster.findOneAndUpdate({_id:user._id},{$set:{isTrialer:false}},
-            {new: true},)
+        if (new Date(+date1) < new Date(+Date.now())) {
+          await Quizmaster.findOneAndUpdate(
+            { _id: user._id },
+            { $set: { isTrialer: false } },
+            { new: true }
+          );
         }
 
+        var token = generateToken(user._id, user.email);
 
-        var token = generateToken(user._id,user.email);
-
-        return  res.status(200).send({
+        return res.status(200).send({
           auth: true,
           token: token,
           user: user,
         });
       } else {
-        return  res.status(401).send({ message: "Invalid Email or Password" });
+        return res.status(401).send({ message: "Invalid Email or Password" });
       }
     }
   } catch (error) {
