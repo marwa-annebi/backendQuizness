@@ -4,10 +4,16 @@ const Question = require("../../models/questionModel");
 const Quizmaster = require("../../models/users/quizmasterModel");
 
 const createUser = async (req, res) => {
-  let { firstName, lastName, email, password } = req.body;
+  const {
+    account: { domain_name, logo, darkColor, lightColor, businessName },
+    firstName,
+    lastName,
+    password,
+    email,
+  } = req.body;
 
   const user = await Quizmaster.findOne({ email: req.body.email });
-  if (user) return res.status(500).json({ msg: "email used" });
+  if (user) return res.status(500).json({ message: "email used" });
 
   const newUser = new Quizmaster({
     firstName,
@@ -15,6 +21,13 @@ const createUser = async (req, res) => {
     email,
     password,
     verified: true,
+    account: {
+      domain_name,
+      businessName,
+      darkColor,
+      lightColor,
+      logo,
+    },
   });
   try {
     newUser.save().then(() => {
@@ -64,12 +77,20 @@ const deleteUser = async (req, res) => {
 // update
 
 const updateUser = async (req, res) => {
+  const {
+    account: { domain_name, logo, darkColor, lightColor, businessName },
+    firstName,
+    lastName,
+    email,
+  } = req.body;
   try {
-    const updatedUser = await Quizmaster.findOneAndUpdate(
+    console.log("body", req.body);
+    const updatedUser = await Quizmaster.findByIdAndUpdate(
       req.params.id,
       { ...req.body },
       { new: true }
     );
+    console.log("updated", updatedUser);
     res.status(200).json(updatedUser);
   } catch (error) {
     console.error(error);
