@@ -4,12 +4,12 @@ const Question = require("../../models/questionModel");
 const Quizmaster = require("../../models/users/quizmasterModel");
 
 const createUser = async (req, res) => {
-  const {
-    account: { domain_name, logo, darkColor, lightColor, businessName },
+  let {
     firstName,
     lastName,
-    password,
     email,
+    password,
+    account: { domain_name, logo, lightColor, darkColor, businessName },
   } = req.body;
 
   const user = await Quizmaster.findOne({ email: req.body.email });
