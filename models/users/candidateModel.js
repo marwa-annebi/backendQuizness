@@ -33,10 +33,21 @@ const candidateSchema = mongoose.Schema(
       default:
         "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg",
     },
+    nationality: {
+      type: String,
+    },
+    Address: {
+      type: String,
+    },
+    state: {
+      type: String,
+      default: "Etudiant(e)",
+    },
     quizmaster: [{ type: mongoose.Schema.Types.ObjectId, ref: "Quizmaster" }],
     resetPasswordToken: { type: String },
     resetPasswordExpire: { type: Date },
   },
+
   {
     timestamps: true,
   }

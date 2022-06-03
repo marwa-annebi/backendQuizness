@@ -66,17 +66,14 @@ router
 router.route("/createSkill").post(verifTokenQuizmaster, createSkill);
 router.route("/getSkills").get(verifTokenQuizmaster, getSkillsByIdQuizMaster);
 
-router
-  .route("/skill/:id")
-  .put(verifTokenQuizmaster, updateSkill)
-  .delete(verifTokenQuizmaster, deleteSkill)
-  .get(verifTokenQuizmaster, getSkillById);
+router.route("/updateSkill/:id").put(verifTokenQuizmaster, updateSkill);
+router.route("/skill/:id").delete(verifTokenQuizmaster, deleteSkill);
+router.route("/skill/:id").get(verifTokenQuizmaster, getSkillById);
 
 //question
 
-router.route("/createQuestion").post(createQuestion);
 router.route("/getAllQuestions").get(verifTokenQuizmaster, findAll);
-router.route("/Question/:id").put(updateQuestion).delete(deleteQuestion);
+router.route("/Question/:id").delete(verifTokenQuizmaster, deleteQuestion);
 
 //proposition
 

@@ -3,7 +3,7 @@ const Skill = require("../../models/skillModel");
 const Quizmaster = require("../../models/users/quizmasterModel");
 const createSkill = async (req, res) => {
   try {
-    let { skill_name, quizmaster, requirements } = req.body;
+    let { skill_name, requirements } = req.body;
     const skillExists = await Skill.findOne({
       skill_name,
       quizmaster: req.user._id,
@@ -11,6 +11,9 @@ const createSkill = async (req, res) => {
       // // quizmaster,
     });
     console.log(skillExists);
+    if (!skill_name || !requirements) {
+      res.status(400).send({ message: "please fill all this fields " });
+    }
     if (skillExists) {
       res.status(400).send({
         message: "skill with provided skill name exists",
@@ -39,16 +42,24 @@ const createSkill = async (req, res) => {
 // update category
 
 const updateSkill = expressAsyncHandler(async (req, res) => {
+  const { skill_name, requirements } = req.body;
+  console.log({ skill_name, requirements });
+  console.log("heloo");
   try {
-    const updateSkill = await Skill.findByIdAndUpdate(
+    await Skill.findByIdAndUpdate(
       req.params.id,
-      { ...req.body },
-      { new: true }
+      {
+        $set: {
+          skill_name: skill_name,
+          requirements: requirements,
+        },
+      }
+      // { new: true }
     );
-
+    // await updateSkill.save();
+    console.log("sucsssssss");
     res.status(200).send({
       message: "updated successfully",
-      updateSkill,
     });
   } catch (error) {
     res.status(500).send(error);
@@ -58,18 +69,13 @@ const updateSkill = expressAsyncHandler(async (req, res) => {
 // delete category
 
 const deleteSkill = expressAsyncHandler(async (req, res) => {
-  const skill = await Skill.findById(req.params.id);
-  if (skill.quizmaster.toString() !== req.user._id.toString()) {
-    res.status(401);
-    throw new Error("You can't perform this action");
-  }
-
-  if (skill) {
-    await skill.remove();
-    res.status(200).send({ message: "category Removed" });
-  } else {
-    res.status(404).send({ message: "category not Found" });
-  }
+  await Skill.deleteOne({ _id: req.params.id })
+    .then(res.send({ message: "skill was deleted successfully!" }))
+    .catch((err) => {
+      res.status(500).send({
+        message: "Could not delete Skill ",
+      });
+    });
 });
 // getCategories for candidat
 const getSkillsForCandidat = expressAsyncHandler(async (req, res) => {

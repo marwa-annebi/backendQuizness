@@ -21,8 +21,7 @@ const finishQuestion = async (req, res) => {
     tronc,
     typeQuestion,
     quizmaster: req.user._id,
-    _id_question:
-      "Q" + ((await Question.find({ quizmaster: req.user._id }).count()) + 1),
+    _id_question: "Q" + ((await Question.find({ skill }).count()) + 1),
   }).save();
 
   console.log(questionCreated);
