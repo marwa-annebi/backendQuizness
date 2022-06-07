@@ -20,12 +20,8 @@ const createCandidat = async (req, res) => {
 // read data
 
 const getAllCandidats = async (req, res) => {
-  Candidate.find((error, result) => {
-    if (error) {
-      res.send(error);
-    }
-    res.status(200).send(result);
-  });
+  const result = Candidate.find(req.user._id);
+  res.status(200).send(result);
 };
 
 //delete

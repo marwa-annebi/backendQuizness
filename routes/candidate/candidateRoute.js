@@ -1,5 +1,8 @@
 const express = require("express");
-const getQuizByIdVoucher = require("../../controllers/candidate/candidateController");
+const {
+  getQuizByIdVoucher,
+  getSkills,
+} = require("../../controllers/candidate/candidateController");
 const {
   addAnswerController,
   correctAnswerController,
@@ -15,5 +18,6 @@ router.route("/paymentCandidate").post(candidatePayment);
 router.route("/getQuiz").post(getQuizByIdVoucher);
 router.route("/answerCandidate").post(addAnswerController);
 router.route("/correctAnswer").post(correctAnswerController);
-router.route("/updateProfile").put(verifTokenCandidate, updateUserProfile);
+router.route("/updateProfile").post(verifTokenCandidate, updateUserProfile);
+router.route("/getSkills").get(verifTokenCandidate, getSkills);
 module.exports = router;

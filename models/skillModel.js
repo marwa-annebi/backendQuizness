@@ -18,6 +18,10 @@ const skillSchema = mongoose.Schema({
   requirements: {
     type: String,
   },
+  budget: {
+    type: String,
+    required: true,
+  },
 });
 
 skillSchema.pre("deleteOne", function (next) {

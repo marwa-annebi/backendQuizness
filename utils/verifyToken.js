@@ -1,7 +1,7 @@
 const expressAsyncHandler = require("express-async-handler");
 const jwt = require("jsonwebtoken");
 const Quizmaster = require("../models/users/quizmasterModel");
-const Candidate=require("../models/users/candidateModel")
+const Candidate = require("../models/users/candidateModel");
 const verifTokenQuizmaster = expressAsyncHandler(async (req, res, next) => {
   let token;
   if (
@@ -24,7 +24,6 @@ const verifTokenQuizmaster = expressAsyncHandler(async (req, res, next) => {
   }
   if (!token) res.status(401).send("not token");
 });
-
 
 const verifTokenCandidate = expressAsyncHandler(async (req, res, next) => {
   let token;
@@ -49,4 +48,4 @@ const verifTokenCandidate = expressAsyncHandler(async (req, res, next) => {
   if (!token) res.status(401).send("not token");
 });
 
-module.exports = {verifTokenQuizmaster,verifTokenCandidate};
+module.exports = { verifTokenQuizmaster, verifTokenCandidate };

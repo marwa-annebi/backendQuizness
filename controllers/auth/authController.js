@@ -27,7 +27,16 @@ const updateUserProfile = asyncHandler(async (req, res) => {
       user.password = req.body.password;
     }
     const update = await user.save();
-    console.log(update);
+    if (update) {
+      var token = generateToken(user._id, user.email);
+      console.log(token);
+      res.status(200).send({
+        auth: true,
+        token: token,
+        user: update,
+      });
+      console.log(token);
+    }
   } else {
     res.status(404);
     throw new Error("Quiz Master Not Found");

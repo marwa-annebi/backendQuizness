@@ -3,11 +3,12 @@ const Skill = require("../../models/skillModel");
 const Quizmaster = require("../../models/users/quizmasterModel");
 const createSkill = async (req, res) => {
   try {
-    let { skill_name, requirements } = req.body;
+    let { skill_name, requirements, budget } = req.body;
     const skillExists = await Skill.findOne({
       skill_name,
       quizmaster: req.user._id,
       // requirements,
+
       // // quizmaster,
     });
     console.log(skillExists);
@@ -23,11 +24,11 @@ const createSkill = async (req, res) => {
         quizmaster: req.user._id,
         skill_name,
         requirements,
+        budget,
       });
       newSkill.save().then(() => {
         res.status(201).send({
           message: "Category saved",
-          skill_id: newSkill._id,
         });
       });
     }
@@ -42,8 +43,8 @@ const createSkill = async (req, res) => {
 // update category
 
 const updateSkill = expressAsyncHandler(async (req, res) => {
-  const { skill_name, requirements } = req.body;
-  console.log({ skill_name, requirements });
+  const { skill_name, requirements, budget } = req.body;
+  // console.log({ skill_name, requirements, budget });
   console.log("heloo");
   try {
     await Skill.findByIdAndUpdate(
@@ -52,6 +53,7 @@ const updateSkill = expressAsyncHandler(async (req, res) => {
         $set: {
           skill_name: skill_name,
           requirements: requirements,
+          budget: budget,
         },
       }
       // { new: true }
