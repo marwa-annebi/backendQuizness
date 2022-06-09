@@ -1,5 +1,6 @@
 const expressAsyncHandler = require("express-async-handler");
 const Question = require("../../models/questionModel");
+const Skill = require("../../models/skillModel");
 const voucherModel = require("./../../models/voucherModel");
 
 const getQuizByIdVoucher = expressAsyncHandler(async (req, res) => {
@@ -29,4 +30,15 @@ const getQuestions = expressAsyncHandler(async (questions, res) => {
   //   return array;
   return res.send(array);
 });
-module.exports = getQuizByIdVoucher;
+
+const getSkills = expressAsyncHandler(async (req, res) => {
+  console.log("helloooooooo");
+  // const { quizmaster } = req.body;
+  let quizmaster = req.query.quizmaster; // const question = { quizmaster: quizmaster };
+  const skills = await Skill.find({
+    quizmaster,
+  });
+  res.status(200).send(skills);
+});
+
+module.exports = { getQuizByIdVoucher, getSkills };

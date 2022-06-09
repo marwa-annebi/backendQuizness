@@ -13,6 +13,7 @@ const createQuestion = function (skill, tronc, typeQuestion) {
 
 const deleteQuestion = expressAsyncHandler(async (req, res) => {
   // const id = req.params.id;
+  console.log(req.params._id);
   await Question.deleteOne({ _id: req.params.id })
     .then(res.send({ message: "Question was deleted successfully!" }))
     .catch((err) => {
@@ -28,7 +29,8 @@ const findAll = expressAsyncHandler(async (req, res) => {
     .populate("propositions")
     .populate("skill")
     .then((data) => {
-      res.send(data);
+      res.status(200).send(data);
+      console.log(data);
     })
     .catch((err) => {
       res.status(500).send({

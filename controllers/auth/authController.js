@@ -13,24 +13,30 @@ const { registerValidation } = require("./../../validation/userValidation");
 const Quizmaster = require("../../models/users/quizmasterModel");
 const Candidate = require("./../../models/users/candidateModel");
 const updateUserProfile = asyncHandler(async (req, res) => {
-  const user = await Quizmaster.findById(req.user._id);
+  const user = await Candidate.findById(req.user._id);
+  console.log(req.user._id);
   if (user) {
     user.firstName = req.body.firstName || user.firstName;
     user.lastName = req.body.lastName || user.lastName;
     user.email = req.body.email || user.email;
-    user.logo = req.body.logo || user.logo;
+    user.nationality = req.body.nationality || user.nationality;
+    user.Address = req.body.Address || user.Address;
+    user.state = req.body.state || user.state;
+    user.picture = req.body.picture || user.picture;
     if (req.body.password) {
       user.password = req.body.password;
     }
     const update = await user.save();
-    res.json({
-      _id: update._id,
-      firstName: update.firstName,
-      lastName: update.lastName,
-      email: update.email,
-      logo: update.logo,
-      // token: generateToken(update._id),
-    });
+    if (update) {
+      var token = generateToken(user._id, user.email);
+      console.log(token);
+      res.status(200).send({
+        auth: true,
+        token: token,
+        user: update,
+      });
+      console.log(token);
+    }
   } else {
     res.status(404);
     throw new Error("Quiz Master Not Found");
@@ -102,7 +108,16 @@ const registerQuizMaster = asyncHandler(async (req, res) => {
 
 const registerCandidate = asyncHandler(async (req, res) => {
   try {
-    let { firstName, lastName, email, password, quizmaster } = req.body;
+    let { firstName, lastName, email, password, quizmaster, confirmpassword } =
+      req.body;
+    console.log({
+      firstName,
+      lastName,
+      email,
+      password,
+      quizmaster,
+      confirmpassword,
+    });
     const userExists = await Candidate.findOne({ email });
     const idQuizMasterExists = await Candidate.findOne({
       quizmaster: quizmaster,
@@ -112,6 +127,7 @@ const registerCandidate = asyncHandler(async (req, res) => {
       lastName,
       email,
       password,
+      confirmpassword,
     });
     if (error) return res.status(400).send({ msg: "error" });
     if (userExists && !idQuizMasterExists) {
@@ -320,6 +336,7 @@ const loginUser = asyncHandler(async (req, res) => {
             res.status(200).send({
               auth: true,
               token: token,
+              user: user,
             });
           } else {
             res.status(401).send({ message: "Invalid Email or Password" });
