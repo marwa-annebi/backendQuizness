@@ -16,6 +16,7 @@ const {
   loginAdmin,
   updateAccount,
   getCompanySettings,
+  updateAdminProfile,
 } = require("../../controllers/auth/authController");
 const router = express.Router();
 require("../../controllers/auth/passport");
@@ -26,7 +27,7 @@ const QUIZMASTER_URL = "http://localhost:3000/dashboard/quizMaster";
 //register Admin
 
 router.route("/registerAdmin").post(registerAdmin);
-
+router.route("/updateAdminProfile").put(updateAdminProfile);
 //update User Profile
 
 router.route("/updateProfile").put(updateUserProfile);

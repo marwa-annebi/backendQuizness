@@ -68,6 +68,7 @@ app.use(
     origin: "*",
     methods: "GET,POST,PUT,DELETE",
     credentials: true,
+    allowedHeaders: "X-Requested-With, Content-Type, Authorization",
   })
 );
 app.use("/auth", authRoute);
