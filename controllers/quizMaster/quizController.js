@@ -1,6 +1,7 @@
 const expressAsyncHandler = require("express-async-handler");
 const Quiz = require("./../../models/quizModel");
 const moment = require("moment");
+const Question = require("../../models/questionModel");
 
 // create quiz
 
@@ -24,8 +25,7 @@ const createQuiz = async (req, res) => {
     quizmaster: req.user._id,
     nbQuestion: nbQuestion,
     // quizmaster: id,
-    quizName:
-      "Quiz_" + ((await Quiz.find({ quizmaster: req.user._id }).count()) + 1),
+    quizName: "Quiz_" + quizName,
     creation_date: moment(creation_date).format("MM-DD-yyyy"),
     validation_date: moment(validation_date).format("MM-DD-yyyy"),
     questions,
@@ -73,7 +73,8 @@ const findAllQuiz = expressAsyncHandler(async (req, res) => {
     .populate("questions")
     // populate("skill").
     .then((data) => {
-      res.send(data);
+      console.log(data);
+      res.json(data);
     })
     .catch((err) => {
       res.status(500).send({

@@ -2,12 +2,14 @@ const voucherModel = require("./../../models/voucherModel");
 const moment = require("moment");
 var voucher_codes = require("voucher-code-generator");
 const expressAsyncHandler = require("express-async-handler");
-
+const { sendVoucherToCandidate } = require("../../mailer/mailer");
+const Candidate = require("./../../models/users/candidateModel");
 // create voucher
 const createVoucher = async (req, res) => {
   let _id_voucher;
   try {
     const { creation_date, validation_date, quiz, candidat } = req.body;
+    console.log({ creation_date, validation_date, quiz, candidat });
     const newVoucher = new voucherModel({
       creation_date: moment(creation_date).format("yyyy-MM-DD"),
       validation_date: moment(validation_date).format("yyyy-MM-DD"),
@@ -19,11 +21,23 @@ const createVoucher = async (req, res) => {
         })
         .toString(),
     });
-    newVoucher.save().then(() => {
-      return res.json({
-        status: "SUCCESS",
-        message: "voucher  saved",
-        _id_voucher,
+
+    Candidate.findById(candidat).then((result) => {
+      console.log("result", result);
+      newVoucher.save().then(() => {
+        sendVoucherToCandidate(
+          {
+            email: result.email,
+            firstName: result.firstName,
+            lastName: result.lastName,
+            businessName: req.user.account.businessName,
+            logo: req.user.account.logo,
+            darkColor: req.user.account.darkColor,
+            _id_voucher: newVoucher._id_voucher,
+            validation_date: newVoucher.validation_date,
+          },
+          res
+        );
       });
     });
   } catch (error) {

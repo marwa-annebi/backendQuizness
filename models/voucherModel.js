@@ -21,6 +21,10 @@ const voucherSchema = mongoose.Schema({
     type: Date,
     required: true,
   },
+  startTime:{
+    type:Date,
+    default:null
+  },
   validation_date: {
     type: Date,
     required: true,

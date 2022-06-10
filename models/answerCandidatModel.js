@@ -2,18 +2,20 @@ const mongoose = require("mongoose");
 const answerCandidatSchema = mongoose.Schema({
   voucher: {
     type: mongoose.Types.ObjectId,
-    ref: "Voucher",
-    required: true,
+    ref: "Candidate",
+    // required: true,
   },
-  proposition: {
-    type: mongoose.Schema.Types.ObjectId,
-    required: true,
-    ref: "Proposition",
-  },
-  response: {
-    type: Boolean,
-    required: true,
-  },
+
+  reponses: [
+    {
+      proposition: {
+        type: mongoose.Schema.Types.ObjectId,
+        // required: true,
+        ref: "Proposition",
+        checked:Boolean
+      }
+    },
+  ],
 });
 
 module.exports = AnswerCandidat = mongoose.model(

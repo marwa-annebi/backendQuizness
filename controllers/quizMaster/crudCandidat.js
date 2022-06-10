@@ -20,8 +20,18 @@ const createCandidat = async (req, res) => {
 // read data
 
 const getAllCandidats = async (req, res) => {
-  const result = Candidate.find(req.user._id);
-  res.status(200).send(result);
+  // console.log(req.user._id);
+  Candidate.find({ quizmaster: req.user._id })
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving questions.",
+      });
+    });
+  // res.status(200).send(result);
 };
 
 //delete

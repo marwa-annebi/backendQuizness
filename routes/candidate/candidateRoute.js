@@ -2,6 +2,8 @@ const express = require("express");
 const {
   getQuizByIdVoucher,
   getSkills,
+  findAllQuiz,
+  findQuizById,
 } = require("../../controllers/candidate/candidateController");
 const {
   addAnswerController,
@@ -16,8 +18,11 @@ const { verifTokenCandidate } = require("../../utils/verifyToken");
 const router = express.Router();
 router.route("/paymentCandidate").post(candidatePayment);
 router.route("/getQuiz").post(getQuizByIdVoucher);
-router.route("/answerCandidate").post(addAnswerController);
+router.route("/answerCandidate").post(verifTokenCandidate, addAnswerController);
 router.route("/correctAnswer").post(correctAnswerController);
 router.route("/updateProfile").post(verifTokenCandidate, updateUserProfile);
 router.route("/getSkills").get(verifTokenCandidate, getSkills);
+router.route("/getQuizzes").get(verifTokenCandidate, findAllQuiz);
+router.route("/getQuizById/:id").get(verifTokenCandidate, findQuizById);
+
 module.exports = router;

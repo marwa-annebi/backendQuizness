@@ -1,9 +1,6 @@
 const mongoose = require("mongoose");
 const quizSchema = mongoose.Schema(
   {
-    quiz_id: {
-      type: Number,
-    },
     quizmaster: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
@@ -21,6 +18,9 @@ const quizSchema = mongoose.Schema(
       type: String,
     },
     quizName: {
+      type: String,
+    },
+    typeQuiz: {
       type: String,
     },
   },

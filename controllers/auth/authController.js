@@ -200,9 +200,9 @@ const updateAccount = asyncHandler(async (req, res) => {
     account: { domain_name, logo, darkColor, lightColor, businessName },
     id,
   } = req.body;
-  console.log({
-    account: { domain_name, logo, darkColor, lightColor, businessName },
-  });
+  // console.log({
+  //   account: { domain_name, logo, darkColor, lightColor, businessName },
+  // });
   try {
     if (!domain_name || !logo || !lightColor || !darkColor || !businessName) {
       throw Error("Empty account details are not allowed");
@@ -416,7 +416,6 @@ const getCompanySettings = async (req, res) => {
   const settings = await Quizmaster.findOne({
     "account.domain_name": domain_name,
   });
-  console.log(settings);
   res.json(settings);
 };
 module.exports = {
