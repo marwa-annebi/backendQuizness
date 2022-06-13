@@ -73,7 +73,7 @@ const findAllQuiz = expressAsyncHandler(async (req, res) => {
     .populate("questions")
     // populate("skill").
     .then((data) => {
-      console.log(data);
+      // console.log(data);
       res.json(data);
     })
     .catch((err) => {

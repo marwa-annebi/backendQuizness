@@ -59,7 +59,7 @@ const updateSkill = expressAsyncHandler(async (req, res) => {
       // { new: true }
     );
     // await updateSkill.save();
-    console.log("sucsssssss");
+
     res.status(200).send({
       message: "updated successfully",
     });
