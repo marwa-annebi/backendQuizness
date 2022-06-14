@@ -11,6 +11,7 @@ const voucherSchema = mongoose.Schema({
   },
   quiz: {
     type: mongoose.Schema.Types.ObjectId,
+
     required: true,
     ref: "Quiz",
   },
@@ -21,9 +22,9 @@ const voucherSchema = mongoose.Schema({
     type: Date,
     required: true,
   },
-  startTime:{
-    type:Date,
-    default:null
+  startTime: {
+    type: Date,
+    default: null,
   },
   validation_date: {
     type: Date,

@@ -21,7 +21,7 @@ const router = express.Router();
 require("../../controllers/auth/passport");
 require("../../controllers/auth/quizMasterPassport");
 const CLIENT_URL = "http://localhost:3000";
-const QUIZMASTER_URL = "http://localhost:3000/dashboard/quizMaster";
+const QUIZMASTER_URL = "http://formalab.localhost:3000";
 
 //register Admin
 

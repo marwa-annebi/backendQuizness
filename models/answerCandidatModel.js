@@ -2,18 +2,19 @@ const mongoose = require("mongoose");
 const answerCandidatSchema = mongoose.Schema({
   voucher: {
     type: mongoose.Types.ObjectId,
-    ref: "Candidate",
+    ref: "Voucher",
     // required: true,
   },
 
-  reponses: [
+  answers: [
     {
-      proposition: {
-        type: mongoose.Schema.Types.ObjectId,
-        // required: true,
+      _id_proposition: {
+        type: mongoose.Types.ObjectId,
         ref: "Proposition",
-        checked:Boolean
-      }
+      },
+      response: {
+        type: Boolean,
+      },
     },
   ],
 });

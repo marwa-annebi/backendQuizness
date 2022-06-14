@@ -16,6 +16,9 @@ const {
   candidatePayment,
   webhook,
 } = require("../../controllers/candidate/stripe");
+const {
+  getvoucher,
+} = require("../../controllers/quizMaster/voucherController");
 
 const router = express.Router();
 router.route("/paymentCandidate").post(verifTokenCandidate, candidatePayment);
@@ -31,4 +34,6 @@ router.route("/webhook").post(
   express.raw({ type: "application/json" }),
   webhook
 );
+router.route("/getvoucher").get(verifTokenCandidate, getvoucher);
+
 module.exports = router;

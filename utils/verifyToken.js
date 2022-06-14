@@ -36,7 +36,7 @@ const verifTokenCandidate = expressAsyncHandler(async (req, res, next) => {
       if (token) {
         decoded = jwt.verify(token, process.env.JWT_SECRET);
         req.user = await Candidate.findById(decoded.id).select("-password");
-        console.log(req.user);
+        // console.log(req.user);
       }
 
       next();

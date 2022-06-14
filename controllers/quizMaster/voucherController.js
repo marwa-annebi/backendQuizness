@@ -72,6 +72,35 @@ const getVoucherByIdCandidat = expressAsyncHandler(async (req, res) => {
   }
 });
 
+//
+
+const getvoucher = expressAsyncHandler(async (req, res) => {
+  const { _id_voucher } = req.query;
+  try {
+    if (!_id_voucher) {
+      return res.status(500).send({ message: "please enter your key" });
+    } else {
+      const start = new Date(Date.now());
+      console.log(start);
+      const data = await voucherModel.findOne({
+        candidat: req.user._id,
+        _id_voucher: _id_voucher,
+      });
+      console.log(data);
+      if (data && start < data.validation_date) {
+        console.log(data);
+        res.json(data);
+      } else if (data && start > data.validation_date) {
+        res.status(500).send({ message: "Invalid Key" });
+      } else if (!data) {
+        res.status(500).send({ message: "Incorrect Key " });
+      }
+    }
+  } catch (error) {
+    console.log(error);
+  }
+});
+
 //getVoucherByid
 const getVoucherById = expressAsyncHandler(async (req, res) => {
   voucher = await voucherModel.findById(req.params.id);
@@ -100,4 +129,5 @@ module.exports = {
   getVoucherById,
   deleteVoucher,
   getVoucherByIdCandidat,
+  getvoucher,
 };
