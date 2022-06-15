@@ -39,6 +39,7 @@ const {
   getVoucherById,
   deleteVoucher,
   getVoucherByIdCandidat,
+  getvoucher,
 } = require("../../controllers/quizMaster/voucherController");
 const router = express.Router();
 // candidat
@@ -108,5 +109,4 @@ router
   .put(verifTokenQuizmaster, updateVoucher)
   .delete(verifTokenQuizmaster, deleteVoucher)
   .get(verifTokenQuizmaster, getVoucherById);
-
 module.exports = router;

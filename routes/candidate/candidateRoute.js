@@ -1,7 +1,12 @@
 const express = require("express");
 
 const { verifTokenCandidate } = require("../../utils/verifyToken");
-const { verifTokenQuizmaster } = require("./../../utils/verifyToken");
+const {
+  getQuizByIdVoucher,
+  getSkills,
+  findAllQuiz,
+  findQuizById,
+} = require("../../controllers/candidate/candidateController");
 
 const {
   addAnswerController,
@@ -10,7 +15,6 @@ const {
 const {
   candidatePayment,
 } = require("../../controllers/candidate/paymentController");
-const router = express.Router();
 
 const {
   getQuizByIdVoucher,
@@ -18,12 +22,30 @@ const {
 } = require("../../controllers/candidate/candidateController");
 
 const { updateUserProfile } = require("../../controllers/auth/authController");
-// const { verifTokenCandidate } = require("../../utils/verifyToken");
-router.route("/paymentCandidate").post(candidatePayment);
+const { verifTokenCandidate } = require("../../utils/verifyToken");
+const {
+  candidatePayment,
+  webhook,
+} = require("../../controllers/candidate/stripe");
+const {
+  getvoucher,
+} = require("../../controllers/quizMaster/voucherController");
+
+const router = express.Router();
+router.route("/paymentCandidate").post(verifTokenCandidate, candidatePayment);
 router.route("/getQuiz").post(getQuizByIdVoucher);
-router.route("/answerCandidate").post(addAnswerController);
+router.route("/answerCandidate").post(verifTokenCandidate, addAnswerController);
 router.route("/correctAnswer").post(correctAnswerController);
 router.route("/updateProfile").post(verifTokenCandidate, updateUserProfile);
 router.route("/getSkills").get(verifTokenCandidate, getSkills);
+
+router.route("/getQuizzes").get(verifTokenCandidate, findAllQuiz);
+router.route("/getQuizById/:id").get(verifTokenCandidate, findQuizById);
+router.route("/webhook").post(
+  // verifTokenCandidate,
+  express.raw({ type: "application/json" }),
+  webhook
+);
+router.route("/getvoucher").get(verifTokenCandidate, getvoucher);
 
 module.exports = router;

@@ -1,13 +1,12 @@
 const nodemailer = require("nodemailer");
 const dotenv = require("dotenv");
 dotenv.config();
-module.exports = async (email, subject,text) => {
+module.exports = async (email, subject, text) => {
   try {
     const transporter = nodemailer.createTransport({
-      service: "gmail",
       host: process.env.HOST,
-      port: Number(process.env.EMAIL_PORT),
-      secure: Boolean(process.env.SECURE),
+      port: process.env.EMAIL_PORT,
+      secure: true,
       auth: {
         user: process.env.EMAIL,
         pass: process.env.PASSWORD,
@@ -40,39 +39,39 @@ module.exports = async (email, subject,text) => {
           * {
             box-sizing: border-box;
           }
-      
+
           body {
             margin: 0;
             padding: 0;
           }
-      
+
           a[x-apple-data-detectors] {
             color: inherit !important;
             text-decoration: inherit !important;
           }
-      
+
           #MessageViewBody a {
             color: inherit;
             text-decoration: none;
           }
-      
+
           p {
             line-height: inherit
           }
-      
+
           @media (max-width:520px) {
             .row-content {
               width: 100% !important;
             }
-      
+
             .column .border {
               display: none;
             }
-      
+
             table {
               table-layout: fixed !important;
             }
-      
+
             .stack .column {
               width: 100%;
               display: block;
@@ -97,7 +96,7 @@ module.exports = async (email, subject,text) => {
       <tr>
       <td style="padding-bottom:10px;width:100%;padding-right:0px;padding-left:0px;">
       <div align="center" style="line-height:10px">
-      <img alt="your-logo" src="cid:logo" style="display: block; height: auto; border: 0; width: 125px; max-width: 100%;" 
+      <img alt="your-logo" src="cid:logo" style="display: block; height: auto; border: 0; width: 125px; max-width: 100%;"
       title="your-logo" width="125"/>
       </div>
       </td>
@@ -237,12 +236,12 @@ module.exports = async (email, subject,text) => {
           filename: "logo.png",
           path: __dirname + "/logo.png",
           cid: "logo", //same cid value as in the html img src
-        },  {
+        },
+        {
           filename: "gif-resetpass.gif",
           path: __dirname + "/gif-resetpass.gif",
           cid: "gif", //same cid value as in the html img src
         },
-
       ],
     });
     console.log("email sent successfully");
