@@ -17,15 +17,15 @@ const quizSchema = mongoose.Schema(
     },
     questions: [{ type: mongoose.Schema.Types.ObjectId, ref: "Question" }],
     nbQuestion: Number,
-<<<<<<< HEAD
-=======
+
+
     duration: {
       type: String,
     },
     quizName: {
       type: String,
     },
->>>>>>> cfca4135898952f1c41742f6aba62e36d30b917f
+
   },
   {
     timestamps: true,

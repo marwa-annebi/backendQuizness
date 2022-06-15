@@ -24,11 +24,11 @@ const sendPasswordLink = async (req, res, next) => {
       //console.log(user);
       break;
     case myEnum.CANDIDATE.value:
-      user = await Candidate.findOne({ email});
+      user = await Candidate.findOne({ email });
       console.log(user);
       break;
     case myEnum.QUIZMASTER.value:
-      user = await Quizmaster.findOne({ email});
+      user = await Quizmaster.findOne({ email });
       // console.log(user);
       break;
   }
@@ -44,7 +44,7 @@ const sendPasswordLink = async (req, res, next) => {
     // console.log(user);
     const url = ` ${process.env.CLIENT_URL}setNewPassword/${user._id}/${resetToken}/${type}`;
     await sendEmail(user.email, "reset password", url);
-console.log(url)
+    console.log(url);
     res
       .status(200)
       .send({ message: "Password reset link sent to your email account" });
@@ -121,7 +121,7 @@ const setNewPassword = async (req, res, next) => {
           newQuizMaster = await Quizmaster.findByIdAndUpdate(req.params.id, {
             password: hashedPassword,
           });
-         
+
           newQuizMaster.save();
           break;
       }

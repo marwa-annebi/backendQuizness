@@ -2,10 +2,9 @@ const expressAsyncHandler = require("express-async-handler");
 const jwt = require("jsonwebtoken");
 const Quizmaster = require("../models/users/quizmasterModel");
 const Candidate = require("../models/users/candidateModel");
-<<<<<<< HEAD
+
 const Admin = require("../models/users/adminModel");
-=======
->>>>>>> cfca4135898952f1c41742f6aba62e36d30b917f
+
 const verifTokenQuizmaster = expressAsyncHandler(async (req, res, next) => {
   let token;
   if (
@@ -29,7 +28,6 @@ const verifTokenQuizmaster = expressAsyncHandler(async (req, res, next) => {
   if (!token) res.status(401).send("not token");
 });
 
-<<<<<<< HEAD
 const verifTokenAdmin = expressAsyncHandler(async (req, res, next) => {
   let token;
   if (
@@ -55,8 +53,6 @@ const verifTokenAdmin = expressAsyncHandler(async (req, res, next) => {
   if (!token) res.status(401).send("not token");
 });
 
-=======
->>>>>>> cfca4135898952f1c41742f6aba62e36d30b917f
 const verifTokenCandidate = expressAsyncHandler(async (req, res, next) => {
   let token;
   if (
@@ -80,8 +76,5 @@ const verifTokenCandidate = expressAsyncHandler(async (req, res, next) => {
   if (!token) res.status(401).send("not token");
 });
 
-<<<<<<< HEAD
+
 module.exports = { verifTokenQuizmaster, verifTokenCandidate, verifTokenAdmin };
-=======
-module.exports = { verifTokenQuizmaster, verifTokenCandidate };
->>>>>>> cfca4135898952f1c41742f6aba62e36d30b917f
