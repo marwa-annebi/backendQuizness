@@ -17,13 +17,16 @@ const quizSchema = mongoose.Schema(
 
 
     duration: {
-      type: String,
+      type: Number,
     },
     quizName: {
       type: String,
     },
     typeQuiz: {
       type: String,
+    },
+    Tauxscore: {
+      type: Number,
     },
   },
   {

@@ -5,6 +5,8 @@ const answerCandidatModel = require("../../models/answerCandidatModel");
 const Proposition = require("../../models/propositionModel");
 
 const Voucher = require("../../models/voucherModel");
+const Question = require("../../models/questionModel");
+const propositionModel = require("../../models/propositionModel");
 
 const answerValidation = (data) => {
   //   const schema = joi.object({
@@ -39,47 +41,66 @@ const getAnswerController = async (id) => {
     throw new Error(error);
   }
 };
-const correctAnswerController = expressAsyncHandler(async (req, res) => {
-  let score = 0;
+
+const nbCorrectAnswer = async (propositions, req, res) => {
   try {
-    const { id_answer, id_proposition } = req.body;
-    const proposition = await Proposition.findById({ _id: id_proposition });
-    const answerCandidate = await getAnswerController(id_answer);
-    const voucher = answerCandidate.voucher;
-    console.log(voucher);
+    let nb = 0;
+    await propositions.map((item) => {
+      if (item.veracity) nb++;
+    });
+    return nb;
+  } catch (error) {
+    res.status(500).send({ error });
+  }
+};
 
-    if (proposition && answerCandidate) {
-      if (answerCandidate.response == proposition.veracity) {
-        score = score + 1;
-        console.log(score);
-
-        const updateVoucher = await Voucher.findOneAndUpdate(
-          { _id: voucher },
-          { $set: { score: score } },
-          { new: true }
-        );
-        console.log(updateVoucher);
-
-        res.json({
-          updateVoucher,
+const correctAnswerController = expressAsyncHandler(async (req, res) => {
+  try {
+    let score = 0;
+    const { array, _id_voucher } = req.body;
+    const newAnswer = new answerCandidatModel({
+      array,
+    });
+    newAnswer.save();
+    let nbCorrectProposition = 0;
+    let nbTotal = 0;
+    let nbIncorrectProposition = 0;
+    const result = [];
+    let scoreFinal = 0;
+    for (let index = 0; index < array.length; index++) {
+      const element = array[index];
+      // console.log(element);
+      await Question.findOne({
+        _id: { $in: array[index]._id_Question },
+      })
+        .populate("propositions")
+        .then(async (result) => {
+          nbTotal = result.propositions.length;
+          // console.log(nbTotal);
+          nbCorrectProposition = await nbCorrectAnswer(result.propositions);
+          nbIncorrectProposition = nbTotal - nbCorrectProposition;
+          result.propositions.map(async (proposition) => {
+            // console.log(nbIncorrectProposition);
+            {
+              array[index].answers.map((item) => {
+                if (item._id_proposition == proposition._id) {
+                  // console.log(score);
+                  if (item.response === proposition.veracity) {
+                    score += 1 / nbCorrectProposition;
+                    console.log("bonne reponse", score);
+                  } else {
+                    score -= 1 / nbIncorrectProposition;
+                    console.log(nbIncorrectProposition);
+                    console.log(1 / nbIncorrectProposition);
+                    console.log("mauvaise reponse", score);
+                  }
+                }
+              });
+            }
+          });
         });
-      } else {
-        res.json({
-          message: "reponse incorrect ",
-        });
-      }
     }
-
-    if (!proposition) {
-      res.status(404).json({
-        message: "proposition doesn't exist",
-      });
-    }
-    if (!answerCandidate) {
-      res.status(404).json({
-        message: "answer doesn't exist",
-      });
-    }
+    res.send({ score });
   } catch (error) {
     res.status(400).send(error.message);
   }

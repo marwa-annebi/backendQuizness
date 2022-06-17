@@ -2,6 +2,7 @@ const expressAsyncHandler = require("express-async-handler");
 const Quiz = require("./../../models/quizModel");
 const moment = require("moment");
 const Question = require("../../models/questionModel");
+const { quizAdd } = require("../../validation/quizValidation");
 
 // create quiz
 
@@ -13,14 +14,18 @@ const createQuiz = async (req, res) => {
     nbQuestion,
     duration,
     quizName,
+    Tauxscore,
+    typeQuiz,
   } = req.body;
-  console.log({
+  const { error } = quizAdd({
+    quizName,
+    nbQuestion,
+    duration,
+    Tauxscore,
     creation_date,
     validation_date,
-    questions,
-    nbQuestion,
-    quizName,
   });
+  if (error) return res.status(400).send({ message: error.message });
   await new Quiz({
     quizmaster: req.user._id,
     nbQuestion: nbQuestion,
@@ -30,6 +35,8 @@ const createQuiz = async (req, res) => {
     validation_date: moment(validation_date).format("MM-DD-yyyy"),
     questions,
     duration,
+    typeQuiz,
+    Tauxscore: Tauxscore,
   })
     .save()
     .then((data) => {

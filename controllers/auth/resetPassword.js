@@ -9,7 +9,7 @@ const sendEmail = require("../../mailer/sendEmail");
 const Candidate = require("../../models/users/candidateModel");
 
 const sendPasswordLink = async (req, res, next) => {
-  const { email, type } = req.body;
+  const { email, type, subDomain } = req.body;
 
   //     const { error } = emailSchema.validate(req.body.email);
   //      if (error)
@@ -19,17 +19,16 @@ const sendPasswordLink = async (req, res, next) => {
   }
   let user;
   switch (type) {
-    case myEnum.ADMIN.value:
-      user = await Admin.findOne({ email });
-      //console.log(user);
-      break;
     case myEnum.CANDIDATE.value:
       user = await Candidate.findOne({ email });
       console.log(user);
       break;
     case myEnum.QUIZMASTER.value:
       user = await Quizmaster.findOne({ email });
+<<<<<<< HEAD
+=======
       // console.log(user);
+>>>>>>> 72e157d3177e3e0279239ed26857f9d4bae74b76
       break;
   }
   if (!user) {
@@ -42,7 +41,7 @@ const sendPasswordLink = async (req, res, next) => {
     console.log(resetToken);
     await user.save();
     // console.log(user);
-    const url = ` ${process.env.CLIENT_URL}setNewPassword/${user._id}/${resetToken}/${type}`;
+    const url = `http://${subDomain}.localhost:3000/setNewPassword/${user._id}/${resetToken}/${type}`;
     await sendEmail(user.email, "reset password", url);
     console.log(url);
     res
