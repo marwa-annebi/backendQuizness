@@ -12,17 +12,15 @@ const {
   addAnswerController,
   correctAnswerController,
 } = require("../../controllers/candidate/answerCandidate");
-const {
-  candidatePayment,
-} = require("../../controllers/candidate/paymentController");
 
-const {
-  getQuizByIdVoucher,
-  getSkills,
-} = require("../../controllers/candidate/candidateController");
+
+// const {
+
+//   getSkills,
+// } = require("../../controllers/candidate/candidateController");
 
 const { updateUserProfile } = require("../../controllers/auth/authController");
-const { verifTokenCandidate } = require("../../utils/verifyToken");
+
 const {
   candidatePayment,
   webhook,

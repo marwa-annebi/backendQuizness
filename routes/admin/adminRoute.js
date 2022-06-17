@@ -11,6 +11,7 @@ const {
   nbCandidatEachMonth,
   nbQuizEachMonth,
 } = require("../../controllers/admin/crudQuizMaster");
+
 router.route("/createUser").post(verifTokenAdmin, createUser);
 router.route("/getUsers").get(verifTokenAdmin, getAllUsers);
 router.route("/deleteUser/:id").delete(verifTokenAdmin, deleteUser);

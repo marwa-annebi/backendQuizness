@@ -44,29 +44,35 @@ const updateUserProfile = asyncHandler(async (req, res) => {
 });
 // const getAdminById=asyncHandler(async(req,res))
 const updateAdminProfile = asyncHandler(async (req, res) => {
+  console.log("hellooooooooooooooo");
   const user = await Admin.findById(req.user._id);
-  if (user) {
-    user.firstName = req.body.firstName || user.firstName;
-    user.lastName = req.body.lastName || user.lastName;
-    user.email = req.body.email || user.email;
-    user.logo = req.body.logo || user.logo;
-    if (req.body.password) {
-      user.password = req.body.password;
+  console.log(user)
+    console.log(req.user._id);
+    if (user) {
+      user.firstName = req.body.firstName || user.firstName;
+      user.lastName = req.body.lastName || user.lastName;
+      user.email = req.body.email || user.email;
+      if (req.body.password) {
+        user.password = req.body.password;
+      }
+      const update = await user.save();
+      if (update) {
+        var token = generateToken(user._id, user.email);
+        console.log(token);
+        res.status(200).send({
+          auth: true,
+          token: token,
+          user: update,
+        });
+        console.log(token);
+      }
+    } else {
+      res.status(404);
+      throw new Error("Admin Not Found");
     }
-    const update = await user.save();
-    res.json({
-      _id: update._id,
-      firstName: update.firstName,
-      lastName: update.lastName,
-      email: update.email,
-      logo: update.logo,
-      // token: generateToken(update._id),
-    });
-  } else {
-    res.status(404);
-    throw new Error("Admin Not Found");
-  }
-});
+  });
+
+
 
 // register QuizMaster
 
@@ -292,11 +298,12 @@ const loginAdmin = asyncHandler(async (req, res) => {
           if (await user.matchPassword(password)) {
             var token = generateToken(user._id, user.email);
             console.log(token);
-            return res.send({
+            return res.status(200).send({
               token: token,
-            });
+              user:user
+            })
           } else {
-            return res.send({
+            return res.status(401).send({
               message: "Invalid email or password",
             });
           }

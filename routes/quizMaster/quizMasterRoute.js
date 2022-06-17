@@ -1,6 +1,10 @@
 const { verifTokenQuizmaster } = require("./../../utils/verifyToken");
 const express = require("express");
 const {
+  nbQuizTotal,
+  nbcandidatByeachMonth,
+} = require("../../controllers/quizMaster/Statistic");
+const {
   subscriptionPayment,
 } = require("../../controllers/quizMaster/subcriptionPayment");
 const {
@@ -50,7 +54,10 @@ const {
   getCandidatById,
   updateCandidat,
 } = require("../../controllers/quizMaster/crudCandidat");
-
+router.route("/nbQuizTotal").get(verifTokenQuizmaster, nbQuizTotal);
+router
+  .route("/nbcandidatByeachMonth")
+  .get( nbcandidatByeachMonth);
 router.route("/createCandidat").post(verifTokenQuizmaster, createCandidat);
 router.route("/getCandidats").get(verifTokenQuizmaster, getAllCandidats);
 router

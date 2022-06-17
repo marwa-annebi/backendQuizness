@@ -4,20 +4,25 @@ dotenv.config();
 module.exports = async (email, subject, text) => {
   try {
     const transporter = nodemailer.createTransport({
-      host: process.env.HOST,
-      port: process.env.EMAIL_PORT,
-      secure: true,
+      service: "gmail",
       auth: {
         user: process.env.EMAIL,
         pass: process.env.PASSWORD,
       },
     });
-
+    transporter.verify((error, success) => {
+      if (error) {
+        console.log(error);
+      } else {
+        console.log("Ready for message");
+        console.log(success);
+      }
+    });
     await transporter.sendMail({
       from: process.env.USER,
       to: email,
       subject: subject,
-      text: text,
+      // text: text,
 
       html: `
       <!DOCTYPE html>
