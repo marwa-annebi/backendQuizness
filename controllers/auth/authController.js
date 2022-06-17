@@ -42,6 +42,37 @@ const updateUserProfile = asyncHandler(async (req, res) => {
     throw new Error("Quiz Master Not Found");
   }
 });
+// const getAdminById=asyncHandler(async(req,res))
+const updateAdminProfile = asyncHandler(async (req, res) => {
+  console.log("hellooooooooooooooo");
+  const user = await Admin.findById(req.user._id);
+  console.log(user)
+    console.log(req.user._id);
+    if (user) {
+      user.firstName = req.body.firstName || user.firstName;
+      user.lastName = req.body.lastName || user.lastName;
+      user.email = req.body.email || user.email;
+      if (req.body.password) {
+        user.password = req.body.password;
+      }
+      const update = await user.save();
+      if (update) {
+        var token = generateToken(user._id, user.email);
+        console.log(token);
+        res.status(200).send({
+          auth: true,
+          token: token,
+          user: update,
+        });
+        console.log(token);
+      }
+    } else {
+      res.status(404);
+      throw new Error("Admin Not Found");
+    }
+  });
+
+
 
 // register QuizMaster
 
@@ -256,13 +287,15 @@ const loginAdmin = asyncHandler(async (req, res) => {
         }
         // console.log(user);
         else if (user) {
-          if (await user.matchPassword(req.body.password)) {
-            return res.send({
-              email,
-              password,
-            });
+          if (await user.matchPassword(password)) {
+            var token = generateToken(user._id, user.email);
+            console.log(token);
+            return res.status(200).send({
+              token: token,
+              user:user
+            })
           } else {
-            return res.send({
+            return res.status(401).send({
               message: "Invalid email or password",
             });
           }
@@ -368,14 +401,15 @@ const logout = asyncHandler(async (req, res) => {
 const registerAdmin = asyncHandler(async (req, res) => {
   try {
     let { firstName, lastName, email, password } = req.body;
-    const { error } = registerValidation({
-      firstName,
-      lastName,
-      email,
-      password,
-      // password_confirmation,
-    });
-    if (error) return res.status(400).send({ msg: "error" });
+    // const { error } = registerValidation({
+    //   firstName,
+    //   lastName,
+    //   email,
+    //   password,
+    //   // password_confirmation,
+    // });
+    // if (error) return res.status(400).send({ msg: "error" });
+    const userExists = await Admin.findOne({ email });
     if (userExists) {
       res.json({
         status: "FAILED",
@@ -422,4 +456,5 @@ module.exports = {
   loginAdmin,
   updateAccount,
   getCompanySettings,
+  updateAdminProfile,
 };

@@ -30,6 +30,7 @@ const voucherSchema = mongoose.Schema({
     type: Date,
     required: true,
   },
+
   remark: {
     type: String,
   },

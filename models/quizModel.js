@@ -14,6 +14,8 @@ const quizSchema = mongoose.Schema(
     },
     questions: [{ type: mongoose.Schema.Types.ObjectId, ref: "Question" }],
     nbQuestion: Number,
+
+
     duration: {
       type: Number,
     },

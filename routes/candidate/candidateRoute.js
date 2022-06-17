@@ -1,17 +1,26 @@
 const express = require("express");
+
+const { verifTokenCandidate } = require("../../utils/verifyToken");
 const {
   getQuizByIdVoucher,
   getSkills,
   findAllQuiz,
   findQuizById,
 } = require("../../controllers/candidate/candidateController");
+
 const {
   addAnswerController,
   correctAnswerController,
 } = require("../../controllers/candidate/answerCandidate");
 
+
+// const {
+
+//   getSkills,
+// } = require("../../controllers/candidate/candidateController");
+
 const { updateUserProfile } = require("../../controllers/auth/authController");
-const { verifTokenCandidate } = require("../../utils/verifyToken");
+
 const {
   candidatePayment,
   webhook,
@@ -27,6 +36,7 @@ router.route("/answerCandidate").post(verifTokenCandidate, addAnswerController);
 router.route("/correctAnswer").post(correctAnswerController);
 router.route("/updateProfile").post(verifTokenCandidate, updateUserProfile);
 router.route("/getSkills").get(verifTokenCandidate, getSkills);
+
 router.route("/getQuizzes").get(verifTokenCandidate, findAllQuiz);
 router.route("/getQuizById/:id").get(verifTokenCandidate, findQuizById);
 router.route("/webhook").post(

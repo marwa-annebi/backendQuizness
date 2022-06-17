@@ -25,6 +25,10 @@ const sendPasswordLink = async (req, res, next) => {
       break;
     case myEnum.QUIZMASTER.value:
       user = await Quizmaster.findOne({ email });
+<<<<<<< HEAD
+=======
+      // console.log(user);
+>>>>>>> 72e157d3177e3e0279239ed26857f9d4bae74b76
       break;
   }
   if (!user) {

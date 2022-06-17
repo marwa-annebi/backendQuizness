@@ -5,6 +5,11 @@ const {
   setNewPassword,
 } = require("../../controllers/auth/resetPassword");
 const {
+  sendPasswordLinkAdmin,
+  setNewPasswordAdmin,
+} = require("../../controllers/auth/resetPasswordAdmin");
+const { verifTokenAdmin } = require("../../utils/verifyToken");
+const {
   registerAdmin,
   registerCandidate,
   registerQuizMaster,
@@ -16,6 +21,7 @@ const {
   loginAdmin,
   updateAccount,
   getCompanySettings,
+  updateAdminProfile,
 } = require("../../controllers/auth/authController");
 const router = express.Router();
 require("../../controllers/auth/passport");
@@ -26,7 +32,7 @@ const QUIZMASTER_URL = "http://formalab.localhost:3000";
 //register Admin
 
 router.route("/registerAdmin").post(registerAdmin);
-
+router.route("/updateAdminProfile").put(verifTokenAdmin,updateAdminProfile);
 //update User Profile
 
 router.route("/updateProfile").put(updateUserProfile);
@@ -55,6 +61,15 @@ router.route("/sendpasswordlink").post(sendPasswordLink);
 
 router.route("/setNewPassword/:id/:resetToken/:type").post(setNewPassword);
 
+//forgot passwordAdmin
+
+router.route("/sendpasswordlinkAdmin").post(sendPasswordLinkAdmin);
+
+//set new passwordAdmin
+
+router
+  .route("/setNewPasswordAdmin/:id/:resetToken/:type")
+  .post(setNewPasswordAdmin);
 //verify token
 
 // router.route("/verifyToken").get(verifyToken);
