@@ -1,20 +1,20 @@
 const expressAsyncHandler = require("express-async-handler");
 const Skill = require("../../models/skillModel");
 const Quizmaster = require("../../models/users/quizmasterModel");
+const { addSkill } = require("../../validation/skillValidation");
 const createSkill = async (req, res) => {
   try {
     let { skill_name, requirements, budget } = req.body;
     const skillExists = await Skill.findOne({
       skill_name,
       quizmaster: req.user._id,
-      // requirements,
-
-      // // quizmaster,
     });
-    console.log(skillExists);
-    if (!skill_name || !requirements) {
-      res.status(400).send({ message: "please fill all this fields " });
-    }
+    const { error } = addSkill({
+      skill_name,
+      budget,
+      requirements,
+    });
+    if (error) return res.status(400).send({ message: error.message });
     if (skillExists) {
       res.status(400).send({
         message: "skill with provided skill name exists",
@@ -44,8 +44,6 @@ const createSkill = async (req, res) => {
 
 const updateSkill = expressAsyncHandler(async (req, res) => {
   const { skill_name, requirements, budget } = req.body;
-  // console.log({ skill_name, requirements, budget });
-  console.log("heloo");
   try {
     await Skill.findByIdAndUpdate(
       req.params.id,

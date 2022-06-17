@@ -46,6 +46,7 @@ const createVoucher = async (req, res) => {
 };
 
 // update Voucher
+
 const updateVoucher = expressAsyncHandler(async (req, res) => {
   try {
     const updateVoucher = await voucherModel.findByIdAndUpdate(
@@ -61,6 +62,7 @@ const updateVoucher = expressAsyncHandler(async (req, res) => {
     res.status(500).send(error);
   }
 });
+
 // getVoucherByIdCandidat
 const getVoucherByIdCandidat = expressAsyncHandler(async (req, res) => {
   try {

@@ -5,17 +5,25 @@ const propositionModel = require("../../models/propositionModel");
 const Question = require("../../models/questionModel");
 const { createProposition } = require("./propositionController");
 const Quizmaster = require("../../models/users/quizmasterModel");
+const { addQuestion } = require("../../validation/questionValidation");
 
 const finishQuestion = async (req, res) => {
   const {
     question: { skill, tronc, typeQuestion },
     proposition,
   } = req.body;
-  console.log({
-    question: { skill, tronc, typeQuestion },
-    proposition,
+
+  const { error } = addQuestion({
+    skill,
+    tronc,
+    // proposition,
   });
-  // var query=Question.find
+  if (error) return res.status(400).send({ message: error.message });
+  // const troncExist = Question.findOne();
+  // console.log(troncExist);
+  // if (troncExist) {
+  //   return res.status(400).send({ message: "Tronc exist" });
+  // }
   questionCreated = await new Question({
     skill,
     tronc,

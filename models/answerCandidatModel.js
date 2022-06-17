@@ -6,15 +6,21 @@ const answerCandidatSchema = mongoose.Schema({
     // required: true,
   },
 
-  answers: [
+  array: [
     {
-      _id_proposition: {
+      _id_Question: {
         type: mongoose.Types.ObjectId,
-        ref: "Proposition",
+        ref: "Question",
       },
-      response: {
-        type: Boolean,
-      },
+      answers: [
+        {
+          _id_proposition: {
+            type: mongoose.Types.ObjectId,
+            ref: "Proposition",
+          },
+          response: false,
+        },
+      ],
     },
   ],
 });

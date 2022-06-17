@@ -85,14 +85,6 @@ const registerCandidate = asyncHandler(async (req, res) => {
   try {
     let { firstName, lastName, email, password, quizmaster, confirmpassword } =
       req.body;
-    console.log({
-      firstName,
-      lastName,
-      email,
-      password,
-      quizmaster,
-      confirmpassword,
-    });
     const userExists = await Candidate.findOne({ email });
     const idQuizMasterExists = await Candidate.findOne({
       quizmaster: quizmaster,
@@ -104,7 +96,7 @@ const registerCandidate = asyncHandler(async (req, res) => {
       password,
       confirmpassword,
     });
-    if (error) return res.status(400).send({ msg: "error" });
+    if (error) return res.status(400).send({ message: error.message });
     if (userExists && !idQuizMasterExists) {
       const user = await Candidate.findOneAndUpdate(
         { email },
