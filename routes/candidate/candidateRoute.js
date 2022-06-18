@@ -13,7 +13,6 @@ const {
   correctAnswerController,
 } = require("../../controllers/candidate/answerCandidate");
 
-
 // const {
 
 //   getSkills,
@@ -31,7 +30,7 @@ const {
 
 const router = express.Router();
 router.route("/paymentCandidate").post(verifTokenCandidate, candidatePayment);
-router.route("/getQuiz").post(getQuizByIdVoucher);
+router.route("/getQuiz").post(verifTokenCandidate, getQuizByIdVoucher);
 router.route("/answerCandidate").post(verifTokenCandidate, addAnswerController);
 router.route("/correctAnswer").post(correctAnswerController);
 router.route("/updateProfile").post(verifTokenCandidate, updateUserProfile);

@@ -4,6 +4,7 @@ var voucher_codes = require("voucher-code-generator");
 const expressAsyncHandler = require("express-async-handler");
 const { sendVoucherToCandidate } = require("../../mailer/mailer");
 const Candidate = require("./../../models/users/candidateModel");
+const Quiz = require("../../models/quizModel");
 // create voucher
 const createVoucher = async (req, res) => {
   let _id_voucher;
@@ -88,10 +89,18 @@ const getvoucher = expressAsyncHandler(async (req, res) => {
         candidat: req.user._id,
         _id_voucher: _id_voucher,
       });
+      // .populate("quiz");
       console.log(data);
+
+      const result = await Quiz.findById({ _id: data.quiz });
+
+      const nbQuestion = result.nbQuestion;
+      const Tauxscore = result.Tauxscore;
+
+      console.log(result);
       if (data && start < data.validation_date) {
         console.log(data);
-        res.json(data);
+        res.json({ data, nbQuestion, Tauxscore });
       } else if (data && start > data.validation_date) {
         res.status(500).send({ message: "Invalid Key" });
       } else if (!data) {

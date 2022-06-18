@@ -6,13 +6,15 @@ const Quiz = require("./../../models/quizModel");
 const propositionModel = require("../../models/propositionModel");
 const dayjs = require("dayjs");
 const getQuizByIdVoucher = expressAsyncHandler(async (req, res) => {
-  const { _id_voucher } = req.body;
+  const { _id_voucher } = req.query._id_voucher;
+  console.log(_id_voucher);
   voucherModel
     .find({ _id_voucher })
     .populate("quiz")
     .then(async (data) => {
-      getQuestions(data[0].quiz.questions, res);
+      // getQuestions(data[0].quiz.questions, res);
       // res.status(200).send(result);
+      res.send({ data });
       //   res.send(data[0].quiz);
       // console.log(quiz);
     })

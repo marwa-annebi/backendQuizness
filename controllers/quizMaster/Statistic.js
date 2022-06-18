@@ -46,52 +46,55 @@ const nbcandidatByeachMonth = async (req, res) => {
   var today = new Date();
 
   try {
-    await Candidate.aggregate([
-      ({
-        $match: {
-          //"author": { "$in": userIds }
-          quizmaster: [{ $lt:id }],
-          createdAt: {
-            $lt: today.toISOString(),
+    // Candidate.findOne({})
+    const quizmaster = await Candidate.find({ quizmaster: { $in: [id] } });
+    console.log(quizmaster);
+    if (quizmaster) {
+      await Candidate.aggregate([
+        ({
+          $match: {
+            quizmaster: { $in: [id] },
+            createdAt: {
+              $lt: today.toISOString(),
+            },
           },
         },
-      },
-      {
-        $project: {
-          month: {
-            $month: "$createdAt",
+        {
+          $project: {
+            month: {
+              $month: "$createdAt",
+            },
           },
         },
-      },
-      {
-        $group: {
-          _id: {
-            $month: "$createdAt",
+        {
+          $group: {
+            _id: {
+              $month: "$createdAt",
+            },
+            total: {
+              $sum: 1,
+            },
           },
-
-          total: {
-            $sum: 1,
-          },
-        },
-      }),
-    ]).exec(function (err, result) {
-      console.log(result);
-      // if (err) return handleError(err);
-      console.log("hello");
-      array.map((index, key) => {
-        for (let index = 0; index < result.length; index++) {
-          // let id2 = result[index]._id;
-          if (key == result[index]._id) {
-            var element = result[index];
-            // element += array[id2 - 1];
-            array[result[index]._id - 1] = element;
-          } else {
-            console.log("falseee");
+        }),
+      ]).exec(function (err, result) {
+        console.log(result);
+        // if (err) return handleError(err);
+        // console.log("hello");
+        array.map((index, key) => {
+          for (let index = 0; index < result.length; index++) {
+            // let id2 = result[index]._id;
+            if (key == result[index]._id) {
+              var element = result[index];
+              // element += array[id2 - 1];
+              array[result[index]._id - 1] = element;
+            } else {
+              // console.log("falseee");
+            }
           }
-        }
+        });
+        return res.status(200).send(array);
       });
-      return res.status(200).send(array);
-    });
+    }
 
     // console.log(nb);
   } catch (error) {

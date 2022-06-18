@@ -57,50 +57,53 @@ const nbCorrectAnswer = async (propositions, req, res) => {
 const correctAnswerController = expressAsyncHandler(async (req, res) => {
   try {
     let score = 0;
-    const { array, _id_voucher } = req.body;
-    const newAnswer = new answerCandidatModel({
-      array,
-    });
-    newAnswer.save();
-    let nbCorrectProposition = 0;
-    let nbTotal = 0;
-    let nbIncorrectProposition = 0;
-    const result = [];
     let scoreFinal = 0;
-    for (let index = 0; index < array.length; index++) {
-      const element = array[index];
-      // console.log(element);
-      await Question.findOne({
-        _id: { $in: array[index]._id_Question },
-      })
-        .populate("propositions")
-        .then(async (result) => {
-          nbTotal = result.propositions.length;
-          // console.log(nbTotal);
-          nbCorrectProposition = await nbCorrectAnswer(result.propositions);
-          nbIncorrectProposition = nbTotal - nbCorrectProposition;
-          result.propositions.map(async (proposition) => {
-            // console.log(nbIncorrectProposition);
-            {
-              array[index].answers.map((item) => {
-                if (item._id_proposition == proposition._id) {
-                  // console.log(score);
-                  if (item.response === proposition.veracity) {
-                    score += 1 / nbCorrectProposition;
-                    console.log("bonne reponse", score);
-                  } else {
-                    score -= 1 / nbIncorrectProposition;
-                    console.log(nbIncorrectProposition);
-                    console.log(1 / nbIncorrectProposition);
-                    console.log("mauvaise reponse", score);
+    const { array, _id_voucher, nbQuestion, Tauxscore } = req.body;
+    console.log(req.body);
+    const nb = Math.round(nbQuestion / 2);
+    if (array.length <= nb) {
+      res.status(500).send({
+        message: `please answer at least ${nb} questions`,
+      });
+    } else if (array.length > nb) {
+      const newAnswer = new answerCandidatModel({
+        _id_voucher,
+        array,
+      });
+      newAnswer.save();
+      let nbCorrectProposition = 0;
+      let nbTotal = 0;
+      let nbIncorrectProposition = 0;
+      // let nbTotalQuestion = 0;
+      const result = [];
+      for (let index = 0; index < array.length; index++) {
+        await Question.findOne({
+          _id: { $in: array[index]._id_Question },
+        })
+          .populate("propositions")
+          .then(async (result) => {
+            nbTotal = result.propositions.length;
+            console.log(nbTotal);
+            nbCorrectProposition = await nbCorrectAnswer(result.propositions);
+            nbIncorrectProposition = nbTotal - nbCorrectProposition;
+            result.propositions.map(async (proposition) => {
+              {
+                array[index].answers.map((item) => {
+                  if (item._id_proposition == proposition._id) {
+                    if (item.response === proposition.veracity) {
+                      score += 1 / nbCorrectProposition;
+                    } else {
+                      score -= 1 / nbIncorrectProposition;
+                    }
                   }
-                }
-              });
-            }
+                });
+              }
+            });
           });
-        });
+      }
+      scoreFinal = (score * 100) / nbQuestion;
+      res.send({ scoreFinal });
     }
-    res.send({ score });
   } catch (error) {
     res.status(400).send(error.message);
   }
