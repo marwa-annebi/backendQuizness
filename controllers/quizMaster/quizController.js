@@ -78,9 +78,7 @@ const updateQuiz = expressAsyncHandler(async (req, res) => {});
 const findAllQuiz = expressAsyncHandler(async (req, res) => {
   Quiz.find({ quizmaster: req.user._id })
     .populate("questions")
-    // populate("skill").
     .then((data) => {
-      // console.log(data);
       res.json(data);
     })
     .catch((err) => {

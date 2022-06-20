@@ -5,6 +5,7 @@ const Proposition = require("../propositionModel");
 const Question = require("../questionModel");
 const deleteProposition = require("../../controllers/quizMaster/propositionController");
 const propositionModel = require("../propositionModel");
+const { string, array } = require("joi");
 const quizmasterSchema = mongoose.Schema(
   {
     linkedinId: {
@@ -51,8 +52,13 @@ const quizmasterSchema = mongoose.Schema(
       darkColor: String,
       businessName: String,
     },
+    stripeCustomerId: { type: String },
     resetPasswordToken: { type: String },
     resetPasswordExpire: { type: Date },
+    notifications: {
+      type: Array,
+      default: [],
+    },
   },
 
   {

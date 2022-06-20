@@ -12,11 +12,7 @@ const getQuizByIdVoucher = expressAsyncHandler(async (req, res) => {
     .find({ _id_voucher })
     .populate("quiz")
     .then(async (data) => {
-      // getQuestions(data[0].quiz.questions, res);
-      // res.status(200).send(result);
       res.send({ data });
-      //   res.send(data[0].quiz);
-      // console.log(quiz);
     })
     .catch((err) => {
       res.status(500).send({
@@ -77,13 +73,15 @@ const findQuizById = expressAsyncHandler(async (req, res) => {
     const perPage = req.query.perPage || 1;
     let id = req.params.id;
     const resultVoucher = await voucherModel.findOne({ quiz: id });
+    console.log(resultVoucher);
     const quiz = await Quiz.findById(id);
+
     const countQuestion = quiz.questions.length;
     if (resultVoucher.startTime === null) {
-      resultVoucher.startTime = dayjs().format();
+      resultVoucher.startTime = new Date().setHours(new Date().getHours() + 1);
       resultVoucher.save();
-      const minutes = quiz.duration;
-      const seconds = 00;
+      const timer = (await quiz.duration) * 60000;
+
       Quiz.findById(id, { _id: 0, questions: 1 }).then((data) => {
         Question.find({
           _id: { $in: data.questions },
@@ -92,23 +90,17 @@ const findQuizById = expressAsyncHandler(async (req, res) => {
           .skip((page - 1) * parseInt(perPage))
           .limit(parseInt(perPage))
           .then((result) => {
-            // console.log({ result }),
-            res.status(200).json({ result, countQuestion, minutes, seconds });
+            res.status(200).json({ result, countQuestion, timer });
           });
       });
     } else {
       let resuult = resultVoucher.startTime;
-      // console.log(resuult);
-      // console.log(new Date());
-      // console.log(Date.now());
       await resuult.setMinutes(resuult.getMinutes() + quiz.duration);
-      console.log(resuult);
-
       if (resuult < new Date()) {
         res.status(403).json({ message: "date of voucher expired" });
       } else {
-        const minutes = resuult.getMinutes() - new Date().getMinutes();
-        const seconds = resuult.getSeconds() - new Date().getSeconds();
+        const timer =
+          resuult.getTime() - new Date().setHours(new Date().getHours() + 1);
 
         Quiz.findById(id, { _id: 0, questions: 1 }).then((data) => {
           Question.find({
@@ -118,9 +110,7 @@ const findQuizById = expressAsyncHandler(async (req, res) => {
             .skip((page - 1) * parseInt(perPage))
             .limit(parseInt(perPage))
             .then((result) => {
-              // console.log({ result, countQuestion }),
-
-              res.status(200).json({ result, countQuestion, minutes, seconds });
+              res.status(200).json({ result, countQuestion, timer });
             });
         });
       }

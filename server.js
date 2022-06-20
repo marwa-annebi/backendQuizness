@@ -6,6 +6,7 @@ const app = express();
 const authRoute = require("./routes/auth/authRoute");
 const adminRoute = require("./routes/admin/adminRoute");
 const quizMasterRoute = require("./routes/quizMaster/quizMasterRoute");
+const subsRoute = require("./routes/subscription/subs");
 const candidateRoute = require("./routes/candidate/candidateRoute");
 const cors = require("cors");
 dotenv.config();
@@ -75,5 +76,7 @@ app.use("/auth", authRoute);
 app.use("/admin", adminRoute);
 app.use("/quizmaster", quizMasterRoute);
 app.use("/candidate", candidateRoute);
+app.use("/subs", subsRoute);
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, console.log(`Server started on PORT ${PORT}`));

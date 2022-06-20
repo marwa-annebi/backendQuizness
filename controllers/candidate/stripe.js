@@ -1,20 +1,20 @@
 const express = require("express");
 const expressAsyncHandler = require("express-async-handler");
 const CandidateSkill = require("../../models/CanidateSkill");
+const Candidate = require("../../models/users/candidateModel");
+const Quizmaster = require("../../models/users/quizmasterModel");
 const stripe = require("stripe")(STRIPE_SECRET);
 require("dotenv").config();
 const YOUR_DOMAIN = "http://formalab.localhost:3000";
 const candidatePayment = expressAsyncHandler(async (req, res) => {
   const line_items = req.body.key;
-  // console.log(userId);
   const customer = await stripe.customers.create({
     metadata: {
       userId: req.body.userId,
       cart: req.body.key._id,
+      quizmaster: req.body.key.quizmaster,
     },
   });
-  console.log("req.body.userId", customer);
-
   const session = await stripe.checkout.sessions.create({
     payment_method_types: ["card"],
     phone_number_collection: {
@@ -54,11 +54,21 @@ const createOrder = expressAsyncHandler(async (customer, data) => {
     userId: customer.metadata.userId,
     customerId: data.customer,
     payment_status: data.payment_status,
+    _id_quizmaster: customer.metadata.quizmaster,
   });
   try {
     const saveOrder = await newOrder.save();
-
-    console.log(saveOrder);
+    if (saveOrder.payment_status === "paid") {
+      Quizmaster.findById({ _id: saveOrder._id_quizmaster }).then((result) => {
+        Candidate.findById({ _id: saveOrder.userId }).then((candidate) => {
+          result.notifications.push(
+            candidate.firstName + " " + candidate.lastName + " buy a voucher"
+          );
+          console.log(result);
+          result.save();
+        });
+      });
+    }
   } catch (error) {
     console.log(error);
   }

@@ -102,6 +102,12 @@ const correctAnswerController = expressAsyncHandler(async (req, res) => {
           });
       }
       scoreFinal = (score * 100) / nbQuestion;
+      const updateVoucher = await Voucher.findOneAndUpdate(
+        { _id: _id_voucher },
+        { $set: { score: scoreFinal } },
+        { new: true }
+      );
+      console.log(updateVoucher);
       res.send({ scoreFinal });
     }
   } catch (error) {

@@ -12,6 +12,11 @@ const candidateSkillSchema = mongoose.Schema({
   },
   payment_status: { type: String },
   customerId: { type: String },
+  _id_quizmaster: {
+    type: mongoose.Schema.Types.ObjectId,
+    // required: true,
+    ref: "Quizmaster",
+  },
 });
 
 const CandidateSkill = mongoose.model("CandidateSkill", candidateSkillSchema);

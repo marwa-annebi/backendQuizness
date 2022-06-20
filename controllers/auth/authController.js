@@ -1,7 +1,5 @@
 // register for admin
 const moment = require("moment");
-const { ObjectId } = require("mongodb");
-const mongoose = require("mongoose");
 const asyncHandler = require("express-async-handler");
 const { sendVerificationEmail } = require("../../mailer/mailer");
 const Admin = require("../../models/users/adminModel");
@@ -12,9 +10,12 @@ const generateToken = require("../../utils/generateToken");
 const { registerValidation } = require("./../../validation/userValidation");
 const Quizmaster = require("../../models/users/quizmasterModel");
 const Candidate = require("./../../models/users/candidateModel");
+const Stripe = require("stripe");
+
+//update profile user
+
 const updateUserProfile = asyncHandler(async (req, res) => {
   const user = await Candidate.findById(req.user._id);
-  console.log(req.user._id);
   if (user) {
     user.firstName = req.body.firstName || user.firstName;
     user.lastName = req.body.lastName || user.lastName;
@@ -29,52 +30,51 @@ const updateUserProfile = asyncHandler(async (req, res) => {
     const update = await user.save();
     if (update) {
       var token = generateToken(user._id, user.email);
-      console.log(token);
+
       res.status(200).send({
         auth: true,
         token: token,
         user: update,
       });
-      console.log(token);
     }
   } else {
     res.status(404);
     throw new Error("Quiz Master Not Found");
   }
 });
-// const getAdminById=asyncHandler(async(req,res))
+
+//update admin profile
+
 const updateAdminProfile = asyncHandler(async (req, res) => {
-  console.log("hellooooooooooooooo");
   const user = await Admin.findById(req.user._id);
-  console.log(user)
-    console.log(req.user._id);
-    if (user) {
-      user.firstName = req.body.firstName || user.firstName;
-      user.lastName = req.body.lastName || user.lastName;
-      user.email = req.body.email || user.email;
-      if (req.body.password) {
-        user.password = req.body.password;
-      }
-      const update = await user.save();
-      if (update) {
-        var token = generateToken(user._id, user.email);
-        console.log(token);
-        res.status(200).send({
-          auth: true,
-          token: token,
-          user: update,
-        });
-        console.log(token);
-      }
-    } else {
-      res.status(404);
-      throw new Error("Admin Not Found");
+  if (user) {
+    user.firstName = req.body.firstName || user.firstName;
+    user.lastName = req.body.lastName || user.lastName;
+    user.email = req.body.email || user.email;
+    if (req.body.password) {
+      user.password = req.body.password;
     }
-  });
-
-
+    const update = await user.save();
+    if (update) {
+      var token = generateToken(user._id, user.email);
+      res.status(200).send({
+        auth: true,
+        token: token,
+        user: update,
+      });
+    }
+  } else {
+    res.status(404);
+    throw new Error("Admin Not Found");
+  }
+});
 
 // register QuizMaster
+
+//stripe
+const stripe = new Stripe(process.env.STRIPE_SECRET, {
+  apiVersion: "2020-08-27",
+});
 
 const registerQuizMaster = asyncHandler(async (req, res) => {
   let { firstName, lastName, email, password, confirmpassword } = req.body;
@@ -93,11 +93,20 @@ const registerQuizMaster = asyncHandler(async (req, res) => {
         message: "quizMaster with provided email exists ",
       });
     } else {
+      const customer = await stripe.customers.create(
+        {
+          email,
+        },
+        {
+          apiKey: process.env.STRIPE_SECRET,
+        }
+      );
       const quizMaster = new Quizmaster({
         firstName,
         lastName,
         email,
         password,
+        stripeCustomerId: customer.id,
       });
       quizMaster.save().then((result) => {
         sendVerificationEmail(result, res);
@@ -159,12 +168,44 @@ const registerCandidate = asyncHandler(async (req, res) => {
   }
 });
 
+//register admin
+
+const registerAdmin = asyncHandler(async (req, res) => {
+  try {
+    let { firstName, lastName, email, password } = req.body;
+    const userExists = await Admin.findOne({ email });
+    if (userExists) {
+      res.json({
+        status: "FAILED",
+        message: "admin with provided email exists ",
+      });
+    } else {
+      const admin = new Admin({
+        firstName,
+        lastName,
+        email,
+        password,
+      });
+      admin.save().then(() => {
+        res.json({
+          status: "SUCCESS",
+          admin: admin,
+        });
+      });
+    }
+  } catch (error) {
+    res.json({
+      status: "FAILED",
+      message: error.message,
+    });
+  }
+});
+
 // verify OTP
 
 const verifyOTP = asyncHandler(async (req, res) => {
   try {
     let { userId, otp } = req.body;
-    // console.log({ userId, otp });
     if (!otp) {
       throw Error("Empty otp details are not allowed");
     } else {
@@ -188,14 +229,11 @@ const verifyOTP = asyncHandler(async (req, res) => {
             .status(400)
             .send({ message: "Code has expired please request again" });
         } else {
-          console.log(hashedOtp);
           const validOTP = await bcrypt.compare(otp, hashedOtp);
-          console.log("hello");
           if (!validOTP) {
             res
               .status(400)
               .send({ message: "Invalid code passed .Check your inbox" });
-            // console.log({ message: "Invalid code passed .Check your inbox" });
           } else {
             //success
             await Quizmaster.updateOne({ _id: userId }, { verified: true });
@@ -218,40 +256,6 @@ const verifyOTP = asyncHandler(async (req, res) => {
 
 // resend verification
 
-const updateAccount = asyncHandler(async (req, res) => {
-  const {
-    account: { domain_name, logo, darkColor, lightColor, businessName },
-    id,
-  } = req.body;
-  // console.log({
-  //   account: { domain_name, logo, darkColor, lightColor, businessName },
-  // });
-  try {
-    if (!domain_name || !logo || !lightColor || !darkColor || !businessName) {
-      throw Error("Empty account details are not allowed");
-    } else if (domain_name.length > 15) {
-      throw Error("max 15 charachter must be");
-    } else {
-      const user = await Quizmaster.findByIdAndUpdate(id, {
-        "account.domain_name": domain_name,
-        "account.logo": logo,
-        "account.darkColor": darkColor,
-        "account.lightColor": lightColor,
-        "account.businessName": businessName,
-      });
-      await user.save();
-      // console.log(user);
-      return res.status(201).send({
-        message: "Updated Success",
-      });
-    }
-  } catch (error) {
-    res.status(500).send({
-      status: "FAILED",
-      message: error.message,
-    });
-  }
-});
 const resendverification = asyncHandler(async (req, res) => {
   try {
     let { userId, email } = req.body;
@@ -270,6 +274,41 @@ const resendverification = asyncHandler(async (req, res) => {
   }
 });
 
+//update account quizmaster
+
+const updateAccount = asyncHandler(async (req, res) => {
+  const {
+    account: { domain_name, logo, darkColor, lightColor, businessName },
+    id,
+  } = req.body;
+  try {
+    if (!domain_name || !logo || !lightColor || !darkColor || !businessName) {
+      throw Error("Empty account details are not allowed");
+    } else if (domain_name.length > 15) {
+      throw Error("max 15 charachter must be");
+    } else {
+      const user = await Quizmaster.findByIdAndUpdate(id, {
+        "account.domain_name": domain_name,
+        "account.logo": logo,
+        "account.darkColor": darkColor,
+        "account.lightColor": lightColor,
+        "account.businessName": businessName,
+      });
+      await user.save();
+      return res.status(201).send({
+        message: "Updated Success",
+      });
+    }
+  } catch (error) {
+    res.status(500).send({
+      status: "FAILED",
+      message: error.message,
+    });
+  }
+});
+
+//login admin
+
 const loginAdmin = asyncHandler(async (req, res) => {
   try {
     const { email, password, type } = req.body;
@@ -279,21 +318,17 @@ const loginAdmin = asyncHandler(async (req, res) => {
         user = await Admin.findOne({
           email,
         });
-        // console.log(user);
         if (!user) {
           res.status(404).send({
             message: "user doesn't exist",
           });
-        }
-        // console.log(user);
-        else if (user) {
+        } else if (user) {
           if (await user.matchPassword(password)) {
             var token = generateToken(user._id, user.email);
-            console.log(token);
             return res.status(200).send({
               token: token,
-              user:user
-            })
+              user: user,
+            });
           } else {
             return res.status(401).send({
               message: "Invalid email or password",
@@ -331,7 +366,6 @@ const loginUser = asyncHandler(async (req, res) => {
         } else if (user) {
           if (await user.matchPassword(password)) {
             var token = generateToken(user._id, user.email);
-            console.log(token);
             res.status(200).send({
               auth: true,
               token: token,
@@ -398,44 +432,7 @@ const logout = asyncHandler(async (req, res) => {
   res.status(200).send({ auth: false, token: null, user: null });
 });
 
-const registerAdmin = asyncHandler(async (req, res) => {
-  try {
-    let { firstName, lastName, email, password } = req.body;
-    // const { error } = registerValidation({
-    //   firstName,
-    //   lastName,
-    //   email,
-    //   password,
-    //   // password_confirmation,
-    // });
-    // if (error) return res.status(400).send({ msg: "error" });
-    const userExists = await Admin.findOne({ email });
-    if (userExists) {
-      res.json({
-        status: "FAILED",
-        message: "admin with provided email exists ",
-      });
-    } else {
-      const admin = new Admin({
-        firstName,
-        lastName,
-        email,
-        password,
-      });
-      admin.save().then(() => {
-        res.json({
-          status: "SUCCESS",
-          admin: admin,
-        });
-      });
-    }
-  } catch (error) {
-    res.json({
-      status: "FAILED",
-      message: error.message,
-    });
-  }
-});
+//get company settings quizmaster
 
 const getCompanySettings = async (req, res) => {
   const domain_name = req.query.domain_name;
@@ -444,6 +441,7 @@ const getCompanySettings = async (req, res) => {
   });
   res.json(settings);
 };
+
 module.exports = {
   registerAdmin,
   registerQuizMaster,

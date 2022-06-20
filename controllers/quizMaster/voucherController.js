@@ -78,7 +78,7 @@ const getVoucherByIdCandidat = expressAsyncHandler(async (req, res) => {
 //
 
 const getvoucher = expressAsyncHandler(async (req, res) => {
-  const { _id_voucher } = req.query;
+  const { _id_voucher } = req.body;
   try {
     if (!_id_voucher) {
       return res.status(500).send({ message: "please enter your key" });
@@ -121,10 +121,10 @@ const getVoucherById = expressAsyncHandler(async (req, res) => {
     res.status(404).json({ message: "voucher  not found" });
   }
 });
+
 //delete voucher
 const deleteVoucher = expressAsyncHandler(async (req, res) => {
   const voucher = await voucherModel.findById(req.params.id);
-
   if (voucher) {
     await voucher.remove();
     res.json({ message: "voucher Removed" });

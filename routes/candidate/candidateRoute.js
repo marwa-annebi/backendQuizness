@@ -43,6 +43,6 @@ router.route("/webhook").post(
   express.raw({ type: "application/json" }),
   webhook
 );
-router.route("/getvoucher").get(verifTokenCandidate, getvoucher);
+router.route("/getvoucher").post(verifTokenCandidate, getvoucher);
 
 module.exports = router;

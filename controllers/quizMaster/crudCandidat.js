@@ -1,19 +1,34 @@
 const express = require("express");
 const Candidate = require("../../models/users/candidateModel");
 const createCandidat = async (req, res) => {
-  let { firstName, lastName, email, password } = req.body;
-  const newUser = new Candidate({
-    firstName,
-    lastName,
-    email,
-    password,
-  });
   try {
-    newUser.save().then((result) => {
-      result;
+    const {
+      firstName,
+      lastName,
+      email,
+      password,
+      // confirmpassword,
+      quizmaster,
+    } = req.body;
+    // console.log(req.body);
+    // const { error } = registerValidation({
+    //   firstName,
+    //   lastName,
+    //   email,
+    //   password,
+    //   confirmpassword,
+    // });
+    // if (error) return res.status(400).send({ message: error.message });
+    const newUser = await new Candidate({
+      firstName,
+      lastName,
+      email,
+      password,
+      quizmaster,
     });
+    await newUser.save().then((data) => res.status(200).send(data));
   } catch (error) {
-    console.error(error);
+    res.status(500).send({ message: error });
   }
 };
 
@@ -52,13 +67,26 @@ const deleteCandidat = async (req, res) => {
 // update
 
 const updateCandidat = async (req, res) => {
+  // try {
+  const { firstName, lastName, email, password } = req.body;
   try {
-    const updatedUser = await Candidate.findByIdAndUpdate(
+    await Skill.findByIdAndUpdate(
       req.params.id,
-      { ...req.body },
-      { new: true }
+      {
+        $set: {
+          firstName: firstName,
+          lastName: lastName,
+          email: email,
+          password: password,
+        },
+      }
+      // { new: true }
     );
-    res.send(updatedUser);
+    // await updateSkill.save();
+
+    res.status(200).send({
+      message: "updated successfully",
+    });
   } catch (error) {
     console.error(error);
   }

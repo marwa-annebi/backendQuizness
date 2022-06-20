@@ -54,17 +54,19 @@ const {
   getCandidatById,
   updateCandidat,
 } = require("../../controllers/quizMaster/crudCandidat");
+const {
+  findAllCandidateSkill,
+} = require("../../controllers/quizMaster/crudOrder");
+const getNotifications = require("../../controllers/quizMaster/notification");
 router.route("/nbQuizTotal").get(verifTokenQuizmaster, nbQuizTotal);
-router
-  .route("/nbcandidatByeachMonth")
-  .get( nbcandidatByeachMonth);
+router.route("/nbcandidatByeachMonth").get(nbcandidatByeachMonth);
 router.route("/createCandidat").post(verifTokenQuizmaster, createCandidat);
 router.route("/getCandidats").get(verifTokenQuizmaster, getAllCandidats);
+router.route("/candidat/:id").put(verifTokenQuizmaster, updateCandidat);
 router
-  .route("/candidat/:id")
-  .put(verifTokenQuizmaster, updateCandidat)
-  .delete(verifTokenQuizmaster, deleteCandidat)
-  .get(verifTokenQuizmaster, getCandidatById);
+  .route("/deletecandidat/:id")
+  .delete(verifTokenQuizmaster, deleteCandidat);
+// .get(verifTokenQuizmaster, getCandidatById);
 router
   .route("/subscriptionPayment")
   .post(verifTokenQuizmaster, subscriptionPayment);
@@ -116,4 +118,14 @@ router
   .put(verifTokenQuizmaster, updateVoucher)
   .delete(verifTokenQuizmaster, deleteVoucher)
   .get(verifTokenQuizmaster, getVoucherById);
+
+//candiate skill
+findAllCandidateSkill;
+router
+  .route("/getSkillCandidate")
+  .get(verifTokenQuizmaster, findAllCandidateSkill);
+
+//notification
+router.route("/getNotification").get(verifTokenQuizmaster, getNotifications);
+
 module.exports = router;
