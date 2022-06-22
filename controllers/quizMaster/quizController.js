@@ -25,7 +25,13 @@ const createQuiz = async (req, res) => {
     creation_date,
     validation_date,
   });
+
   if (error) return res.status(400).send({ message: error.message });
+  else if (creation_date > validation_date) {
+    res
+      .status(400)
+      .send({ message: "creation date must be < to validation date" });
+  }
   await new Quiz({
     quizmaster: req.user._id,
     nbQuestion: nbQuestion,

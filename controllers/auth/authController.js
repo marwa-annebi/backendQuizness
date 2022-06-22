@@ -282,8 +282,12 @@ const updateAccount = asyncHandler(async (req, res) => {
     id,
   } = req.body;
   try {
+    const domainExist = Quizmaster.find({ "account.domain_name": domain_name });
+
     if (!domain_name || !logo || !lightColor || !darkColor || !businessName) {
       throw Error("Empty account details are not allowed");
+    } else if (domainExist) {
+      throw Error("Domain Name exists");
     } else if (domain_name.length > 15) {
       throw Error("max 15 charachter must be");
     } else {

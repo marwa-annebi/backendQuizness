@@ -17,6 +17,7 @@ const voucherSchema = mongoose.Schema({
   },
   score: {
     type: Number,
+    default: 0,
   },
   creation_date: {
     type: Date,

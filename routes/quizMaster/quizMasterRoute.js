@@ -27,6 +27,7 @@ const {
   deleteQuestion,
   findAll,
   updateQuestion,
+  getQuestionsSkill,
 } = require("../../controllers/quizMaster/questionController");
 const {
   finishQuestion,
@@ -127,5 +128,10 @@ router
 
 //notification
 router.route("/getNotification").get(verifTokenQuizmaster, getNotifications);
+
+//question By skill
+router
+  .route("/getQuestionSkill/:skill")
+  .get(verifTokenQuizmaster, getQuestionsSkill);
 
 module.exports = router;

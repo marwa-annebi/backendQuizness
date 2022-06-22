@@ -3,11 +3,16 @@ const expressAsyncHandler = require("express-async-handler");
 const CandidateSkill = require("../../models/CanidateSkill");
 const Candidate = require("../../models/users/candidateModel");
 const Quizmaster = require("../../models/users/quizmasterModel");
+
 const stripe = require("stripe")(STRIPE_SECRET);
+
 require("dotenv").config();
+
 const YOUR_DOMAIN = "http://formalab.localhost:3000";
+
 const candidatePayment = expressAsyncHandler(async (req, res) => {
   const line_items = req.body.key;
+  const subdomain = req.body.subdomain;
   const customer = await stripe.customers.create({
     metadata: {
       userId: req.body.userId,
@@ -39,8 +44,8 @@ const candidatePayment = expressAsyncHandler(async (req, res) => {
     ],
     mode: "payment",
     customer: customer.id,
-    success_url: YOUR_DOMAIN + "/success",
-    cancel_url: YOUR_DOMAIN + "/cancel",
+    success_url: `http://${subdomain}.localhost:3000/success`,
+    cancel_url: `http://${subdomain}.localhost:3000/cancel`,
   });
 
   res.send({ url: session.url });
@@ -64,7 +69,6 @@ const createOrder = expressAsyncHandler(async (customer, data) => {
           result.notifications.push(
             candidate.firstName + " " + candidate.lastName + " buy a voucher"
           );
-          console.log(result);
           result.save();
         });
       });
@@ -89,9 +93,7 @@ const webhook = expressAsyncHandler(async (request, response) => {
     let event;
     try {
       event = stripe.webhooks.constructEvent(request.body, sig, endpointSecret);
-      console.log("WebHook verified");
     } catch (err) {
-      console.log("webhook error", err.message);
       response.status(400).send(`Webhook Error: ${err.message}`);
       return;
     }
@@ -106,9 +108,7 @@ const webhook = expressAsyncHandler(async (request, response) => {
     stripe.customers
       .retrieve(data.customer)
       .then((customer) => {
-        console.log(customer);
         createOrder(customer, data);
-        console.log("data:", data);
       })
       .catch((err) => console.log(err.message));
   }

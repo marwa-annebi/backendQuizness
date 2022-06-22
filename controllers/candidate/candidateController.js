@@ -3,11 +3,9 @@ const Question = require("../../models/questionModel");
 const Skill = require("../../models/skillModel");
 const voucherModel = require("./../../models/voucherModel");
 const Quiz = require("./../../models/quizModel");
-const propositionModel = require("../../models/propositionModel");
-const dayjs = require("dayjs");
+
 const getQuizByIdVoucher = expressAsyncHandler(async (req, res) => {
   const { _id_voucher } = req.query._id_voucher;
-  console.log(_id_voucher);
   voucherModel
     .find({ _id_voucher })
     .populate("quiz")
@@ -20,21 +18,9 @@ const getQuizByIdVoucher = expressAsyncHandler(async (req, res) => {
       });
     });
 });
-const getQuestions = expressAsyncHandler(async (questions, res) => {
-  var array = [];
-  for (let index = 0; index < questions.length; index++) {
-    result = await Question.findById(questions[index]).populate("propositions");
-    array.push(result);
-  }
-  //   console.log(array);
-  //   return array;
-  return res.send(array);
-});
 
 const getSkills = expressAsyncHandler(async (req, res) => {
-  // console.log("helloooooooo");
-  // const { quizmaster } = req.body;
-  let quizmaster = req.query.quizmaster; // const question = { quizmaster: quizmaster };
+  let quizmaster = req.query.quizmaster;
   const skills = await Skill.find({
     quizmaster,
   });
@@ -58,7 +44,6 @@ const findAllQuiz = expressAsyncHandler(async (req, res) => {
     // .skip((page - 1) * pageSize)
     .then((data) => {
       res.status(200).send(data);
-      console.log(data);
     })
     .catch((err) => {
       res.status(500).send({
@@ -67,15 +52,20 @@ const findAllQuiz = expressAsyncHandler(async (req, res) => {
       });
     });
 });
+
+// get quiz by id voucher
+
 const findQuizById = expressAsyncHandler(async (req, res) => {
   try {
     const page = req.query.page || 1;
     const perPage = req.query.perPage || 1;
-    let id = req.params.id;
-    const resultVoucher = await voucherModel.findOne({ quiz: id });
-    console.log(resultVoucher);
+    let { id } = req.params;
+    let { _id_voucher } = req.params;
+    const resultVoucher = await voucherModel.findOne({
+      _id: _id_voucher,
+      quiz: id,
+    });
     const quiz = await Quiz.findById(id);
-
     const countQuestion = quiz.questions.length;
     if (resultVoucher.startTime === null) {
       resultVoucher.startTime = new Date().setHours(new Date().getHours() + 1);
@@ -97,11 +87,11 @@ const findQuizById = expressAsyncHandler(async (req, res) => {
       let resuult = resultVoucher.startTime;
       await resuult.setMinutes(resuult.getMinutes() + quiz.duration);
       if (resuult < new Date()) {
+        voucherModel.remove(resultVoucher);
         res.status(403).json({ message: "date of voucher expired" });
       } else {
         const timer =
           resuult.getTime() - new Date().setHours(new Date().getHours() + 1);
-
         Quiz.findById(id, { _id: 0, questions: 1 }).then((data) => {
           Question.find({
             _id: { $in: data.questions },

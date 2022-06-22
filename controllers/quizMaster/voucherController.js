@@ -7,27 +7,31 @@ const Candidate = require("./../../models/users/candidateModel");
 const Quiz = require("../../models/quizModel");
 // create voucher
 const createVoucher = async (req, res) => {
-  let _id_voucher;
   try {
     const { creation_date, validation_date, quiz, candidat } = req.body;
-    console.log({ creation_date, validation_date, quiz, candidat });
-    const newVoucher = new voucherModel({
-      creation_date: moment(creation_date).format("yyyy-MM-DD"),
-      validation_date: moment(validation_date).format("yyyy-MM-DD"),
-      quiz,
-      candidat,
-      _id_voucher: voucher_codes
-        .generate({
-          prefix: "Quizness-",
-        })
-        .toString(),
-    });
+    if (!quiz || !validation_date || !creation_date) {
+      res.status(400).send({ message: "required" });
+    } else if (creation_date > validation_date) {
+      res
+        .status(400)
+        .send({ message: "creation date must be < to validation date" });
+    } else {
+      const newVoucher = await new voucherModel({
+        creation_date: moment(creation_date).format("yyyy-MM-DD"),
+        validation_date: moment(validation_date).format("yyyy-MM-DD"),
+        quiz,
+        candidat,
+        _id_voucher: voucher_codes
+          .generate({
+            prefix: "Quizness-",
+          })
+          .toString(),
+      });
 
-    Candidate.findById(candidat).then((result) => {
-      console.log("result", result);
-      newVoucher.save().then(() => {
-        sendVoucherToCandidate(
-          {
+      Candidate.findById(candidat).then((result) => {
+        console.log("result", result);
+        newVoucher.save().then(() => {
+          sendVoucherToCandidate({
             email: result.email,
             firstName: result.firstName,
             lastName: result.lastName,
@@ -36,11 +40,10 @@ const createVoucher = async (req, res) => {
             darkColor: req.user.account.darkColor,
             _id_voucher: newVoucher._id_voucher,
             validation_date: newVoucher.validation_date,
-          },
-          res
-        );
+          });
+        });
       });
-    });
+    }
   } catch (error) {
     console.log(error);
   }
@@ -84,10 +87,9 @@ const getvoucher = expressAsyncHandler(async (req, res) => {
       return res.status(500).send({ message: "please enter your key" });
     } else {
       const start = new Date(Date.now());
-      console.log(start);
       const data = await voucherModel.findOne({
-        candidat: req.user._id,
         _id_voucher: _id_voucher,
+        candidat: req.user._id,
       });
       // .populate("quiz");
       console.log(data);

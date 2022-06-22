@@ -39,6 +39,18 @@ const findAll = expressAsyncHandler(async (req, res) => {
       });
     });
 });
+
+// get question by skill
+
+const getQuestionsSkill = expressAsyncHandler(async (req, res) => {
+  const { skill } = req.params;
+  const questions = await Question.find({
+    skill: skill,
+    quizmaster: req.user._id,
+  });
+  res.status(200).send({ questions });
+});
+
 const updateQuestion = expressAsyncHandler(async (req, res) => {
   const id = req.params.id;
   Question.findByIdAndUpdate(id, req.body, { useFindAndModify: false })
@@ -61,4 +73,5 @@ module.exports = {
   deleteQuestion,
   updateQuestion,
   findAll,
+  getQuestionsSkill,
 };
