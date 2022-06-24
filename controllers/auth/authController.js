@@ -101,6 +101,7 @@ const registerQuizMaster = asyncHandler(async (req, res) => {
           apiKey: process.env.STRIPE_SECRET,
         }
       );
+
       const quizMaster = new Quizmaster({
         firstName,
         lastName,
@@ -109,6 +110,11 @@ const registerQuizMaster = asyncHandler(async (req, res) => {
         stripeCustomerId: customer.id,
       });
       quizMaster.save().then((result) => {
+        var token = generateToken(result._id, result.email);
+        res.status(200).send({
+          token: token,
+          user: result,
+        });
         sendVerificationEmail(result, res);
       });
     }
@@ -282,14 +288,17 @@ const updateAccount = asyncHandler(async (req, res) => {
     id,
   } = req.body;
   try {
-    const domainExist = Quizmaster.find({ "account.domain_name": domain_name });
-
+    const domainExist = await Quizmaster.findOne({
+      "account.domain_name": domain_name,
+    });
+    console.log(domainExist);
     if (!domain_name || !logo || !lightColor || !darkColor || !businessName) {
       throw Error("Empty account details are not allowed");
-    } else if (domainExist) {
-      throw Error("Domain Name exists");
     } else if (domain_name.length > 15) {
       throw Error("max 15 charachter must be");
+    }
+    if (domainExist) {
+      throw Error("Domain Name exists");
     } else {
       const user = await Quizmaster.findByIdAndUpdate(id, {
         "account.domain_name": domain_name,

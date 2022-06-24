@@ -2,6 +2,8 @@ const expressAsyncHandler = require("express-async-handler");
 const answerCandidatModel = require("../../models/answerCandidatModel");
 const Voucher = require("../../models/voucherModel");
 const Question = require("../../models/questionModel");
+const Quiz = require("../../models/quizModel");
+const Skill = require("../../models/skillModel");
 
 const nbCorrectAnswer = async (propositions, req, res) => {
   try {
@@ -57,8 +59,24 @@ const correctAnswerController = expressAsyncHandler(async (req, res) => {
       scoreFinal = Math.round((score * 100) / nbQuestion);
       const filter = { _id: _id_voucher };
       const update = { score: scoreFinal };
-      await Voucher.findOneAndUpdate(filter, update);
-      res.send({ scoreFinal });
+      const voucher = await Voucher.findOneAndUpdate(filter, update)
+        .populate("candidat")
+        .populate({
+          path: "quiz",
+          model: Quiz,
+          // select: "questions",
+          populate: {
+            path: "questions",
+            model: Question,
+            // select: "skill",
+            populate: {
+              path: "skill",
+              model: Skill,
+              // select: "skill_name",
+            },
+          },
+        });
+      res.status(200).send({ scoreFinal, voucher });
     }
   } catch (error) {
     res.status(400).send(error.message);

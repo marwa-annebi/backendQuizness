@@ -45,6 +45,7 @@ const {
   deleteVoucher,
   getVoucherByIdCandidat,
   getvoucher,
+  findAllVoucher,
 } = require("../../controllers/quizMaster/voucherController");
 const router = express.Router();
 // candidat
@@ -58,7 +59,11 @@ const {
 const {
   findAllCandidateSkill,
 } = require("../../controllers/quizMaster/crudOrder");
-const getNotifications = require("../../controllers/quizMaster/notification");
+const {
+  getNotifications,
+  deleteNotificaton,
+} = require("../../controllers/quizMaster/notification");
+const { webhook } = require("../../controllers/subscription/subs");
 router.route("/nbQuizTotal").get(verifTokenQuizmaster, nbQuizTotal);
 router.route("/nbcandidatByeachMonth").get(nbcandidatByeachMonth);
 router.route("/createCandidat").post(verifTokenQuizmaster, createCandidat);
@@ -120,6 +125,8 @@ router
   .delete(verifTokenQuizmaster, deleteVoucher)
   .get(verifTokenQuizmaster, getVoucherById);
 
+router.route("/getScore").get(verifTokenQuizmaster, findAllVoucher);
+
 //candiate skill
 findAllCandidateSkill;
 router
@@ -128,10 +135,18 @@ router
 
 //notification
 router.route("/getNotification").get(verifTokenQuizmaster, getNotifications);
-
+router
+  .route("/deleteNotification/:id")
+  .delete(verifTokenQuizmaster, deleteNotificaton);
 //question By skill
 router
   .route("/getQuestionSkill/:skill")
   .get(verifTokenQuizmaster, getQuestionsSkill);
+
+router.route("/webhook").post(
+  // verifTokenCandidate,
+  express.raw({ type: "application/json" }),
+  webhook
+);
 
 module.exports = router;

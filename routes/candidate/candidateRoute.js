@@ -17,6 +17,7 @@ const {
 const {
   getvoucher,
 } = require("../../controllers/quizMaster/voucherController");
+const getCertificate = require("../../controllers/candidate/certificate");
 const router = express.Router();
 
 router.route("/paymentCandidate").post(verifTokenCandidate, candidatePayment);
@@ -35,4 +36,5 @@ router.route("/webhook").post(
 );
 router.route("/getvoucher").post(verifTokenCandidate, getvoucher);
 
+// router.route("/getCertif").get(verifTokenCandidate, getCertificate);
 module.exports = router;

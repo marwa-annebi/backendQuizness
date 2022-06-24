@@ -84,10 +84,10 @@ const sendVerificationEmail = async ({ _id, email, firstName }, res) => {
     // save otp record
     await newOTPVerification.save();
     await transporter.sendMail(mailOptions);
-    res.status(200).send({
-      userId: _id,
-      email,
-    });
+    // res.status(200).send({
+    //   userId: _id,
+    //   email,
+    // });
   } catch (error) {
     res.status(500).send({
       message: error.message,

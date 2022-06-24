@@ -11,7 +11,6 @@ const voucherSchema = mongoose.Schema({
   },
   quiz: {
     type: mongoose.Schema.Types.ObjectId,
-
     required: true,
     ref: "Quiz",
   },
@@ -32,7 +31,7 @@ const voucherSchema = mongoose.Schema({
     required: true,
   },
 
-  remark: {
+  status: {
     type: String,
   },
 });

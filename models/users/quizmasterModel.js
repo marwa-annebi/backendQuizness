@@ -59,6 +59,12 @@ const quizmasterSchema = mongoose.Schema(
       type: Array,
       default: [],
     },
+    startPack: {
+      type: Date,
+    },
+    endPack: {
+      type: Date,
+    },
   },
 
   {

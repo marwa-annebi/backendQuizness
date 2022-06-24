@@ -9,6 +9,7 @@ const quizMasterRoute = require("./routes/quizMaster/quizMasterRoute");
 const subsRoute = require("./routes/subscription/subs");
 const candidateRoute = require("./routes/candidate/candidateRoute");
 const cors = require("cors");
+const getCertificate = require("./controllers/candidate/certificate");
 dotenv.config();
 // socket
 // const { Server } = require("socket.io");
@@ -77,6 +78,6 @@ app.use("/admin", adminRoute);
 app.use("/quizmaster", quizMasterRoute);
 app.use("/candidate", candidateRoute);
 app.use("/subs", subsRoute);
-
+// getCertificate();
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, console.log(`Server started on PORT ${PORT}`));

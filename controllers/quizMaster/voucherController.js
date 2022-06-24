@@ -5,6 +5,7 @@ const expressAsyncHandler = require("express-async-handler");
 const { sendVoucherToCandidate } = require("../../mailer/mailer");
 const Candidate = require("./../../models/users/candidateModel");
 const Quiz = require("../../models/quizModel");
+const CandidateSkill = require("../../models/CanidateSkill");
 // create voucher
 const createVoucher = async (req, res) => {
   try {
@@ -28,8 +29,8 @@ const createVoucher = async (req, res) => {
           .toString(),
       });
 
-      Candidate.findById(candidat).then((result) => {
-        console.log("result", result);
+      Candidate.findById(candidat).then(async (result) => {
+        // console.log("result", result);
         newVoucher.save().then(() => {
           sendVoucherToCandidate({
             email: result.email,
@@ -42,6 +43,8 @@ const createVoucher = async (req, res) => {
             validation_date: newVoucher.validation_date,
           });
         });
+        var myquery = { userId: result._id };
+        await CandidateSkill.deleteOne(myquery);
       });
     }
   } catch (error) {
@@ -89,11 +92,10 @@ const getvoucher = expressAsyncHandler(async (req, res) => {
       const start = new Date(Date.now());
       const data = await voucherModel.findOne({
         _id_voucher: _id_voucher,
-        candidat: req.user._id,
+        // candidat: req.user._id,
       });
       // .populate("quiz");
       console.log(data);
-
       const result = await Quiz.findById({ _id: data.quiz });
 
       const nbQuestion = result.nbQuestion;
@@ -136,6 +138,46 @@ const deleteVoucher = expressAsyncHandler(async (req, res) => {
   }
 });
 
+const findAllVoucher = expressAsyncHandler(async (req, res) => {
+  var array = [];
+  var array1 = [];
+  const vouchers = await voucherModel
+    .find()
+    .populate("candidat")
+    .then((result) => {
+      // for (let index = 0; index < result.length; index++) {
+      //   const quizmasters = result[index].candidat.quizmaster;
+      //   console.log(quizmasters);
+      //   for (let index = 0; index < quizmasters.length; index++) {
+      //     const element = quizmasters[index];
+      //     if (element == req.user._id) {
+      //       return res.send(result);
+      //     }
+      //   }
+      // }
+      {
+        result.map((voucher) => {
+          const quizmasters = voucher.candidat.quizmaster;
+          console.log(quizmasters);
+          quizmasters.map((quizmater) => {
+            console.log(quizmater);
+            if (quizmater.toString() == req.user._id.toString()) {
+              array.push(voucher);
+            }
+          });
+        });
+      }
+    });
+  {
+    array.map((key) => {
+      if (key.status === "success") {
+        array1.push(key);
+      }
+    });
+  }
+  res.status(200).send(array1);
+});
+
 module.exports = {
   createVoucher,
   updateVoucher,
@@ -143,4 +185,5 @@ module.exports = {
   deleteVoucher,
   getVoucherByIdCandidat,
   getvoucher,
+  findAllVoucher,
 };
